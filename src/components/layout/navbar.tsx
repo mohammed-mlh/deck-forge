@@ -9,6 +9,7 @@ import type { NavItem } from "@/types";
 const navItems: NavItem[] = [
   { label: "Cards", href: "/cards" },
   { label: "Deck Builder", href: "/deck-builder" },
+  { label: "Browse Decks", href: "/browse-decks" },
   { label: "My Decks", href: "/decks" },
   { label: "Archetypes", href: "/archetypes" },
   { label: "Meta", href: "/meta" },

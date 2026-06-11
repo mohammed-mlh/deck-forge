@@ -12,6 +12,7 @@ interface AppShellProps {
 
 const navItems = [
   { label: "Builder", href: "/deck-builder" },
+  { label: "Browse", href: "/browse-decks" },
   { label: "My Decks", href: "/decks" },
 ];
 
