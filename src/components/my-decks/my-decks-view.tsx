@@ -11,22 +11,20 @@ import { countZone } from "@/lib/deck-rules";
 
 function DeckListSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 3 }).map((_, i) => (
+    <div className="grid gap-4 lg:grid-cols-2">
+      {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)]"
+          className="flex h-[168px] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)]"
         >
-          <div className="h-[76px] animate-pulse bg-[var(--color-surface-2)]" />
-          <div className="flex flex-col gap-3 p-4">
-            <div className="h-5 w-2/3 animate-pulse rounded bg-[var(--color-surface-2)]" />
-            <div className="flex gap-2">
-              <div className="h-6 w-16 animate-pulse rounded bg-[var(--color-surface-2)]" />
-              <div className="h-6 w-16 animate-pulse rounded bg-[var(--color-surface-2)]" />
-              <div className="h-6 w-14 animate-pulse rounded bg-[var(--color-surface-2)]" />
+          <div className="flex flex-1 flex-col justify-between p-4">
+            <div className="space-y-2">
+              <div className="h-6 w-2/3 animate-pulse rounded bg-[var(--color-surface-2)]" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-[var(--color-surface-2)]" />
             </div>
-            <div className="h-4 w-1/2 animate-pulse rounded bg-[var(--color-surface-2)]" />
+            <div className="h-3 w-28 animate-pulse rounded bg-[var(--color-surface-2)]" />
           </div>
+          <div className="w-[40%] animate-pulse bg-[var(--color-surface-2)]" />
         </div>
       ))}
     </div>
@@ -43,7 +41,7 @@ export function MyDecksView() {
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <PageHeader
         title="My Decks"
         description="Open a saved deck to keep building, or start fresh."
@@ -82,7 +80,7 @@ export function MyDecksView() {
           </Link>
         </EmptyState>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 lg:grid-cols-2">
           {decks.map((deck) => (
             <DeckListCard key={deck.id} deck={deck} onDelete={() => remove(deck.id)} />
           ))}
