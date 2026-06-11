@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SiteLayout } from "@/components/layout/site-layout";
 import { AuthProvider } from "@/providers/auth-context";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
@@ -34,7 +35,9 @@ export default function RootLayout({
     >
       <body className="min-h-screen antialiased">
         <QueryProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <SiteLayout>{children}</SiteLayout>
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>
