@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Hammer, Library, Sparkles, BarChart2, Database, Wallet } from "lucide-react";
+import { ArrowRight, Hammer, Sparkles, BarChart2, Database, Wallet } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
 import { FeatureCard } from "@/components/cards/feature-card";
@@ -30,11 +30,6 @@ const features = [
     icon: <BarChart2 className="size-5" />,
     title: "Meta Tracker",
     description: "Up-to-date competitive data from YCS and regional events.",
-  },
-  {
-    icon: <Library className="size-5" />,
-    title: "Collection Manager",
-    description: "Track your cards with condition grading and market value.",
   },
   {
     icon: <Wallet className="size-5" />,

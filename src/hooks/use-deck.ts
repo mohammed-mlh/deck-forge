@@ -88,6 +88,10 @@ export function useDeck(initial?: Deck) {
     setDeck((prev) => ({ ...prev, name }));
   }, []);
 
+  const replaceDeck = useCallback((next: Deck) => {
+    setDeck(next);
+  }, []);
+
   return {
     deck,
     stats,
@@ -97,5 +101,6 @@ export function useDeck(initial?: Deck) {
     moveCard,
     resetDeck,
     setDeckName,
+    replaceDeck,
   };
 }

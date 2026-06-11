@@ -13,8 +13,6 @@ const footerLinks = {
   Tools: [
     { label: "Deck Builder", href: "/app/builder" },
     { label: "My Decks", href: "/app/my-decks" },
-    { label: "Collection", href: "/app/collection" },
-    { label: "AI Assistant", href: "/app/ai" },
   ],
   Company: [
     { label: "About", href: "/about" },

@@ -35,7 +35,6 @@ const plans = [
       "AI Deck Doctor",
       "Full meta analytics",
       "Price tracker & alerts",
-      "Collection management",
       "Export to YDK / Untap",
     ],
     cta: "Start Pro",

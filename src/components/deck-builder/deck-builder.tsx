@@ -1,17 +1,47 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
-import { DeckStatsBar } from "@/components/deck-builder/deck-stats-bar";
+import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { useDeck } from "@/hooks/use-deck";
+import { useSavedDecks } from "@/hooks/use-saved-decks";
+import { downloadDeckTxt } from "@/lib/deck-export";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import type { DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
 export function DeckBuilder() {
-  const { deck, stats, issues, addCard, removeCard, resetDeck, setDeckName } = useDeck();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const deckId = searchParams.get("id");
+  const { save, getById } = useSavedDecks();
+  const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
+    useDeck();
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const loadedIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!deckId) {
+      loadedIdRef.current = null;
+      return;
+    }
+    if (deckId === loadedIdRef.current) return;
+    const saved = getById(deckId);
+    if (saved) {
+      replaceDeck(saved);
+      loadedIdRef.current = deckId;
+    }
+  }, [deckId, getById, replaceDeck]);
+
+  const handleSave = () => {
+    save(deck);
+    setSaveStatus("saved");
+    router.replace(`/app/builder?id=${deck.id}`);
+    window.setTimeout(() => setSaveStatus("idle"), 2000);
+  };
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
     addCard(card, zone);
@@ -23,50 +53,41 @@ export function DeckBuilder() {
 
   return (
     <DragDropProvider onDropOnZone={handleDrop}>
-      <div className="flex h-full min-h-0 flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <input
-            type="text"
-            value={deck.name}
-            onChange={(e) => setDeckName(e.target.value)}
-            className="min-w-0 flex-1 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 text-lg font-semibold text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-focus)] sm:max-w-xs"
-          />
-          <button
-            type="button"
-            onClick={resetDeck}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-sm text-[var(--color-foreground-muted)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-3)]"
-          >
-            <RotateCcw className="size-4" />
-            Reset
-          </button>
-        </div>
-
-        <DeckStatsBar
-          main={stats.main}
-          extra={stats.extra}
-          side={stats.side}
-          issues={issues}
+      <div className="flex h-full min-h-0">
+        {/* Card pool — fixed-width left column, full height */}
+        <CardSearchPanel
+          onAddCard={handleAdd}
+          className="w-[clamp(260px,32vw,400px)] shrink-0"
         />
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
-          <div className="flex min-h-[400px] flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4 lg:min-h-0">
-            <h2 className="mb-3 shrink-0 text-sm font-semibold text-[var(--color-foreground)]">
-              Card Search
-            </h2>
-            <CardSearchPanel onAddCard={handleAdd} />
-          </div>
+        {/* Deck area — header + main (fills) + extra/side strips at bottom */}
+        <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <DeckPanelHeader
+            deckName={deck.name}
+            onDeckNameChange={setDeckName}
+            main={stats.main}
+            extra={stats.extra}
+            side={stats.side}
+            saveStatus={saveStatus}
+            onSave={handleSave}
+            onClear={resetDeck}
+            onExport={() => downloadDeckTxt(deck)}
+          />
 
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4">
-            <h2 className="text-sm font-semibold text-[var(--color-foreground)]">Your Deck</h2>
+          <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
             <DeckZonePanel
               zone="main"
+              layout="expanded"
               entries={deck.main}
               deck={deck}
               onRemove={(id) => removeCard(id, "main")}
               onAdd={(card) => handleAdd(card, "main")}
+              className="min-h-0 flex-1"
             />
+
             <DeckZonePanel
               zone="extra"
+              layout="strip"
               entries={deck.extra}
               deck={deck}
               onRemove={(id) => removeCard(id, "extra")}
@@ -74,13 +95,14 @@ export function DeckBuilder() {
             />
             <DeckZonePanel
               zone="side"
+              layout="strip"
               entries={deck.side}
               deck={deck}
               onRemove={(id) => removeCard(id, "side")}
               onAdd={(card) => handleAdd(card, "side")}
             />
           </div>
-        </div>
+        </section>
       </div>
     </DragDropProvider>
   );

@@ -5,19 +5,15 @@ import {
   Layers,
   Hammer,
   FolderOpen,
-  Library,
-  Sparkles,
   Settings,
 } from "lucide-react";
 import { SidebarItem } from "@/components/layout/sidebar-item";
 import type { NavItem } from "@/types";
 
 const sidebarItems: NavItem[] = [
-  { label: "Builder",      href: "/app/builder",    icon: Hammer     },
-  { label: "My Decks",     href: "/app/my-decks",   icon: FolderOpen },
-  { label: "Collection",   href: "/app/collection", icon: Library    },
-  { label: "AI Assistant", href: "/app/ai",         icon: Sparkles   },
-  { label: "Settings",     href: "/app/settings",   icon: Settings   },
+  { label: "Builder",  href: "/app/builder",  icon: Hammer     },
+  { label: "My Decks", href: "/app/my-decks", icon: FolderOpen },
+  { label: "Settings", href: "/app/settings", icon: Settings   },
 ];
 
 export function Sidebar() {

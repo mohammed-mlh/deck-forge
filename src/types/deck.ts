@@ -15,6 +15,10 @@ export interface Deck {
   side: DeckCardEntry[];
 }
 
+export interface SavedDeck extends Deck {
+  updatedAt: string;
+}
+
 export interface DeckValidationIssue {
   zone?: DeckZone;
   cardId?: number;
