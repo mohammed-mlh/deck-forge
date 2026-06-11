@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
+import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
@@ -21,6 +22,7 @@ export function DeckBuilder() {
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
     useDeck();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const loadedIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -45,15 +47,22 @@ export function DeckBuilder() {
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
     addCard(card, zone);
+    setSelectedCard(card);
   };
 
   const handleAdd = (card: YugiohCard, zone?: DeckZone) => {
     addCard(card, zone ?? getDefaultZoneForCard(card));
+    setSelectedCard(card);
   };
 
   return (
     <DragDropProvider onDropOnZone={handleDrop}>
       <div className="flex h-full min-h-0">
+        <CardDetailViewer
+          card={selectedCard}
+          className="w-[clamp(220px,22vw,280px)]"
+        />
+
         <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <DeckPanelHeader
             deckName={deck.name}
@@ -63,7 +72,10 @@ export function DeckBuilder() {
             side={stats.side}
             saveStatus={saveStatus}
             onSave={handleSave}
-            onClear={resetDeck}
+            onClear={() => {
+              resetDeck();
+              setSelectedCard(null);
+            }}
             onExport={() => downloadDeckTxt(deck)}
           />
 
@@ -75,6 +87,8 @@ export function DeckBuilder() {
                 deck={deck}
                 onRemove={(id) => removeCard(id, "main")}
                 onAdd={(card) => handleAdd(card, "main")}
+                onSelectCard={setSelectedCard}
+                selectedCardId={selectedCard?.id ?? null}
               />
               <DeckZonePanel
                 zone="extra"
@@ -82,6 +96,8 @@ export function DeckBuilder() {
                 deck={deck}
                 onRemove={(id) => removeCard(id, "extra")}
                 onAdd={(card) => handleAdd(card, "extra")}
+                onSelectCard={setSelectedCard}
+                selectedCardId={selectedCard?.id ?? null}
               />
               <DeckZonePanel
                 zone="side"
@@ -89,6 +105,8 @@ export function DeckBuilder() {
                 deck={deck}
                 onRemove={(id) => removeCard(id, "side")}
                 onAdd={(card) => handleAdd(card, "side")}
+                onSelectCard={setSelectedCard}
+                selectedCardId={selectedCard?.id ?? null}
               />
             </div>
           </div>
@@ -96,6 +114,8 @@ export function DeckBuilder() {
 
         <CardSearchPanel
           onAddCard={handleAdd}
+          onSelectCard={setSelectedCard}
+          selectedCardId={selectedCard?.id ?? null}
           className="w-[clamp(280px,28vw,380px)] shrink-0"
         />
       </div>

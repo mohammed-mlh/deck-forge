@@ -27,6 +27,8 @@ interface DeckZoneProps {
   deck: Deck;
   onRemove: (cardId: number) => void;
   onAdd: (card: YugiohCard) => void;
+  onSelectCard?: (card: YugiohCard) => void;
+  selectedCardId?: number | null;
   className?: string;
 }
 
@@ -34,6 +36,8 @@ export function DeckZonePanel({
   zone,
   entries,
   onRemove,
+  onSelectCard,
+  selectedCardId,
   className,
 }: DeckZoneProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -77,6 +81,8 @@ export function DeckZonePanel({
               slot={slot}
               slotNumber={index + 1}
               onRemove={onRemove}
+              onSelectCard={onSelectCard}
+              selectedCardId={selectedCardId}
             />
           ))}
         </div>
@@ -89,10 +95,14 @@ function SlotCell({
   slot,
   slotNumber,
   onRemove,
+  onSelectCard,
+  selectedCardId,
 }: {
   slot: DeckSlot | null;
   slotNumber: number;
   onRemove: (cardId: number) => void;
+  onSelectCard?: (card: YugiohCard) => void;
+  selectedCardId?: number | null;
 }) {
   if (!slot) {
     return <DeckEmptySlot index={slotNumber} />;
@@ -101,6 +111,8 @@ function SlotCell({
   return (
     <DeckZoneCard
       card={slot.entry.card}
+      onSelect={onSelectCard}
+      selected={selectedCardId === slot.entry.card.id}
       onRemove={() => onRemove(slot.entry.card.id)}
     />
   );

@@ -14,10 +14,17 @@ import { getDefaultZoneForCard } from "@/lib/deck-rules";
 
 interface CardSearchPanelProps {
   onAddCard: (card: YugiohCard, zone?: DeckZone) => void;
+  onSelectCard?: (card: YugiohCard) => void;
+  selectedCardId?: number | null;
   className?: string;
 }
 
-export function CardSearchPanel({ onAddCard, className }: CardSearchPanelProps) {
+export function CardSearchPanel({
+  onAddCard,
+  onSelectCard,
+  selectedCardId,
+  className,
+}: CardSearchPanelProps) {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<CardSearchParams>({ type: "all" });
 
@@ -27,6 +34,10 @@ export function CardSearchPanel({ onAddCard, className }: CardSearchPanelProps) 
     useBrowseCards(debouncedSearch, filters);
 
   const handleCardClick = (card: YugiohCard) => {
+    onSelectCard?.(card);
+  };
+
+  const handleCardDoubleClick = (card: YugiohCard) => {
     onAddCard(card, getDefaultZoneForCard(card));
   };
 
@@ -50,7 +61,7 @@ export function CardSearchPanel({ onAddCard, className }: CardSearchPanelProps) 
         <p className="shrink-0 text-[11px] text-[var(--color-foreground-subtle)]">
           {isLoading
             ? "Loading cards…"
-            : `${cards.length} results — drag a card into a deck section`}
+            : `${cards.length} results — click to preview, drag or double-click to add`}
           {isFetching && !isLoading && " · updating…"}
         </p>
       </div>
@@ -62,6 +73,8 @@ export function CardSearchPanel({ onAddCard, className }: CardSearchPanelProps) 
           isError={isError}
           errorMessage={error?.message}
           onCardClick={handleCardClick}
+          onCardDoubleClick={handleCardDoubleClick}
+          selectedCardId={selectedCardId}
           draggable
           columns={3}
           emptyMessage={

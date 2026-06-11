@@ -8,18 +8,29 @@ import type { YugiohCard } from "@/types/yugioh";
 
 interface DeckZoneCardProps {
   card: YugiohCard;
+  onSelect?: (card: YugiohCard) => void;
   onRemove: () => void;
+  selected?: boolean;
   className?: string;
 }
 
-export function DeckZoneCard({ card, onRemove, className }: DeckZoneCardProps) {
+export function DeckZoneCard({
+  card,
+  onSelect,
+  onRemove,
+  selected,
+  className,
+}: DeckZoneCardProps) {
   return (
     <div className={cn("group relative", className)}>
       <button
         type="button"
-        onClick={onRemove}
-        className="relative block w-full overflow-hidden rounded-[2px] transition-transform hover:scale-[1.02]"
-        aria-label={`Remove ${card.name}`}
+        onClick={() => onSelect?.(card)}
+        className={cn(
+          "relative block w-full overflow-hidden rounded-[2px] transition-transform hover:scale-[1.02]",
+          selected && "ring-2 ring-[var(--color-primary)]"
+        )}
+        aria-label={`View ${card.name}`}
       >
         <div className="relative aspect-[59/86] w-full">
           <Image

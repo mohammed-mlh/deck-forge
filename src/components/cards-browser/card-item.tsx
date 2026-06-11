@@ -10,6 +10,8 @@ import type { YugiohCard } from "@/types/yugioh";
 interface CardItemProps {
   card: YugiohCard;
   onClick?: (card: YugiohCard) => void;
+  onDoubleClick?: (card: YugiohCard) => void;
+  selected?: boolean;
   draggable?: boolean;
   dragId?: string;
   className?: string;
@@ -18,6 +20,8 @@ interface CardItemProps {
 export function CardItem({
   card,
   onClick,
+  onDoubleClick,
+  selected,
   draggable = false,
   dragId,
   className,
@@ -39,6 +43,7 @@ export function CardItem({
       style={style}
       {...(draggable ? { ...listeners, ...attributes } : {})}
       onClick={() => onClick?.(card)}
+      onDoubleClick={() => onDoubleClick?.(card)}
       className={cn(
         "group text-left",
         isDragging && "z-50",
@@ -46,7 +51,12 @@ export function CardItem({
         className
       )}
     >
-      <div className="relative aspect-[59/86] w-full overflow-hidden rounded-[var(--radius-sm)] transition-transform duration-200 group-hover:scale-[1.02]">
+      <div
+        className={cn(
+          "relative aspect-[59/86] w-full overflow-hidden rounded-[var(--radius-sm)] transition-transform duration-200 group-hover:scale-[1.02]",
+          selected && "ring-2 ring-[var(--color-primary)]"
+        )}
+      >
         <Image
           src={getCardImageUrl(card, "small")}
           alt={card.name}

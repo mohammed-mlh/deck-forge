@@ -17,6 +17,8 @@ interface CardGridProps {
   isError?: boolean;
   errorMessage?: string;
   onCardClick?: (card: YugiohCard) => void;
+  onCardDoubleClick?: (card: YugiohCard) => void;
+  selectedCardId?: number | null;
   draggable?: boolean;
   emptyMessage?: string;
   columns?: 3 | 6;
@@ -28,6 +30,8 @@ export function CardGrid({
   isError,
   errorMessage = "Failed to load cards. Please try again.",
   onCardClick,
+  onCardDoubleClick,
+  selectedCardId,
   draggable,
   emptyMessage = "No cards found. Try adjusting your search or filters.",
   columns = 6,
@@ -75,6 +79,8 @@ export function CardGrid({
           key={card.id}
           card={card}
           onClick={onCardClick}
+          onDoubleClick={onCardDoubleClick}
+          selected={selectedCardId === card.id}
           draggable={draggable}
           dragId={`search-${card.id}`}
         />
