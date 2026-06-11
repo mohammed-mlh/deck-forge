@@ -54,13 +54,6 @@ export function DeckBuilder() {
   return (
     <DragDropProvider onDropOnZone={handleDrop}>
       <div className="flex h-full min-h-0">
-        {/* Card pool — fixed-width left column, full height */}
-        <CardSearchPanel
-          onAddCard={handleAdd}
-          className="w-[clamp(260px,32vw,400px)] shrink-0"
-        />
-
-        {/* Deck area — header + main (fills) + extra/side strips at bottom */}
         <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <DeckPanelHeader
             deckName={deck.name}
@@ -74,35 +67,37 @@ export function DeckBuilder() {
             onExport={() => downloadDeckTxt(deck)}
           />
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
-            <DeckZonePanel
-              zone="main"
-              layout="expanded"
-              entries={deck.main}
-              deck={deck}
-              onRemove={(id) => removeCard(id, "main")}
-              onAdd={(card) => handleAdd(card, "main")}
-              className="min-h-0 flex-1"
-            />
-
-            <DeckZonePanel
-              zone="extra"
-              layout="strip"
-              entries={deck.extra}
-              deck={deck}
-              onRemove={(id) => removeCard(id, "extra")}
-              onAdd={(card) => handleAdd(card, "extra")}
-            />
-            <DeckZonePanel
-              zone="side"
-              layout="strip"
-              entries={deck.side}
-              deck={deck}
-              onRemove={(id) => removeCard(id, "side")}
-              onAdd={(card) => handleAdd(card, "side")}
-            />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="flex flex-col divide-y divide-[var(--color-border)] border-b border-[var(--color-border)]">
+              <DeckZonePanel
+                zone="main"
+                entries={deck.main}
+                deck={deck}
+                onRemove={(id) => removeCard(id, "main")}
+                onAdd={(card) => handleAdd(card, "main")}
+              />
+              <DeckZonePanel
+                zone="extra"
+                entries={deck.extra}
+                deck={deck}
+                onRemove={(id) => removeCard(id, "extra")}
+                onAdd={(card) => handleAdd(card, "extra")}
+              />
+              <DeckZonePanel
+                zone="side"
+                entries={deck.side}
+                deck={deck}
+                onRemove={(id) => removeCard(id, "side")}
+                onAdd={(card) => handleAdd(card, "side")}
+              />
+            </div>
           </div>
         </section>
+
+        <CardSearchPanel
+          onAddCard={handleAdd}
+          className="w-[clamp(280px,28vw,380px)] shrink-0"
+        />
       </div>
     </DragDropProvider>
   );

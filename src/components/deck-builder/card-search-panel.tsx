@@ -33,7 +33,7 @@ export function CardSearchPanel({ onAddCard, className }: CardSearchPanelProps) 
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-surface)]",
+        "flex h-full min-h-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-bg-surface)]",
         className
       )}
     >
