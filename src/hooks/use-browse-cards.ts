@@ -9,12 +9,16 @@ import {
   allCardsQuery,
   buildCardQueryParams,
   filterCardsByType,
-  hasActiveCardFilters,
+  hasServerCardFilters,
 } from "@/lib/ygoprodeck";
 import type { CardSearchParams } from "@/types/yugioh";
 
 export function useBrowseCards(search: string, filters: CardSearchParams) {
-  const needsApiQuery = Boolean(search.trim()) || hasActiveCardFilters(filters);
+  const hasSearch = Boolean(search.trim());
+  const serverFilters = hasServerCardFilters(filters);
+  const monsterOnly =
+    filters.type === "monster" && !serverFilters && !hasSearch;
+  const needsApiQuery = hasSearch || serverFilters;
 
   const queryParams = useMemo(
     () => buildCardQueryParams(search, filters),
@@ -38,7 +42,9 @@ export function useBrowseCards(search: string, filters: CardSearchParams) {
 
   const rawCards = needsApiQuery
     ? fetchedCards
-    : allCards.slice(0, INITIAL_CARD_COUNT);
+    : monsterOnly
+      ? allCards
+      : allCards.slice(0, INITIAL_CARD_COUNT);
 
   const cards = useMemo(
     () => filterCardsByType(rawCards, filters.type ?? "all"),
@@ -51,7 +57,7 @@ export function useBrowseCards(search: string, filters: CardSearchParams) {
     isFetching: needsApiQuery ? isFetching : false,
     isError: needsApiQuery ? fetchError : allError,
     error: needsApiQuery ? fetchErrorObj : allErrorObj,
-    isBrowsing: !needsApiQuery,
+    isBrowsing: !needsApiQuery && !monsterOnly,
     queryParams: needsApiQuery ? queryParams : INITIAL_BROWSE_PARAMS,
   };
 }

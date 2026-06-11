@@ -11,26 +11,35 @@ export const INITIAL_BROWSE_PARAMS: CardSearchParams = {
 
 export const INITIAL_CARD_COUNT = 100;
 
-export function hasActiveCardFilters(filters: CardSearchParams): boolean {
+export function hasServerCardFilters(filters: CardSearchParams): boolean {
   return Boolean(
     filters.attribute ||
       filters.level ||
       filters.archetype?.trim() ||
-      (filters.type && filters.type !== "all")
+      (filters.type && filters.type !== "all" && filters.type !== "monster")
   );
+}
+
+export function hasActiveCardFilters(filters: CardSearchParams): boolean {
+  return hasServerCardFilters(filters) || filters.type === "monster";
 }
 
 export function buildCardQueryParams(
   search: string,
   filters: CardSearchParams
 ): CardSearchParams {
-  const base = {
+  const base: CardSearchParams = {
     ...filters,
     type: filters.type === "monster" ? "all" : filters.type,
   };
 
   if (search.trim()) {
     return { ...base, name: search.trim() };
+  }
+
+  if (hasServerCardFilters(filters)) {
+    const { num: _n, offset: _o, ...filterParams } = base;
+    return filterParams;
   }
 
   return { ...base, ...INITIAL_BROWSE_PARAMS };
@@ -73,9 +82,15 @@ export function buildCardSearchUrl(params: CardSearchParams): string {
   if (params.level) search.set("level", params.level);
   if (params.archetype?.trim()) search.set("archetype", params.archetype.trim());
 
-  // YGOProDeck rejects num/offset combined with fname — only paginate default browse
+  // YGOProDeck rejects num/offset combined with fname or filter params
   const hasNameSearch = Boolean(params.name?.trim());
-  if (!hasNameSearch) {
+  const hasFilterParams = Boolean(
+    params.attribute ||
+      params.level ||
+      params.archetype?.trim() ||
+      mapTypeFilter(params.type)
+  );
+  if (!hasNameSearch && !hasFilterParams) {
     if (params.num) search.set("num", String(params.num));
     if (params.offset) search.set("offset", String(params.offset));
   }
