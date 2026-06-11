@@ -3,15 +3,10 @@ import { Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
 
 const footerLinks = {
-  Product: [
-    { label: "Cards", href: "/cards" },
-    { label: "Archetypes", href: "/archetypes" },
-    { label: "Meta", href: "/meta" },
-    { label: "Guides", href: "/guides" },
-    { label: "Pricing", href: "/pricing" },
-  ],
+  Product: [{ label: "Cards", href: "/cards" }],
   Tools: [
     { label: "Deck Builder", href: "/deck-builder" },
+    { label: "Browse Decks", href: "/browse-decks" },
     { label: "My Decks", href: "/decks" },
   ],
   Company: [

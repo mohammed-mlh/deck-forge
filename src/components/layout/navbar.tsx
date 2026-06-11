@@ -11,10 +11,6 @@ const navItems: NavItem[] = [
   { label: "Deck Builder", href: "/deck-builder" },
   { label: "Browse Decks", href: "/browse-decks" },
   { label: "My Decks", href: "/decks" },
-  { label: "Archetypes", href: "/archetypes" },
-  { label: "Meta", href: "/meta" },
-  { label: "Guides", href: "/guides" },
-  { label: "Pricing", href: "/pricing" },
 ];
 
 export function Navbar() {
