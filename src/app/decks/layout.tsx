@@ -3,12 +3,12 @@ import { AppShell } from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "App",
+    default: "My Decks",
     template: "%s | DeckForge",
   },
 };
 
-export default function AppLayout({
+export default function DecksLayout({
   children,
 }: {
   children: React.ReactNode;

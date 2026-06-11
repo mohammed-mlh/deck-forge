@@ -13,13 +13,13 @@ const quickActions = [
     title: "New Deck",
     description: "Start building a new deck from scratch.",
     icon: Hammer,
-    href: "/app/builder",
+    href: "/deck-builder",
   },
   {
     title: "My Decks",
     description: "View and manage your saved decks.",
     icon: FolderOpen,
-    href: "/app/my-decks",
+    href: "/decks",
   },
 ];
 

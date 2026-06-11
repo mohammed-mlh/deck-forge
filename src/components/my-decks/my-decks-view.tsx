@@ -47,7 +47,7 @@ export function MyDecksView() {
         description="Open a saved deck to keep building, or start fresh."
       >
         <Link
-          href="/app/builder"
+          href="/deck-builder"
           className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
         >
           <Plus className="size-4" />
@@ -72,7 +72,7 @@ export function MyDecksView() {
           className="py-24"
         >
           <Link
-            href="/app/builder"
+            href="/deck-builder"
             className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
           >
             <Plus className="size-4" />

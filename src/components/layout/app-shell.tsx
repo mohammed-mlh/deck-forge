@@ -10,19 +10,19 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { label: "Builder", href: "/app/builder" },
-  { label: "My Decks", href: "/app/my-decks" },
+  { label: "Builder", href: "/deck-builder" },
+  { label: "My Decks", href: "/decks" },
 ];
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const isBuilder = pathname.startsWith("/app/builder");
+  const isBuilder = pathname.startsWith("/deck-builder");
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--color-bg-base)]">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4">
         <Link
-          href="/app/builder"
+          href="/deck-builder"
           className="flex items-center gap-2.5 font-semibold text-[var(--color-foreground)]"
         >
           <Layers className="size-5 text-[var(--color-primary)]" />

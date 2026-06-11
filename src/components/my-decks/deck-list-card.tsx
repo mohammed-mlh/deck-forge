@@ -48,7 +48,7 @@ export function DeckListCard({ deck, onDelete }: DeckListCardProps) {
 
   return (
     <Link
-      href={`/app/builder?id=${deck.id}`}
+      href={`/deck-builder/${deck.id}`}
       className="group relative flex h-[168px] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
     >
       <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between p-4 pr-2">

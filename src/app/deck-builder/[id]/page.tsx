@@ -4,7 +4,7 @@ import { DeckBuilder } from "@/components/deck-builder/deck-builder";
 
 export const metadata: Metadata = { title: "Deck Builder" };
 
-export default function BuilderPage() {
+export default function DeckBuilderByIdPage() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Suspense>

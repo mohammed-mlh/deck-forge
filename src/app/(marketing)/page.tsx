@@ -58,7 +58,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
-                href="/app"
+                href="/deck-builder"
                 className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
               >
                 Start Building
@@ -125,7 +125,7 @@ export default function HomePage() {
               Join thousands of duelists who use DeckForge to stay ahead of the meta.
             </p>
             <Link
-              href="/app"
+              href="/deck-builder"
               className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
             >
               Get Started Free

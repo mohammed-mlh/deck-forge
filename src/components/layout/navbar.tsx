@@ -7,6 +7,8 @@ import type { NavItem } from "@/types";
 
 const navItems: NavItem[] = [
   { label: "Cards", href: "/cards" },
+  { label: "Deck Builder", href: "/deck-builder" },
+  { label: "My Decks", href: "/decks" },
   { label: "Archetypes", href: "/archetypes" },
   { label: "Meta", href: "/meta" },
   { label: "Guides", href: "/guides" },
@@ -33,7 +35,7 @@ export function Navbar() {
               Login
             </Link>
             <Link
-              href="/app"
+              href="/deck-builder"
               className="hidden rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)] md:block"
             >
               Get Started

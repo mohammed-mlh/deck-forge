@@ -5,15 +5,13 @@ import {
   Layers,
   Hammer,
   FolderOpen,
-  Settings,
 } from "lucide-react";
 import { SidebarItem } from "@/components/layout/sidebar-item";
 import type { NavItem } from "@/types";
 
 const sidebarItems: NavItem[] = [
-  { label: "Builder",  href: "/app/builder",  icon: Hammer     },
-  { label: "My Decks", href: "/app/my-decks", icon: FolderOpen },
-  { label: "Settings", href: "/app/settings", icon: Settings   },
+  { label: "Builder",  href: "/deck-builder", icon: Hammer     },
+  { label: "My Decks", href: "/decks",        icon: FolderOpen },
 ];
 
 export function Sidebar() {
@@ -21,7 +19,7 @@ export function Sidebar() {
     <aside className="flex h-full w-[220px] shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-surface)]">
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-[var(--color-border)] px-4">
-        <Link href="/app" className="flex items-center gap-2.5 font-semibold text-[var(--color-foreground)]">
+        <Link href="/deck-builder" className="flex items-center gap-2.5 font-semibold text-[var(--color-foreground)]">
           <Layers className="size-5 text-[var(--color-primary)]" />
           <span className="text-sm">DeckForge</span>
         </Link>

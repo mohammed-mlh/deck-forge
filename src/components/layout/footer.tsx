@@ -11,8 +11,8 @@ const footerLinks = {
     { label: "Pricing", href: "/pricing" },
   ],
   Tools: [
-    { label: "Deck Builder", href: "/app/builder" },
-    { label: "My Decks", href: "/app/my-decks" },
+    { label: "Deck Builder", href: "/deck-builder" },
+    { label: "My Decks", href: "/decks" },
   ],
   Company: [
     { label: "About", href: "/about" },

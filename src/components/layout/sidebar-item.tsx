@@ -11,7 +11,7 @@ interface SidebarItemProps extends NavItem {
 
 export function SidebarItem({ label, href, icon: Icon, badge, collapsed }: SidebarItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href || (href !== "/app" && pathname.startsWith(href));
+  const isActive = pathname === href || (href !== "/deck-builder" && pathname.startsWith(href));
 
   return (
     <Link

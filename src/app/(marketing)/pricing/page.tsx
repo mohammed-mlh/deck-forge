@@ -21,7 +21,7 @@ const plans = [
       "Meta overview",
     ],
     cta: "Get Started",
-    href: "/app",
+    href: "/deck-builder",
     highlighted: false,
   },
   {
@@ -38,7 +38,7 @@ const plans = [
       "Export to YDK / Untap",
     ],
     cta: "Start Pro",
-    href: "/app",
+    href: "/deck-builder",
     highlighted: true,
   },
   {

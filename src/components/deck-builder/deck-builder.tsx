@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
@@ -16,8 +16,8 @@ import type { YugiohCard } from "@/types/yugioh";
 
 export function DeckBuilder() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const deckId = searchParams.get("id");
+  const params = useParams();
+  const deckId = typeof params.id === "string" ? params.id : null;
   const { save, getById } = useSavedDecks();
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
     useDeck();
@@ -41,7 +41,7 @@ export function DeckBuilder() {
   const handleSave = () => {
     save(deck);
     setSaveStatus("saved");
-    router.replace(`/app/builder?id=${deck.id}`);
+    router.replace(`/deck-builder/${deck.id}`);
     window.setTimeout(() => setSaveStatus("idle"), 2000);
   };
 
