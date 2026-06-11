@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { AuthNavActions } from "@/components/navigation/auth-nav-actions";
 import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileNav } from "@/components/navigation/mobile-nav";
 import type { NavItem } from "@/types";
@@ -28,18 +29,7 @@ export function Navbar() {
           <DesktopNav items={navItems} className="absolute left-1/2 -translate-x-1/2" />
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="hidden rounded-[var(--radius-md)] px-3 py-1.5 text-sm text-[var(--color-foreground-muted)] transition-colors hover:text-[var(--color-foreground)] md:block"
-            >
-              Login
-            </Link>
-            <Link
-              href="/deck-builder"
-              className="hidden rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)] md:block"
-            >
-              Get Started
-            </Link>
+            <AuthNavActions className="hidden items-center gap-2 md:flex" />
             <MobileNav items={navItems} />
           </div>
         </div>

@@ -21,7 +21,7 @@ const plans = [
       "Meta overview",
     ],
     cta: "Get Started",
-    href: "/deck-builder",
+    href: "/register",
     highlighted: false,
   },
   {

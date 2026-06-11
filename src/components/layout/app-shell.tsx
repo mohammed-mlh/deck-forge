@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Layers } from "lucide-react";
+import { Layers, LogOut } from "lucide-react";
+import { useAuth } from "@/providers/auth-context";
 import { cn } from "@/lib/utils";
 
 interface AppShellProps {
@@ -16,6 +17,7 @@ const navItems = [
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
   const isBuilder = pathname.startsWith("/deck-builder");
 
   return (
@@ -29,25 +31,40 @@ export function AppShell({ children }: AppShellProps) {
           <span className="text-sm">DeckForge</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "rounded-[var(--radius-md)] px-3 py-1.5 text-sm transition-colors",
-                  active
-                    ? "bg-[var(--color-surface-2)] font-medium text-[var(--color-foreground)]"
-                    : "text-[var(--color-foreground-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
-                )}
+        <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-1">
+            {navItems.map((item) => {
+              const active = pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-[var(--radius-md)] px-3 py-1.5 text-sm transition-colors",
+                    active
+                      ? "bg-[var(--color-surface-2)] font-medium text-[var(--color-foreground)]"
+                      : "text-[var(--color-foreground-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+          {user && (
+            <div className="flex items-center gap-2 border-l border-[var(--color-border)] pl-3">
+              <span className="text-xs text-[var(--color-foreground-muted)]">{user.name}</span>
+              <button
+                type="button"
+                onClick={logout}
+                className="inline-flex items-center gap-1 rounded-[var(--radius-md)] px-2 py-1 text-xs text-[var(--color-foreground-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
               >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <LogOut className="size-3" />
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       <main

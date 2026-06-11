@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
+import { useAuth } from "@/providers/auth-context";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
@@ -13,6 +14,7 @@ interface MobileNavProps {
 
 export function MobileNav({ items, className }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <div className={cn("relative md:hidden", className)}>
@@ -37,6 +39,42 @@ export function MobileNav({ items, className }: MobileNavProps) {
                 {item.label}
               </Link>
             ))}
+            <div className="my-1 border-t border-[var(--color-border)]" />
+            {user ? (
+              <>
+                <p className="px-3 py-1 text-xs text-[var(--color-foreground-subtle)]">
+                  Signed in as {user.name}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    setOpen(false);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--color-foreground-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
+                >
+                  <LogOut className="size-3.5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--color-foreground-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}

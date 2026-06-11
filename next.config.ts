@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { source: "/app/my-decks", destination: "/decks", permanent: true },
       { source: "/app/settings", destination: "/deck-builder", permanent: true },
       { source: "/app/ai", destination: "/deck-builder", permanent: true },
+      { source: "/get-started", destination: "/register", permanent: true },
     ];
   },
   images: {
