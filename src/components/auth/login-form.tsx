@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/providers/auth-context";
 import { DUMMY_ACCOUNTS, DEFAULT_DUMMY_ACCOUNT } from "@/lib/dummy-users";
-import { PrimaryButton } from "@/components/ui/primary-button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function LoginForm() {
@@ -83,9 +83,9 @@ export function LoginForm() {
         />
       </div>
 
-      <PrimaryButton type="submit" size="lg" className="mt-1 w-full">
+      <Button type="submit" size="lg" className="mt-1 w-full">
         Sign in
-      </PrimaryButton>
+      </Button>
 
       <p className="text-center text-xs text-(--color-foreground-subtle)">
         Sign in is stored locally in your browser.

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/providers/auth-context";
 import { DEFAULT_DUMMY_ACCOUNT } from "@/lib/dummy-users";
-import { PrimaryButton } from "@/components/ui/primary-button";
+import { Button } from "@/components/ui/button";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -50,9 +50,9 @@ export function RegisterForm() {
         />
       </div>
 
-      <PrimaryButton type="submit" size="lg" className="mt-1 w-full">
+      <Button type="submit" size="lg" className="mt-1 w-full">
         Create account
-      </PrimaryButton>
+      </Button>
 
       <p className="text-center text-xs text-(--color-foreground-subtle)">
         Your account is stored locally in your browser.

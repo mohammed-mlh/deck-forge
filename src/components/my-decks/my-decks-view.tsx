@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FolderOpen, Plus } from "lucide-react";
 import { DeckListCard } from "@/components/my-decks/deck-list-card";
-import { StatCard } from "@/components/cards/stat-card";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
@@ -57,8 +57,22 @@ export function MyDecksView() {
 
       {ready && decks.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2">
-          <StatCard label="Saved Decks" value={String(decks.length)} trend="neutral" />
-          <StatCard label="Total Cards" value={String(totalCards)} trend="neutral" />
+          <Card className="hover:border-(--color-border) hover:bg-(--color-surface-1)">
+            <CardHeader className="gap-4 p-5">
+              <CardDescription className="text-sm">Saved Decks</CardDescription>
+              <p className="text-2xl font-semibold tabular-nums text-(--color-foreground)">
+                {decks.length}
+              </p>
+            </CardHeader>
+          </Card>
+          <Card className="hover:border-(--color-border) hover:bg-(--color-surface-1)">
+            <CardHeader className="gap-4 p-5">
+              <CardDescription className="text-sm">Total Cards</CardDescription>
+              <p className="text-2xl font-semibold tabular-nums text-(--color-foreground)">
+                {totalCards}
+              </p>
+            </CardHeader>
+          </Card>
         </div>
       )}
 

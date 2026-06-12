@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, FolderOpen, Hammer, Database, Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
-import { FeatureCard } from "@/components/cards/feature-card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -101,7 +101,17 @@ export default function HomePage() {
             />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((f) => (
-                <FeatureCard key={f.title} {...f} />
+                <Card key={f.title}>
+                  <CardHeader>
+                    <div className="flex size-10 items-center justify-center rounded-md bg-(--color-primary-muted) text-(--color-primary)">
+                      {f.icon}
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <CardTitle>{f.title}</CardTitle>
+                      <CardDescription>{f.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                </Card>
               ))}
             </div>
           </div>
