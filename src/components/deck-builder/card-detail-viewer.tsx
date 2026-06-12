@@ -133,24 +133,7 @@ function CardDetailContent({ card }: { card: YugiohCard }) {
         </div>
 
         {hasStats && (
-          <div className="grid grid-cols-2 gap-2 rounded-md border border-(--color-border) bg-(--color-surface-1) p-3">
-            {card.atk !== undefined && (
-              <div>
-                <p className="text-[10px] uppercase text-(--color-foreground-subtle)">ATK</p>
-                <p className="text-base font-semibold tabular-nums text-(--color-foreground)">
-                  {card.atk === -1 ? "?" : card.atk}
-                </p>
-              </div>
-            )}
-            {card.def !== undefined && (
-              <div>
-                <p className="text-[10px] uppercase text-(--color-foreground-subtle)">DEF</p>
-                <p className="text-base font-semibold tabular-nums text-(--color-foreground)">
-                  {card.def === -1 ? "?" : card.def}
-                </p>
-              </div>
-            )}
-          </div>
+          <MonsterStats atk={card.atk} def={card.def} />
         )}
 
         <div>
@@ -162,6 +145,71 @@ function CardDetailContent({ card }: { card: YugiohCard }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function formatStatValue(value: number): string {
+  return value === -1 ? "?" : value.toLocaleString();
+}
+
+function MonsterStats({ atk, def }: { atk?: number; def?: number }) {
+  const hasAtk = atk !== undefined;
+  const hasDef = def !== undefined;
+
+  if (!hasAtk && !hasDef) return null;
+
+  if (hasAtk && hasDef) {
+    return (
+      <div className="overflow-hidden rounded-lg border border-(--color-border)">
+        <div className="grid grid-cols-2 divide-x divide-(--color-border)">
+          <StatCell label="ATK" value={atk!} tone="atk" />
+          <StatCell label="DEF" value={def!} tone="def" />
+        </div>
+      </div>
+    );
+  }
+
+  const label = hasAtk ? "ATK" : "DEF";
+  const value = hasAtk ? atk! : def!;
+  const tone = hasAtk ? "atk" : "def";
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-(--color-border)">
+      <StatCell label={label} value={value} tone={tone} />
+    </div>
+  );
+}
+
+function StatCell({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "atk" | "def";
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 px-3.5 py-2.5",
+        tone === "atk"
+          ? "bg-linear-to-br from-(--color-danger)/10 via-(--color-surface-1) to-(--color-surface-1)"
+          : "bg-linear-to-br from-(--color-secondary)/10 via-(--color-surface-1) to-(--color-surface-1)"
+      )}
+    >
+      <span
+        className={cn(
+          "text-[11px] font-bold uppercase tracking-[0.18em]",
+          tone === "atk" ? "text-(--color-danger)" : "text-(--color-secondary)"
+        )}
+      >
+        {label}
+      </span>
+      <span className="text-xl font-bold tabular-nums leading-none text-(--color-foreground)">
+        {formatStatValue(value)}
+      </span>
     </div>
   );
 }

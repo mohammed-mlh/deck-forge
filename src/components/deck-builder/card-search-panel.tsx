@@ -19,11 +19,12 @@ interface CardSearchPanelProps {
   onSelectCard?: (card: YugiohCard) => void;
   selectedCardId?: number | null;
   className?: string;
+  embedded?: boolean;
 }
 
 export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps>(
   function CardSearchPanel(
-    { onAddCard, onSelectCard, selectedCardId, className },
+    { onAddCard, onSelectCard, selectedCardId, className, embedded = false },
     searchRef
   ) {
   const [search, setSearch] = useState("");
@@ -45,7 +46,8 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col border-l border-(--color-border) bg-(--color-bg-surface)",
+        "flex min-h-0 flex-col",
+        embedded ? "h-full" : "h-full border-l border-(--color-border) bg-(--color-bg-surface)",
         className
       )}
     >

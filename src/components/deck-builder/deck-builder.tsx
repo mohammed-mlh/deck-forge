@@ -6,17 +6,18 @@ import { useParams, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
-import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
+import { DeckRightPanel } from "@/components/deck-builder/deck-right-panel";
 import { DeckIoDialog } from "@/components/deck-builder/deck-io-dialog";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
+import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
 import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { DeckZone, SavedDeck } from "@/types/deck";
+import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
 function DeckNotFound() {
@@ -89,7 +90,7 @@ function ImportResultToast({
 
 interface DeckBuilderContentProps {
   deckId: string | null;
-  initialDeck?: SavedDeck;
+  initialDeck?: Deck;
 }
 
 function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
@@ -223,11 +224,12 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
           </div>
         </section>
 
-        <CardSearchPanel
-          ref={searchInputRef}
+        <DeckRightPanel
+          deck={deck}
           onAddCard={handleAdd}
           onSelectCard={setSelectedCard}
           selectedCardId={selectedCard?.id ?? null}
+          searchInputRef={searchInputRef}
           className="w-[clamp(280px,28vw,380px)] shrink-0"
         />
       </div>
@@ -240,21 +242,26 @@ export function DeckBuilder() {
   const deckId = typeof params.id === "string" ? params.id : null;
   const { ready, getById } = useSavedDecks();
 
+  const savedDeck = deckId && ready ? getById(deckId) : undefined;
+  const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
+
   if (deckId && !ready) {
     return <DeckBuilderSkeleton />;
   }
 
-  const savedDeck = deckId && ready ? getById(deckId) : undefined;
-
   if (deckId && ready && !savedDeck) {
     return <DeckNotFound />;
+  }
+
+  if (deckId && savedDeck && isHydrating) {
+    return <DeckBuilderSkeleton />;
   }
 
   return (
     <DeckBuilderContent
       key={deckId ?? "new"}
       deckId={deckId}
-      initialDeck={savedDeck}
+      initialDeck={hydratedDeck}
     />
   );
 }
