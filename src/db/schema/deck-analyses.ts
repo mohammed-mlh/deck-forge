@@ -1,4 +1,5 @@
 import { jsonb, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import type { DeckAnalysis } from "@/lib/ai/types";
 import { decks } from "@/db/schema/decks";
 
 export const deckAnalyses = pgTable("deck_analyses", {
@@ -6,7 +7,7 @@ export const deckAnalyses = pgTable("deck_analyses", {
   deckId: uuid("deck_id")
     .notNull()
     .references(() => decks.id, { onDelete: "cascade" }),
-  analysis: jsonb("analysis").notNull().$type<Record<string, unknown>>(),
+  analysis: jsonb("analysis").notNull().$type<DeckAnalysis>(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

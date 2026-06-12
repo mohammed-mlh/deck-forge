@@ -1,5 +1,5 @@
 import { jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
-import type { DeckZoneRefs } from "@/db/schema/types";
+import type { DeckZoneRefs } from "@/features/decks/decks.types";
 
 export const deckVisibilityEnum = pgEnum("deck_visibility", [
   "private",

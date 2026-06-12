@@ -1,27 +1,12 @@
-import { and, desc, eq } from "drizzle-orm";
-import { db } from "@/db";
-import { decks, type DeckRecord, type NewDeckRecord } from "@/db/schema/decks";
-import type { DeckZoneRefs } from "@/db/schema/types";
-
-export type DeckVisibility = "private" | "unlisted" | "public";
-
-export interface CreateDeckInput {
-  name: string;
-  slug?: string;
-  visibility?: DeckVisibility;
-  main?: DeckZoneRefs;
-  extra?: DeckZoneRefs;
-  side?: DeckZoneRefs;
-}
-
-export interface UpdateDeckInput {
-  name?: string;
-  slug?: string;
-  visibility?: DeckVisibility;
-  main?: DeckZoneRefs;
-  extra?: DeckZoneRefs;
-  side?: DeckZoneRefs;
-}
+import {
+  deleteDeckById,
+  findDeckById,
+  findDecksByUserId,
+  insertDeck,
+  updateDeckById,
+} from "@/features/decks/decks.repository";
+import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
+import type { CreateDeckInput, UpdateDeckInput } from "@/features/decks/decks.types";
 
 function slugify(value: string): string {
   return value
@@ -38,21 +23,13 @@ function defaultSlug(name: string): string {
 }
 
 export async function getDeckById(userId: string, deckId: string): Promise<DeckRecord | null> {
-  const rows = await db
-    .select()
-    .from(decks)
-    .where(and(eq(decks.id, deckId), eq(decks.userId, userId)))
-    .limit(1);
-
-  return rows[0] ?? null;
+  const deck = await findDeckById(deckId);
+  if (!deck || deck.userId !== userId) return null;
+  return deck;
 }
 
 export async function getUserDecks(userId: string): Promise<DeckRecord[]> {
-  return db
-    .select()
-    .from(decks)
-    .where(eq(decks.userId, userId))
-    .orderBy(desc(decks.updatedAt));
+  return findDecksByUserId(userId);
 }
 
 export async function createDeck(userId: string, input: CreateDeckInput): Promise<DeckRecord> {
@@ -68,8 +45,7 @@ export async function createDeck(userId: string, input: CreateDeckInput): Promis
     side: input.side ?? [],
   };
 
-  const rows = await db.insert(decks).values(values).returning();
-  return rows[0];
+  return insertDeck(values);
 }
 
 export async function updateDeck(
@@ -88,20 +64,9 @@ export async function updateDeck(
   if (input.extra !== undefined) patch.extra = input.extra;
   if (input.side !== undefined) patch.side = input.side;
 
-  const rows = await db
-    .update(decks)
-    .set(patch)
-    .where(and(eq(decks.id, deckId), eq(decks.userId, userId)))
-    .returning();
-
-  return rows[0] ?? null;
+  return updateDeckById(deckId, userId, patch);
 }
 
 export async function deleteDeck(userId: string, deckId: string): Promise<boolean> {
-  const rows = await db
-    .delete(decks)
-    .where(and(eq(decks.id, deckId), eq(decks.userId, userId)))
-    .returning({ id: decks.id });
-
-  return rows.length > 0;
+  return deleteDeckById(deckId, userId);
 }
