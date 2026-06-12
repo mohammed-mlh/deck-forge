@@ -3,6 +3,7 @@ export type AnalyticsEvent =
   | "card_view"
   | "deck_created"
   | "deck_saved"
+  | "deck_doctor_applied"
   | "deck_copied"
   | "deck_shared"
   | "page_view_deck_builder"

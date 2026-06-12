@@ -14,6 +14,8 @@ export type DeckBuilderRightPanel = "search" | "analysis" | "doctor";
 interface DeckRightPanelProps {
   deck: Deck;
   onAddCard: (card: YugiohCard, zone?: DeckZone) => void;
+  onApplyDoctorSuggestion: (deck: Deck) => void;
+  onDoctorApplyNotes?: (notes: { errors: string[]; warnings: string[] }) => void;
   onSelectCard?: (card: YugiohCard) => void;
   selectedCardId?: number | null;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
@@ -51,6 +53,8 @@ function PanelTab({
 export function DeckRightPanel({
   deck,
   onAddCard,
+  onApplyDoctorSuggestion,
+  onDoctorApplyNotes,
   onSelectCard,
   selectedCardId,
   searchInputRef,
@@ -101,7 +105,12 @@ export function DeckRightPanel({
       </div>
 
       <div className={cn("min-h-0 flex-1", panel !== "doctor" && "hidden")}>
-        <DeckDoctorPanel embedded deck={deck} />
+        <DeckDoctorPanel
+          embedded
+          deck={deck}
+          onApplySuggestion={onApplyDoctorSuggestion}
+          onApplyNotes={onDoctorApplyNotes}
+        />
       </div>
     </div>
   );

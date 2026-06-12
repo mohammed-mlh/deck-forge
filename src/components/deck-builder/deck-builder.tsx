@@ -137,6 +137,18 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
     setSelectedCard(card);
   };
 
+  const handleApplyDoctorSuggestion = (nextDeck: Deck) => {
+    replaceDeck(nextDeck);
+    track("deck_doctor_applied", {
+      deckId: nextDeck.id,
+      deckName: nextDeck.name,
+    });
+  };
+
+  const handleDoctorApplyNotes = (notes: { errors: string[]; warnings: string[] }) => {
+    setImportNotes(notes);
+  };
+
   return (
     <DragDropProvider onDropOnZone={handleDrop}>
       <div className="flex h-full min-h-0">
@@ -227,6 +239,8 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
         <DeckRightPanel
           deck={deck}
           onAddCard={handleAdd}
+          onApplyDoctorSuggestion={handleApplyDoctorSuggestion}
+          onDoctorApplyNotes={handleDoctorApplyNotes}
           onSelectCard={setSelectedCard}
           selectedCardId={selectedCard?.id ?? null}
           searchInputRef={searchInputRef}

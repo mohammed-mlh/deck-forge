@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import {
   AlertTriangle,
+  Check,
   Layers,
   Loader2,
   Minus,
@@ -10,16 +11,19 @@ import {
   RefreshCw,
   Sparkles,
 } from "lucide-react";
+import { applyDeckDoctor } from "@/lib/decks/apply-deck-doctor";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { DeckDoctorCardChange, DeckDoctorResult } from "@/lib/ai/types";
 import type { Deck } from "@/types/deck";
 import { cn } from "@/lib/utils";
 
-type DoctorStatus = "idle" | "empty" | "loading" | "error" | "success";
+type DoctorStatus = "idle" | "empty" | "loading" | "error" | "success" | "applied";
 
 interface DeckDoctorPanelProps {
   deck: Deck;
+  onApplySuggestion: (deck: Deck) => void;
+  onApplyNotes?: (notes: { errors: string[]; warnings: string[] }) => void;
   embedded?: boolean;
   className?: string;
 }
@@ -115,11 +119,18 @@ function DoctorContent({ result }: { result: DeckDoctorResult }) {
   );
 }
 
-export function DeckDoctorPanel({ deck, embedded = false, className }: DeckDoctorPanelProps) {
+export function DeckDoctorPanel({
+  deck,
+  onApplySuggestion,
+  onApplyNotes,
+  embedded = false,
+  className,
+}: DeckDoctorPanelProps) {
   const deckEmpty = isDeckEmpty(deck);
   const [status, setStatus] = useState<DoctorStatus>(deckEmpty ? "empty" : "idle");
   const [result, setResult] = useState<DeckDoctorResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
 
   const runDoctor = useCallback(async () => {
     if (isDeckEmpty(deck)) {
@@ -158,6 +169,32 @@ export function DeckDoctorPanel({ deck, embedded = false, className }: DeckDocto
     }
   }, [deck]);
 
+  const handleApply = useCallback(async () => {
+    if (!result) return;
+
+    setIsApplying(true);
+
+    try {
+      const outcome = await applyDeckDoctor(deck, result);
+      onApplySuggestion(outcome.deck);
+
+      if (outcome.errors.length > 0 || outcome.warnings.length > 0) {
+        onApplyNotes?.({ errors: outcome.errors, warnings: outcome.warnings });
+      }
+
+      setStatus("applied");
+    } catch (err) {
+      onApplyNotes?.({
+        errors: [err instanceof Error ? err.message : "Failed to apply suggestion"],
+        warnings: [],
+      });
+    } finally {
+      setIsApplying(false);
+    }
+  }, [deck, onApplyNotes, onApplySuggestion, result]);
+
+  const canApply = result && (result.remove.length > 0 || result.add.length > 0);
+
   return (
     <div
       className={cn(
@@ -189,7 +226,14 @@ export function DeckDoctorPanel({ deck, embedded = false, className }: DeckDocto
         )}
 
         {status !== "idle" && status !== "loading" && status !== "empty" && (
-          <div className="mb-3 flex justify-end">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            {status === "applied" && (
+              <span className="inline-flex items-center gap-1 text-xs text-(--color-success)">
+                <Check className="size-3.5" />
+                Applied
+              </span>
+            )}
+            {status !== "applied" && <span />}
             <button
               type="button"
               onClick={() => void runDoctor()}
@@ -237,7 +281,61 @@ export function DeckDoctorPanel({ deck, embedded = false, className }: DeckDocto
           </EmptyState>
         )}
 
-        {status === "success" && result && <DoctorContent result={result} />}
+        {status === "success" && result && (
+          <>
+            <DoctorContent result={result} />
+            {canApply && (
+              <div className="mt-5 border-t border-(--color-border) pt-4">
+                <button
+                  type="button"
+                  onClick={() => void handleApply()}
+                  disabled={isApplying}
+                  className={cn(
+                    "inline-flex w-full items-center justify-center gap-2 rounded-md bg-(--color-primary) px-4 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)",
+                    isApplying && "opacity-60"
+                  )}
+                >
+                  {isApplying ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Applying…
+                    </>
+                  ) : (
+                    "Apply Suggestion"
+                  )}
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {status === "applied" && result && (
+          <>
+            <DoctorContent result={result} />
+            {canApply && (
+              <div className="mt-5 border-t border-(--color-border) pt-4">
+                <button
+                  type="button"
+                  onClick={() => void handleApply()}
+                  disabled={isApplying}
+                  className={cn(
+                    "inline-flex w-full items-center justify-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2.5 text-sm font-medium text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)",
+                    isApplying && "opacity-60"
+                  )}
+                >
+                  {isApplying ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Applying…
+                    </>
+                  ) : (
+                    "Apply Again"
+                  )}
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
