@@ -37,8 +37,17 @@ export interface CardSearchParams {
   levelMax?: string;
   atkMin?: string;
   atkMax?: string;
+  defMin?: string;
+  defMax?: string;
+  linkMin?: string;
+  linkMax?: string;
+  scaleMin?: string;
+  scaleMax?: string;
+  frameType?: string;
+  linkmarker?: string;
   archetype?: string;
   race?: string;
+  hasEffect?: boolean;
   num?: number;
   offset?: number;
 }

@@ -1,12 +1,22 @@
 "use client";
 
 import { useId } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { RangeSliderField } from "@/components/cards-browser/range-slider-field";
 import { useArchetypes } from "@/hooks/use-archetypes";
 import {
   DEFAULT_CARD_FILTERS,
+  FILTER_BOUNDS,
+  LINK_MARKERS,
+  MONSTER_FRAMES,
+  SPELL_RACES,
+  TRAP_RACES,
+  extractMonsterRaces,
+  toggleInList,
   type CardFilters,
   type CardSort,
 } from "@/lib/card-filters";
+import { allCardsQuery } from "@/lib/ygoprodeck";
 import { CARD_ATTRIBUTES, type CardTypeFilter } from "@/types/yugioh";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +37,17 @@ interface CardFiltersPanelProps {
   compact?: boolean;
 }
 
+function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-(--color-foreground-muted)">
+        {label}
+      </h4>
+      {children}
+    </div>
+  );
+}
+
 export function CardFiltersPanel({
   filters,
   onChange,
@@ -34,13 +55,21 @@ export function CardFiltersPanel({
   compact,
 }: CardFiltersPanelProps) {
   const archetypeListId = useId();
+  const monsterRaceListId = useId();
   const archetypes = useArchetypes();
+  const { data: allCards = [] } = useQuery(allCardsQuery);
+  const monsterRaces = extractMonsterRaces(allCards);
 
   const patch = (partial: Partial<CardFilters>) => {
     onChange({ ...filters, ...partial });
   };
 
-  const showMonsterExtras = filters.type === "all" || filters.type === "monster";
+  const showMonster = filters.type === "all" || filters.type === "monster";
+  const showLink =
+    showMonster && (filters.frames.includes("link") || filters.frames.length === 0);
+  const showScale =
+    showMonster &&
+    (filters.frames.includes("pendulum") || filters.frames.length === 0);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -92,24 +121,164 @@ export function CardFiltersPanel({
         </datalist>
       </div>
 
-      {!compact && showMonsterExtras && (
-        <>
-          <RangeInputs
-            label="Level"
-            min={filters.levelMin}
-            max={filters.levelMax}
-            bounds={[0, 13]}
-            onChange={(levelMin, levelMax) => patch({ levelMin, levelMax })}
+      {!compact && showMonster && (
+        <div className="space-y-3 border-t border-(--color-border) pt-3">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-(--color-primary)">
+            Monster
+          </p>
+
+          <FilterGroup label="Frame">
+            <div className="grid grid-cols-2 gap-1.5">
+              {MONSTER_FRAMES.map((frame) => (
+                <label
+                  key={frame.value}
+                  className="flex cursor-pointer items-center gap-2 text-xs text-(--color-foreground-muted)"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.frames.includes(frame.value)}
+                    onChange={() =>
+                      patch({ frames: toggleInList(filters.frames, frame.value) })
+                    }
+                    className="size-3.5 rounded border-(--color-border)"
+                  />
+                  <span>{frame.label}</span>
+                </label>
+              ))}
+            </div>
+          </FilterGroup>
+
+          <FilterGroup label="Type (race)">
+            <input
+              type="text"
+              list={monsterRaceListId}
+              value={filters.monsterRace}
+              onChange={(e) => patch({ monsterRace: e.target.value })}
+              placeholder="e.g. Dragon"
+              className={cn(selectClass, "placeholder:text-(--color-foreground-disabled)")}
+            />
+            <datalist id={monsterRaceListId}>
+              {monsterRaces.map((race) => (
+                <option key={race} value={race} />
+              ))}
+            </datalist>
+          </FilterGroup>
+
+          <RangeSliderField
+            label="Level / Rank"
+            values={[filters.levelMin, filters.levelMax]}
+            min={FILTER_BOUNDS.level.min}
+            max={FILTER_BOUNDS.level.max}
+            step={1}
+            onChange={([levelMin, levelMax]) => patch({ levelMin, levelMax })}
           />
-          <RangeInputs
+          <RangeSliderField
             label="ATK"
-            min={filters.atkMin}
-            max={filters.atkMax}
-            bounds={[0, 5000]}
+            values={[filters.atkMin, filters.atkMax]}
+            min={FILTER_BOUNDS.atk.min}
+            max={FILTER_BOUNDS.atk.max}
             step={100}
-            onChange={(atkMin, atkMax) => patch({ atkMin, atkMax })}
+            onChange={([atkMin, atkMax]) => patch({ atkMin, atkMax })}
           />
-        </>
+          <RangeSliderField
+            label="DEF"
+            values={[filters.defMin, filters.defMax]}
+            min={FILTER_BOUNDS.def.min}
+            max={FILTER_BOUNDS.def.max}
+            step={100}
+            onChange={([defMin, defMax]) => patch({ defMin, defMax })}
+          />
+
+          {showLink && (
+            <>
+              <RangeSliderField
+                label="Link rating"
+                values={[filters.linkMin, filters.linkMax]}
+                min={FILTER_BOUNDS.link.min}
+                max={FILTER_BOUNDS.link.max}
+                step={1}
+                onChange={([linkMin, linkMax]) => patch({ linkMin, linkMax })}
+              />
+              <FilterGroup label="Link markers">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {LINK_MARKERS.map((marker) => (
+                    <label
+                      key={marker.value}
+                      className="flex cursor-pointer items-center gap-2 text-xs text-(--color-foreground-muted)"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={filters.linkMarkers.includes(marker.value)}
+                        onChange={() =>
+                          patch({
+                            linkMarkers: toggleInList(filters.linkMarkers, marker.value),
+                          })
+                        }
+                        className="size-3.5 rounded border-(--color-border)"
+                      />
+                      <span>{marker.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterGroup>
+            </>
+          )}
+
+          {showScale && (
+            <RangeSliderField
+              label="Pendulum scale"
+              values={[filters.scaleMin, filters.scaleMax]}
+              min={FILTER_BOUNDS.scale.min}
+              max={FILTER_BOUNDS.scale.max}
+              step={1}
+              onChange={([scaleMin, scaleMax]) => patch({ scaleMin, scaleMax })}
+            />
+          )}
+
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-(--color-foreground-muted)">
+            <input
+              type="checkbox"
+              checked={filters.hasEffect}
+              onChange={(e) => patch({ hasEffect: e.target.checked })}
+              className="size-3.5 rounded border-(--color-border)"
+            />
+            <span>Has effect only</span>
+          </label>
+        </div>
+      )}
+
+      {!compact && filters.type === "spell" && (
+        <FilterGroup label="Spell type">
+          <select
+            value={filters.spellRace}
+            onChange={(e) => patch({ spellRace: e.target.value })}
+            className={selectClass}
+          >
+            <option value="">Any</option>
+            {SPELL_RACES.map((race) => (
+              <option key={race} value={race}>
+                {race}
+              </option>
+            ))}
+          </select>
+        </FilterGroup>
+      )}
+
+      {!compact && filters.type === "trap" && (
+        <FilterGroup label="Trap type">
+          <select
+            value={filters.trapRace}
+            onChange={(e) => patch({ trapRace: e.target.value })}
+            className={selectClass}
+          >
+            <option value="">Any</option>
+            {TRAP_RACES.map((race) => (
+              <option key={race} value={race}>
+                {race}
+              </option>
+            ))}
+          </select>
+        </FilterGroup>
       )}
 
       {!compact && (
@@ -121,6 +290,7 @@ export function CardFiltersPanel({
         >
           <option value="name">Name (A–Z)</option>
           <option value="atk-desc">ATK (high → low)</option>
+          <option value="def-desc">DEF (high → low)</option>
           <option value="level-desc">Level (high → low)</option>
         </select>
       )}
@@ -134,50 +304,6 @@ export function CardFiltersPanel({
           Reset filters
         </button>
       )}
-    </div>
-  );
-}
-
-function RangeInputs({
-  label,
-  min,
-  max,
-  bounds,
-  step = 1,
-  onChange,
-}: {
-  label: string;
-  min: number;
-  max: number;
-  bounds: [number, number];
-  step?: number;
-  onChange: (min: number, max: number) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-(--color-foreground-muted)">{label}</span>
-      <div className="grid grid-cols-2 gap-2">
-        <input
-          type="number"
-          min={bounds[0]}
-          max={bounds[1]}
-          step={step}
-          value={min}
-          onChange={(e) => onChange(Number(e.target.value), max)}
-          className={selectClass}
-          aria-label={`${label} min`}
-        />
-        <input
-          type="number"
-          min={bounds[0]}
-          max={bounds[1]}
-          step={step}
-          value={max}
-          onChange={(e) => onChange(min, Number(e.target.value))}
-          className={selectClass}
-          aria-label={`${label} max`}
-        />
-      </div>
     </div>
   );
 }

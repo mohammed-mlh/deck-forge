@@ -16,11 +16,20 @@ export function hasServerCardFilters(params: CardSearchParams): boolean {
     params.name?.trim() ||
       params.attribute ||
       params.archetype?.trim() ||
+      params.frameType?.trim() ||
+      params.linkmarker?.trim() ||
       params.levelMin ||
       params.levelMax ||
       params.atkMin ||
       params.atkMax ||
+      params.defMin ||
+      params.defMax ||
+      params.linkMin ||
+      params.linkMax ||
+      params.scaleMin ||
+      params.scaleMax ||
       params.race?.trim() ||
+      params.hasEffect ||
       (params.type && params.type !== "all" && params.type !== "monster")
   );
 }
@@ -71,10 +80,17 @@ export function buildCardSearchUrl(params: CardSearchParams): string {
   const apiType = mapTypeFilter(params.type);
   if (apiType) search.set("type", apiType);
   if (params.attribute) search.set("attribute", params.attribute);
+  if (params.frameType?.trim()) search.set("frameType", params.frameType.trim());
+  if (params.linkmarker?.trim()) search.set("linkmarker", params.linkmarker.trim());
   if (params.archetype?.trim()) search.set("archetype", params.archetype.trim());
+  if (params.race?.trim()) search.set("race", params.race.trim());
+  if (params.hasEffect) search.set("has_effect", "true");
 
   appendBoundedParam(search, "level", params.levelMin, params.levelMax);
   appendBoundedParam(search, "atk", params.atkMin, params.atkMax);
+  appendBoundedParam(search, "def", params.defMin, params.defMax);
+  appendBoundedParam(search, "link", params.linkMin, params.linkMax);
+  appendBoundedParam(search, "scale", params.scaleMin, params.scaleMax);
 
   const hasFilters = hasServerCardFilters(params);
   if (!params.name?.trim() && !hasFilters) {

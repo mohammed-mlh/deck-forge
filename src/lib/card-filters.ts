@@ -1,36 +1,94 @@
 import type { CardSearchParams, CardTypeFilter, YugiohCard } from "@/types/yugioh";
 
-export type CardSort = "name" | "atk-desc" | "level-desc";
+export type CardSort = "name" | "atk-desc" | "def-desc" | "level-desc";
 
 export interface CardFilters {
   type: CardTypeFilter;
   attribute?: string;
   archetype?: string;
+  frames: string[];
+  linkMarkers: string[];
+  monsterRace: string;
+  spellRace: string;
+  trapRace: string;
+  hasEffect: boolean;
   levelMin: number;
   levelMax: number;
   atkMin: number;
   atkMax: number;
+  defMin: number;
+  defMax: number;
+  linkMin: number;
+  linkMax: number;
+  scaleMin: number;
+  scaleMax: number;
   sort: CardSort;
 }
 
+export const MONSTER_FRAMES: { value: string; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "effect", label: "Effect" },
+  { value: "ritual", label: "Ritual" },
+  { value: "fusion", label: "Fusion" },
+  { value: "synchro", label: "Synchro" },
+  { value: "xyz", label: "XYZ" },
+  { value: "link", label: "Link" },
+  { value: "pendulum", label: "Pendulum" },
+];
+
+export const LINK_MARKERS: { value: string; label: string }[] = [
+  { value: "top", label: "Top" },
+  { value: "bottom", label: "Bottom" },
+  { value: "left", label: "Left" },
+  { value: "right", label: "Right" },
+  { value: "bottom-left", label: "Bottom-Left" },
+  { value: "bottom-right", label: "Bottom-Right" },
+  { value: "top-left", label: "Top-Left" },
+  { value: "top-right", label: "Top-Right" },
+];
+
+export const SPELL_RACES = [
+  "Normal",
+  "Quick-Play",
+  "Continuous",
+  "Equip",
+  "Field",
+  "Ritual",
+] as const;
+
+export const TRAP_RACES = ["Normal", "Continuous", "Counter"] as const;
+
+const BOUNDS = {
+  level: { min: 0, max: 13 },
+  atk: { min: 0, max: 5000 },
+  def: { min: 0, max: 5000 },
+  link: { min: 1, max: 8 },
+  scale: { min: 0, max: 13 },
+} as const;
+
 export const DEFAULT_CARD_FILTERS: CardFilters = {
   type: "all",
-  levelMin: 0,
-  levelMax: 13,
-  atkMin: 0,
-  atkMax: 5000,
+  frames: [],
+  linkMarkers: [],
+  monsterRace: "",
+  spellRace: "",
+  trapRace: "",
+  hasEffect: false,
+  levelMin: BOUNDS.level.min,
+  levelMax: BOUNDS.level.max,
+  atkMin: BOUNDS.atk.min,
+  atkMax: BOUNDS.atk.max,
+  defMin: BOUNDS.def.min,
+  defMax: BOUNDS.def.max,
+  linkMin: BOUNDS.link.min,
+  linkMax: BOUNDS.link.max,
+  scaleMin: BOUNDS.scale.min,
+  scaleMax: BOUNDS.scale.max,
   sort: "name",
 };
 
-const LEVEL_MAX = 13;
-const ATK_MAX = 5000;
-
-function isLevelFiltered(f: CardFilters) {
-  return f.levelMin > 0 || f.levelMax < LEVEL_MAX;
-}
-
-function isAtkFiltered(f: CardFilters) {
-  return f.atkMin > 0 || f.atkMax < ATK_MAX;
+function rangeActive(min: number, max: number, bounds: { min: number; max: number }) {
+  return min > bounds.min || max < bounds.max;
 }
 
 export function filtersNeedApi(search: string, filters: CardFilters): boolean {
@@ -38,10 +96,19 @@ export function filtersNeedApi(search: string, filters: CardFilters): boolean {
     search.trim() ||
       filters.attribute ||
       filters.archetype?.trim() ||
+      filters.frames.length ||
+      filters.linkMarkers.length ||
+      filters.monsterRace.trim() ||
+      filters.spellRace.trim() ||
+      filters.trapRace.trim() ||
+      filters.hasEffect ||
       filters.type === "spell" ||
       filters.type === "trap" ||
-      isLevelFiltered(filters) ||
-      isAtkFiltered(filters)
+      rangeActive(filters.levelMin, filters.levelMax, BOUNDS.level) ||
+      rangeActive(filters.atkMin, filters.atkMax, BOUNDS.atk) ||
+      rangeActive(filters.defMin, filters.defMax, BOUNDS.def) ||
+      rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link) ||
+      rangeActive(filters.scaleMin, filters.scaleMax, BOUNDS.scale)
   );
 }
 
@@ -58,18 +125,39 @@ export function filtersToApiParams(
   if (search.trim()) params.name = search.trim();
   if (filters.attribute) params.attribute = filters.attribute;
   if (filters.archetype?.trim()) params.archetype = filters.archetype.trim();
+  if (filters.frames.length) params.frameType = filters.frames.join(",");
+  if (filters.linkMarkers.length) params.linkmarker = filters.linkMarkers.join(",");
+  if (filters.hasEffect) params.hasEffect = true;
 
-  if (filters.type === "spell") params.type = "spell";
-  if (filters.type === "trap") params.type = "trap";
-
-  if (isLevelFiltered(filters)) {
-    if (filters.levelMin > 0) params.levelMin = String(filters.levelMin);
-    if (filters.levelMax < LEVEL_MAX) params.levelMax = String(filters.levelMax);
+  if (filters.type === "spell") {
+    params.type = "spell";
+    if (filters.spellRace.trim()) params.race = filters.spellRace.trim();
+  } else if (filters.type === "trap") {
+    params.type = "trap";
+    if (filters.trapRace.trim()) params.race = filters.trapRace.trim();
+  } else if (filters.monsterRace.trim()) {
+    params.race = filters.monsterRace.trim();
   }
 
-  if (isAtkFiltered(filters)) {
-    if (filters.atkMin > 0) params.atkMin = String(filters.atkMin);
-    if (filters.atkMax < ATK_MAX) params.atkMax = String(filters.atkMax);
+  if (rangeActive(filters.levelMin, filters.levelMax, BOUNDS.level)) {
+    if (filters.levelMin > BOUNDS.level.min) params.levelMin = String(filters.levelMin);
+    if (filters.levelMax < BOUNDS.level.max) params.levelMax = String(filters.levelMax);
+  }
+  if (rangeActive(filters.atkMin, filters.atkMax, BOUNDS.atk)) {
+    if (filters.atkMin > BOUNDS.atk.min) params.atkMin = String(filters.atkMin);
+    if (filters.atkMax < BOUNDS.atk.max) params.atkMax = String(filters.atkMax);
+  }
+  if (rangeActive(filters.defMin, filters.defMax, BOUNDS.def)) {
+    if (filters.defMin > BOUNDS.def.min) params.defMin = String(filters.defMin);
+    if (filters.defMax < BOUNDS.def.max) params.defMax = String(filters.defMax);
+  }
+  if (rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link)) {
+    if (filters.linkMin > BOUNDS.link.min) params.linkMin = String(filters.linkMin);
+    if (filters.linkMax < BOUNDS.link.max) params.linkMax = String(filters.linkMax);
+  }
+  if (rangeActive(filters.scaleMin, filters.scaleMax, BOUNDS.scale)) {
+    if (filters.scaleMin > BOUNDS.scale.min) params.scaleMin = String(filters.scaleMin);
+    if (filters.scaleMax < BOUNDS.scale.max) params.scaleMax = String(filters.scaleMax);
   }
 
   return params;
@@ -90,6 +178,8 @@ function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
   const copy = [...cards];
   if (sort === "atk-desc") {
     copy.sort((a, b) => (b.atk ?? -1) - (a.atk ?? -1));
+  } else if (sort === "def-desc") {
+    copy.sort((a, b) => (b.def ?? -1) - (a.def ?? -1));
   } else if (sort === "level-desc") {
     copy.sort((a, b) => (b.level ?? b.rank ?? -1) - (a.level ?? a.rank ?? -1));
   } else {
@@ -101,3 +191,19 @@ function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
 export function finalizeCards(cards: YugiohCard[], filters: CardFilters): YugiohCard[] {
   return sortCards(filterCardsByType(cards, filters.type), filters.sort);
 }
+
+export function extractMonsterRaces(cards: YugiohCard[], limit = 200): string[] {
+  const races = new Set<string>();
+  cards.forEach((card) => {
+    if (card.type.includes("Monster") && card.race) races.add(card.race);
+  });
+  return [...races].sort().slice(0, limit);
+}
+
+export function toggleInList(values: string[], value: string): string[] {
+  return values.includes(value)
+    ? values.filter((v) => v !== value)
+    : [...values, value];
+}
+
+export { BOUNDS as FILTER_BOUNDS };
