@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { track } from "@/lib/analytics";
+import { usePageView } from "@/hooks/use-page-view";
 import { SearchBar } from "@/components/cards-browser/search-bar";
 import {
   CardFiltersPanel,
@@ -33,10 +35,27 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
 
   const updateFilters = (next: CardFilters) => setFilters(next);
 
+  usePageView("page_view_cards");
+
+  const handleSearchSubmit = useCallback((query: string) => {
+    if (!query) return;
+    track("card_search", { query });
+  }, []);
+
+  const handleCardClick = useCallback((card: YugiohCard) => {
+    track("card_view", { cardId: card.id, cardName: card.name });
+    setSelectedCard(card);
+  }, []);
+
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <SearchBar value={search} onChange={setSearch} className="flex-1" />
+        <SearchBar
+          value={search}
+          onChange={setSearch}
+          onSubmit={handleSearchSubmit}
+          className="flex-1"
+        />
         {showFilters && (
           <button
             type="button"
@@ -79,7 +98,7 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
             isLoading={isLoading}
             isError={isError}
             errorMessage={error?.message}
-            onCardClick={setSelectedCard}
+            onCardClick={handleCardClick}
           />
         </div>
       </div>

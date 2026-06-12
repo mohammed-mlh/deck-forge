@@ -4,7 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Copy, User } from "lucide-react";
+import { ArrowLeft, Copy, Share2, User } from "lucide-react";
+import { track } from "@/lib/analytics";
+import { usePageView } from "@/hooks/use-page-view";
 import { PublicDeckZone } from "@/components/public-decks/public-deck-zone";
 import { clonePublicDeckToSaved } from "@/lib/decks/deck-utils";
 import { getMostPowerfulMonster, getCardArtUrl } from "@/lib/deck-preview";
@@ -30,10 +32,42 @@ export function PublicDeckView({ deck }: PublicDeckViewProps) {
   const extra = countZone(deck.extra);
   const side = countZone(deck.side);
 
+  usePageView("page_view_deck", {
+    deckId: deck.id,
+    slug: deck.slug,
+    deckName: deck.name,
+    source: deck.source,
+  });
+
   const handleCopyDeck = () => {
     setCopying(true);
+    track("deck_copied", {
+      sourceDeckId: deck.id,
+      slug: deck.slug,
+      deckName: deck.name,
+      source: deck.source,
+    });
     const saved = clonePublicDeckToSaved(deck);
     router.push(`/deck-builder/${saved.id}`);
+  };
+
+  const handleShare = async () => {
+    track("deck_shared", {
+      deckId: deck.id,
+      slug: deck.slug,
+      deckName: deck.name,
+      source: deck.source,
+    });
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: deck.name, url });
+      } catch {
+        // user cancelled share sheet
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(url);
   };
 
   return (
@@ -82,18 +116,28 @@ export function PublicDeckView({ deck }: PublicDeckViewProps) {
             <p className="mt-3 text-sm tabular-nums text-(--color-foreground-subtle)">
               Main: {main} · Extra: {extra} · Side: {side}
             </p>
-            <button
-              type="button"
-              onClick={handleCopyDeck}
-              disabled={copying}
-              className={cn(
-                "mt-4 inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)",
-                copying && "opacity-70"
-              )}
-            >
-              <Copy className="size-4" />
-              {copying ? "Opening…" : "Copy Deck"}
-            </button>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleCopyDeck}
+                disabled={copying}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)",
+                  copying && "opacity-70"
+                )}
+              >
+                <Copy className="size-4" />
+                {copying ? "Opening…" : "Copy Deck"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleShare()}
+                className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
+              >
+                <Share2 className="size-4" />
+                Share
+              </button>
+            </div>
           </div>
 
           {featured && (

@@ -11,6 +11,8 @@ import { ImportResultToast } from "@/components/deck-builder/import-result-toast
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
+import { track } from "@/lib/analytics";
+import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import type { DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
@@ -45,8 +47,21 @@ export function DeckBuilder() {
     }
   }, [deckId, getById, replaceDeck]);
 
+  usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
+
   const handleSave = () => {
+    const isNew = !deckId;
     save(deck);
+    track("deck_saved", {
+      deckId: deck.id,
+      deckName: deck.name,
+      main: stats.main,
+      extra: stats.extra,
+      side: stats.side,
+    });
+    if (isNew) {
+      track("deck_created", { deckId: deck.id, deckName: deck.name });
+    }
     setSaveStatus("saved");
     router.replace(`/deck-builder/${deck.id}`);
     window.setTimeout(() => setSaveStatus("idle"), 2000);

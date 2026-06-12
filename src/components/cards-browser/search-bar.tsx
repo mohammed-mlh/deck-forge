@@ -7,13 +7,14 @@ import { cn } from "@/lib/utils";
 interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
+  onSubmit?: (value: string) => void;
   placeholder?: string;
   className?: string;
 }
 
 export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
   function SearchBar(
-    { value, onChange, placeholder = "Search cards by name…", className },
+    { value, onChange, onSubmit, placeholder = "Search cards by name…", className },
     ref
   ) {
   return (
@@ -29,6 +30,9 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSubmit?.(value.trim());
+        }}
         placeholder={placeholder}
         className="min-w-0 flex-1 bg-transparent text-sm text-(--color-foreground) outline-none placeholder:text-(--color-foreground-disabled)"
       />
