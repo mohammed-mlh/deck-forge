@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { SearchBar } from "@/components/cards-browser/search-bar";
-import { BuilderCardFilters } from "@/components/deck-builder/builder-card-filters";
+import {
+  CardFiltersPanel,
+  DEFAULT_CARD_FILTERS,
+} from "@/components/cards-browser/card-filters-panel";
 import { CardGrid } from "@/components/cards-browser/card-grid";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useBrowseCards } from "@/hooks/use-browse-cards";
-import type { CardSearchParams } from "@/types/yugioh";
 import type { YugiohCard } from "@/types/yugioh";
 import type { DeckZone } from "@/types/deck";
 import { cn } from "@/lib/utils";
@@ -26,7 +28,7 @@ export function CardSearchPanel({
   className,
 }: CardSearchPanelProps) {
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<CardSearchParams>({ type: "all" });
+  const [filters, setFilters] = useState(DEFAULT_CARD_FILTERS);
 
   const debouncedSearch = useDebounce(search, 350);
 
@@ -54,9 +56,11 @@ export function CardSearchPanel({
           onChange={setSearch}
           placeholder="Search cards..."
         />
-        <BuilderCardFilters
+        <CardFiltersPanel
           filters={filters}
-          onChange={(partial) => setFilters((prev) => ({ ...prev, ...partial }))}
+          onChange={setFilters}
+          compact
+          className="border-0 bg-transparent p-0"
         />
         <p className="shrink-0 text-[11px] text-[var(--color-foreground-subtle)]">
           {isLoading

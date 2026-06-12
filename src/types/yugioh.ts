@@ -17,6 +17,7 @@ export interface YugiohCard {
   level?: number;
   rank?: number;
   linkval?: number;
+  scale?: number;
   archetype?: string;
   frameType: string;
   card_images: YugiohCardImage[];
@@ -32,8 +33,12 @@ export interface CardSearchParams {
   name?: string;
   type?: CardTypeFilter;
   attribute?: string;
-  level?: string;
+  levelMin?: string;
+  levelMax?: string;
+  atkMin?: string;
+  atkMax?: string;
   archetype?: string;
+  race?: string;
   num?: number;
   offset?: number;
 }

@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import { SearchBar } from "@/components/cards-browser/search-bar";
-import { FilterSidebar } from "@/components/cards-browser/filter-sidebar";
+import {
+  CardFiltersPanel,
+  DEFAULT_CARD_FILTERS,
+} from "@/components/cards-browser/card-filters-panel";
 import { CardGrid } from "@/components/cards-browser/card-grid";
 import { CardDetailPanel } from "@/components/cards-browser/card-detail-panel";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useBrowseCards } from "@/hooks/use-browse-cards";
-import type { CardSearchParams, YugiohCard } from "@/types/yugioh";
+import type { CardFilters } from "@/lib/card-filters";
+import type { YugiohCard } from "@/types/yugioh";
 import { SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +22,7 @@ interface CardBrowserProps {
 
 export function CardBrowser({ showFilters = true, className }: CardBrowserProps) {
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<CardSearchParams>({ type: "all" });
+  const [filters, setFilters] = useState<CardFilters>(DEFAULT_CARD_FILTERS);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -27,9 +31,7 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
   const { cards, isLoading, isFetching, isError, error, isBrowsing } =
     useBrowseCards(debouncedSearch, filters);
 
-  const updateFilters = (partial: Partial<CardSearchParams>) => {
-    setFilters((prev) => ({ ...prev, ...partial }));
-  };
+  const updateFilters = (next: CardFilters) => setFilters(next);
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
@@ -49,11 +51,11 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
 
       <div className="flex items-start gap-6">
         {showFilters && (
-          <FilterSidebar
+          <CardFiltersPanel
             filters={filters}
             onChange={updateFilters}
             className={cn(
-              "hidden w-56 shrink-0 self-start lg:flex",
+              "hidden w-56 shrink-0 self-start rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4 lg:flex",
               filtersOpen && "flex w-full lg:w-56"
             )}
           />
@@ -66,7 +68,7 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
                 ? `Results for "${debouncedSearch}"`
                 : isBrowsing
                   ? "Browse cards"
-                  : "Filtered results"}
+                  : `${cards.length.toLocaleString()} filtered cards`}
             </p>
             {isFetching && !isLoading && (
               <p className="text-xs text-[var(--color-foreground-subtle)]">Updating…</p>
@@ -83,8 +85,8 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
       </div>
 
       {filtersOpen && (
-        <div className="lg:hidden">
-          <FilterSidebar filters={filters} onChange={updateFilters} />
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4 lg:hidden">
+          <CardFiltersPanel filters={filters} onChange={updateFilters} />
         </div>
       )}
 

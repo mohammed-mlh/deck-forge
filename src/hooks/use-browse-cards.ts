@@ -4,60 +4,46 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCards } from "@/hooks/use-cards";
 import {
+  finalizeCards,
+  filtersNeedApi,
+  filtersToApiParams,
+  filtersUseMonsterPool,
+  type CardFilters,
+} from "@/lib/card-filters";
+import {
   INITIAL_BROWSE_PARAMS,
   INITIAL_CARD_COUNT,
   allCardsQuery,
   buildCardQueryParams,
-  filterCardsByType,
-  hasServerCardFilters,
 } from "@/lib/ygoprodeck";
-import type { CardSearchParams } from "@/types/yugioh";
 
-export function useBrowseCards(search: string, filters: CardSearchParams) {
-  const hasSearch = Boolean(search.trim());
-  const serverFilters = hasServerCardFilters(filters);
-  const monsterOnly =
-    filters.type === "monster" && !serverFilters && !hasSearch;
-  const needsApiQuery = hasSearch || serverFilters;
+export function useBrowseCards(search: string, filters: CardFilters) {
+  const useApi = filtersNeedApi(search, filters);
+  const useMonsterPool = filtersUseMonsterPool(search, filters);
 
-  const queryParams = useMemo(
-    () => buildCardQueryParams(search, filters),
-    [search, filters]
-  );
+  const queryParams = useMemo(() => {
+    const api = filtersToApiParams(search, filters);
+    return buildCardQueryParams(search, api);
+  }, [search, filters]);
 
-  const {
-    data: allCards = [],
-    isLoading: allLoading,
-    isError: allError,
-    error: allErrorObj,
-  } = useQuery(allCardsQuery);
+  const allQuery = useQuery(allCardsQuery);
+  const apiQuery = useCards(queryParams, { enabled: useApi });
 
-  const {
-    data: fetchedCards = [],
-    isLoading: fetchLoading,
-    isFetching,
-    isError: fetchError,
-    error: fetchErrorObj,
-  } = useCards(queryParams, { enabled: needsApiQuery });
+  const rawCards = useApi
+    ? (apiQuery.data ?? [])
+    : useMonsterPool
+      ? (allQuery.data ?? [])
+      : (allQuery.data ?? []).slice(0, INITIAL_CARD_COUNT);
 
-  const rawCards = needsApiQuery
-    ? fetchedCards
-    : monsterOnly
-      ? allCards
-      : allCards.slice(0, INITIAL_CARD_COUNT);
-
-  const cards = useMemo(
-    () => filterCardsByType(rawCards, filters.type ?? "all"),
-    [rawCards, filters.type]
-  );
+  const cards = useMemo(() => finalizeCards(rawCards, filters), [rawCards, filters]);
 
   return {
     cards,
-    isLoading: needsApiQuery ? fetchLoading : allLoading,
-    isFetching: needsApiQuery ? isFetching : false,
-    isError: needsApiQuery ? fetchError : allError,
-    error: needsApiQuery ? fetchErrorObj : allErrorObj,
-    isBrowsing: !needsApiQuery && !monsterOnly,
-    queryParams: needsApiQuery ? queryParams : INITIAL_BROWSE_PARAMS,
+    isLoading: useApi ? apiQuery.isLoading : allQuery.isLoading,
+    isFetching: useApi ? apiQuery.isFetching : false,
+    isError: useApi ? apiQuery.isError : allQuery.isError,
+    error: useApi ? apiQuery.error : allQuery.error,
+    isBrowsing: !useApi && !useMonsterPool,
+    queryParams: useApi ? queryParams : INITIAL_BROWSE_PARAMS,
   };
 }

@@ -11,35 +11,29 @@ export const INITIAL_BROWSE_PARAMS: CardSearchParams = {
 
 export const INITIAL_CARD_COUNT = 100;
 
-export function hasServerCardFilters(filters: CardSearchParams): boolean {
+export function hasServerCardFilters(params: CardSearchParams): boolean {
   return Boolean(
-    filters.attribute ||
-      filters.level ||
-      filters.archetype?.trim() ||
-      (filters.type && filters.type !== "all" && filters.type !== "monster")
+    params.name?.trim() ||
+      params.attribute ||
+      params.archetype?.trim() ||
+      params.levelMin ||
+      params.levelMax ||
+      params.atkMin ||
+      params.atkMax ||
+      params.race?.trim() ||
+      (params.type && params.type !== "all" && params.type !== "monster")
   );
-}
-
-export function hasActiveCardFilters(filters: CardSearchParams): boolean {
-  return hasServerCardFilters(filters) || filters.type === "monster";
 }
 
 export function buildCardQueryParams(
   search: string,
-  filters: CardSearchParams
+  params: CardSearchParams
 ): CardSearchParams {
-  const base: CardSearchParams = {
-    ...filters,
-    type: filters.type === "monster" ? "all" : filters.type,
-  };
+  const base = { ...params, type: params.type === "monster" ? "all" : params.type };
 
-  if (search.trim()) {
-    return { ...base, name: search.trim() };
-  }
-
-  if (hasServerCardFilters(filters)) {
-    const { num: _n, offset: _o, ...filterParams } = base;
-    return filterParams;
+  if (search.trim() || hasServerCardFilters(base)) {
+    const { num: _n, offset: _o, ...rest } = base;
+    return rest;
   }
 
   return { ...base, ...INITIAL_BROWSE_PARAMS };
@@ -59,38 +53,31 @@ function mapTypeFilter(type: CardSearchParams["type"]): string | undefined {
   return undefined;
 }
 
-export function filterCardsByType(
-  cards: YugiohCard[],
-  type: CardSearchParams["type"] = "all"
-): YugiohCard[] {
-  if (!type || type === "all") return cards;
-  if (type === "monster") return cards.filter((c) => c.type.includes("Monster"));
-  if (type === "spell") return cards.filter((c) => c.type.includes("Spell"));
-  if (type === "trap") return cards.filter((c) => c.type.includes("Trap"));
-  return cards;
+function appendBoundedParam(
+  search: URLSearchParams,
+  key: string,
+  min?: string,
+  max?: string
+) {
+  if (min) search.append(key, `gte${min}`);
+  if (max) search.append(key, `lte${max}`);
 }
 
 export function buildCardSearchUrl(params: CardSearchParams): string {
   const search = new URLSearchParams();
 
-  if (params.name?.trim()) {
-    search.set("fname", params.name.trim());
-  }
+  if (params.name?.trim()) search.set("fname", params.name.trim());
+
   const apiType = mapTypeFilter(params.type);
   if (apiType) search.set("type", apiType);
   if (params.attribute) search.set("attribute", params.attribute);
-  if (params.level) search.set("level", params.level);
   if (params.archetype?.trim()) search.set("archetype", params.archetype.trim());
 
-  // YGOProDeck rejects num/offset combined with fname or filter params
-  const hasNameSearch = Boolean(params.name?.trim());
-  const hasFilterParams = Boolean(
-    params.attribute ||
-      params.level ||
-      params.archetype?.trim() ||
-      mapTypeFilter(params.type)
-  );
-  if (!hasNameSearch && !hasFilterParams) {
+  appendBoundedParam(search, "level", params.levelMin, params.levelMax);
+  appendBoundedParam(search, "atk", params.atkMin, params.atkMax);
+
+  const hasFilters = hasServerCardFilters(params);
+  if (!params.name?.trim() && !hasFilters) {
     if (params.num) search.set("num", String(params.num));
     if (params.offset) search.set("offset", String(params.offset));
   }
@@ -102,12 +89,9 @@ export function buildCardSearchUrl(params: CardSearchParams): string {
 export async function fetchCards(params: CardSearchParams = {}): Promise<YugiohCard[]> {
   const key = buildCacheKey(params);
   const cached = cache.get(key);
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.data;
-  }
+  if (cached && cached.expiresAt > Date.now()) return cached.data;
 
   const res = await fetch(buildCardSearchUrl(params));
-
   if (!res.ok) {
     if (res.status === 400) return [];
     throw new Error(`Failed to fetch cards: ${res.status}`);
@@ -115,7 +99,6 @@ export async function fetchCards(params: CardSearchParams = {}): Promise<YugiohC
 
   const json = (await res.json()) as YugiohApiResponse;
   const data = json.data ?? [];
-
   cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
   return data;
 }
