@@ -13,6 +13,8 @@ export interface Deck {
   main: DeckCardEntry[];
   extra: DeckCardEntry[];
   side: DeckCardEntry[];
+  /** Deck label fallback when cards lack API archetype data. */
+  archetype?: string;
 }
 
 export interface SavedDeck extends Deck {
