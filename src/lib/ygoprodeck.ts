@@ -102,6 +102,23 @@ export function buildCardSearchUrl(params: CardSearchParams): string {
   return query ? `${API_BASE}?${query}` : `${API_BASE}?num=100&offset=0`;
 }
 
+const ID_FETCH_CHUNK = 80;
+
+export async function fetchCardsByIds(ids: number[]): Promise<YugiohCard[]> {
+  const unique = [...new Set(ids.filter((id) => id > 0))];
+  if (unique.length === 0) return [];
+
+  const results: YugiohCard[] = [];
+  for (let i = 0; i < unique.length; i += ID_FETCH_CHUNK) {
+    const chunk = unique.slice(i, i + ID_FETCH_CHUNK);
+    const res = await fetch(`${API_BASE}?id=${chunk.join(",")}`);
+    if (!res.ok) continue;
+    const json = (await res.json()) as YugiohApiResponse;
+    results.push(...(json.data ?? []));
+  }
+  return results;
+}
+
 export async function fetchCards(params: CardSearchParams = {}): Promise<YugiohCard[]> {
   const key = buildCacheKey(params);
   const cached = cache.get(key);

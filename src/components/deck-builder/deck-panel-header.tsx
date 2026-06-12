@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Save, Trash2 } from "lucide-react";
+import { Download, Save, Trash2, Upload } from "lucide-react";
 import { DECK_LIMITS } from "@/types/deck";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ interface DeckPanelHeaderProps {
   saveStatus: "idle" | "saved";
   onSave: () => void;
   onClear: () => void;
+  onImport: () => void;
   onExport: () => void;
 }
 
@@ -56,6 +57,7 @@ export function DeckPanelHeader({
   saveStatus,
   onSave,
   onClear,
+  onImport,
   onExport,
 }: DeckPanelHeaderProps) {
   return (
@@ -88,11 +90,19 @@ export function DeckPanelHeader({
         </button>
         <button
           type="button"
+          onClick={onImport}
+          className="inline-flex items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-surface-2) px-3 py-1.5 text-xs text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
+        >
+          <Upload className="size-3.5" />
+          Import
+        </button>
+        <button
+          type="button"
           onClick={onExport}
           className="inline-flex items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-surface-2) px-3 py-1.5 text-xs text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
         >
           <Download className="size-3.5" />
-          Export .txt
+          Export
         </button>
         <button
           type="button"

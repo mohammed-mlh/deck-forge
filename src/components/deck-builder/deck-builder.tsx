@@ -6,10 +6,11 @@ import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
+import { DeckIoDialog } from "@/components/deck-builder/deck-io-dialog";
+import { ImportResultToast } from "@/components/deck-builder/import-result-toast";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
-import { downloadDeckTxt } from "@/lib/deck-export";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import type { DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
@@ -22,6 +23,11 @@ export function DeckBuilder() {
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
     useDeck();
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
+  const [importNotes, setImportNotes] = useState<{
+    errors: string[];
+    warnings: string[];
+  } | null>(null);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const loadedIdRef = useRef<string | null>(null);
 
@@ -63,7 +69,7 @@ export function DeckBuilder() {
           className="w-[clamp(220px,22vw,280px)]"
         />
 
-        <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <section className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <DeckPanelHeader
             deckName={deck.name}
             onDeckNameChange={setDeckName}
@@ -76,8 +82,36 @@ export function DeckBuilder() {
               resetDeck();
               setSelectedCard(null);
             }}
-            onExport={() => downloadDeckTxt(deck)}
+            onImport={() => setIoMode("import")}
+            onExport={() => setIoMode("export")}
           />
+
+          {ioMode && (
+            <DeckIoDialog
+              deck={deck}
+              mode={ioMode}
+              onClose={() => setIoMode(null)}
+              onImport={(result) => {
+                replaceDeck({
+                  ...deck,
+                  name: result.name?.trim() || deck.name,
+                  main: result.main,
+                  extra: result.extra,
+                  side: result.side,
+                });
+                setImportNotes({ errors: result.errors, warnings: result.warnings });
+                setSelectedCard(null);
+              }}
+            />
+          )}
+
+          {importNotes && (
+            <ImportResultToast
+              errors={importNotes.errors}
+              warnings={importNotes.warnings}
+              onClose={() => setImportNotes(null)}
+            />
+          )}
 
           <div className="min-h-0 flex-1 overflow-y-auto">
             <div className="flex flex-col divide-y divide-(--color-border) border-b border-(--color-border)">
