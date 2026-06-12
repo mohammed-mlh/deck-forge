@@ -22,6 +22,17 @@ export const metadata: Metadata = {
     template: "%s | DeckForge",
   },
   description: "The modern platform for competitive Yu-Gi-Oh deck building and analysis.",
+  openGraph: {
+    type: "website",
+    siteName: "DeckForge",
+    title: "DeckForge",
+    description: "The modern platform for competitive Yu-Gi-Oh deck building and analysis.",
+  },
+  twitter: {
+    card: "summary",
+    title: "DeckForge",
+    description: "The modern platform for competitive Yu-Gi-Oh deck building and analysis.",
+  },
 };
 
 export default function RootLayout({

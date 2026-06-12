@@ -31,7 +31,7 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
 
   const debouncedSearch = useDebounce(search, 350);
 
-  const { cards, isLoading, isFetching, isError, error } =
+  const { cards, isLoading, isFetching, isError, error, refetch } =
     useBrowseCards(debouncedSearch, filters);
 
   const handleCardClick = (card: YugiohCard) => {
@@ -74,7 +74,8 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
           cards={cards}
           isLoading={isLoading}
           isError={isError}
-          errorMessage={error?.message}
+          errorMessage="Failed to load cards. Try again."
+          onRetry={() => void refetch()}
           onCardClick={handleCardClick}
           onCardDoubleClick={handleCardDoubleClick}
           selectedCardId={selectedCardId}

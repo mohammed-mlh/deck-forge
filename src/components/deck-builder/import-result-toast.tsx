@@ -14,7 +14,9 @@ export function ImportResultToast({ errors, warnings, onClose }: ImportResultToa
   return (
     <div className="absolute bottom-4 left-4 right-4 z-10 max-h-40 overflow-y-auto rounded-lg border border-(--color-border) bg-(--color-surface-1) p-3 shadow-lg">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold text-(--color-foreground)">Import notes</span>
+        <span className="text-xs font-semibold text-(--color-foreground)">
+          {errors.length > 0 ? "Import completed with issues" : "Import notes"}
+        </span>
         <button type="button" onClick={onClose} className="text-(--color-foreground-muted)">
           <X className="size-3.5" />
         </button>
@@ -25,8 +27,11 @@ export function ImportResultToast({ errors, warnings, onClose }: ImportResultToa
             {w}
           </li>
         ))}
+        {errors.length > 0 && (
+          <li className="font-medium text-(--color-danger)">Unresolved cards:</li>
+        )}
         {errors.slice(0, 8).map((e) => (
-          <li key={e} className="text-(--color-danger)">
+          <li key={e} className="pl-2 text-(--color-danger)">
             {e}
           </li>
         ))}

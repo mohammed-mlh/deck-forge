@@ -1,40 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Hammer, Sparkles, BarChart2, Database, Wallet } from "lucide-react";
+import { ArrowRight, FolderOpen, Hammer, Database, Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
 import { FeatureCard } from "@/components/cards/feature-card";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "DeckForge — Modern Yu-Gi-Oh Deck Building",
-  description: "Build, analyze, and optimize your Yu-Gi-Oh decks with professional tools.",
-};
+  description: "Build, browse, and share Yu-Gi-Oh decks with a full card database and drag-and-drop deck builder.",
+  path: "/",
+});
 
 const features = [
   {
     icon: <Hammer className="size-5" />,
     title: "Deck Builder",
-    description: "Drag-and-drop deck construction with real-time banlist validation.",
+    description: "Drag-and-drop deck construction with real-time zone limits and validation.",
   },
   {
     icon: <Database className="size-5" />,
     title: "Card Database",
-    description: "Complete card database with rulings, artwork, and pricing history.",
+    description: "Search and filter the full YGOProDeck card database with advanced filters.",
   },
   {
-    icon: <Sparkles className="size-5" />,
-    title: "AI Deck Doctor",
-    description: "Get AI-powered suggestions to improve consistency and power level.",
+    icon: <Layers className="size-5" />,
+    title: "Public Decks",
+    description: "Browse official starter decks and copy them into your own builder.",
   },
   {
-    icon: <BarChart2 className="size-5" />,
-    title: "Meta Tracker",
-    description: "Up-to-date competitive data from YCS and regional events.",
-  },
-  {
-    icon: <Wallet className="size-5" />,
-    title: "Price Tracker",
-    description: "Monitor prices across major marketplaces and set buy alerts.",
+    icon: <FolderOpen className="size-5" />,
+    title: "My Decks",
+    description: "Save decks locally and import or export in multiple formats.",
   },
 ];
 
@@ -45,16 +42,13 @@ export default function HomePage() {
       <section className="border-b border-(--color-border)">
         <Container>
           <div className="flex flex-col items-center gap-6 py-24 text-center md:py-36">
-            <div className="rounded-full border border-(--color-border) px-3 py-1 text-xs text-(--color-foreground-muted)">
-              Now in public beta
-            </div>
             <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-(--color-foreground) md:text-[3rem] md:leading-tight">
               The professional deck building platform for{" "}
               <span className="text-(--color-primary)">competitive play</span>
             </h1>
             <p className="max-w-lg text-base text-(--color-foreground-muted)">
-              Build, analyze, and refine your Yu-Gi-Oh decks with tools designed for serious players.
-              From card search to AI-powered optimization.
+              Build, browse, and refine your Yu-Gi-Oh decks with a card database, deck builder,
+              and shareable public decks.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
@@ -81,9 +75,9 @@ export default function HomePage() {
           <div className="grid grid-cols-2 divide-x divide-(--color-border) md:grid-cols-4">
             {[
               { value: "12,000+", label: "Cards" },
-              { value: "50,000+", label: "Decks Built" },
-              { value: "500+",    label: "Archetypes" },
-              { value: "Weekly",  label: "Meta Updates" },
+              { value: "12", label: "Starter Decks" },
+              { value: "10+", label: "Import Formats" },
+              { value: "Free", label: "To Use" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col items-center gap-1 py-8 text-center">
                 <span className="text-2xl font-semibold tabular-nums text-(--color-foreground)">
@@ -103,7 +97,7 @@ export default function HomePage() {
             <SectionHeader
               title="Everything you need to compete"
               description="Professional tools built for players who take the game seriously."
-              className="mx-auto max-w-lg text-center [&>*]:mx-auto"
+              className="mx-auto max-w-lg text-center *:mx-auto"
             />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((f) => (
@@ -122,7 +116,7 @@ export default function HomePage() {
               Ready to build your next deck?
             </h2>
             <p className="max-w-md text-sm text-(--color-foreground-muted)">
-              Join thousands of duelists who use DeckForge to stay ahead of the meta.
+              Start with the card database or copy an official deck into the builder.
             </p>
             <Link
               href="/register"

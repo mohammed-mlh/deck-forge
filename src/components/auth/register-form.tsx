@@ -11,7 +11,7 @@ export function RegisterForm() {
   const router = useRouter();
   const { register } = useAuth();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("demo123");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ export function RegisterForm() {
       </PrimaryButton>
 
       <p className="text-center text-xs text-(--color-foreground-subtle)">
-        Demo register — creates a local session instantly.
+        Your account is stored locally in your browser.
       </p>
 
       <p className="text-center text-sm text-(--color-foreground-muted)">

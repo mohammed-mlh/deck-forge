@@ -40,10 +40,11 @@ export function useBrowseCards(search: string, filters: CardFilters) {
   return {
     cards,
     isLoading: useApi ? apiQuery.isLoading : allQuery.isLoading,
-    isFetching: useApi ? apiQuery.isFetching : false,
+    isFetching: useApi ? apiQuery.isFetching : allQuery.isFetching,
     isError: useApi ? apiQuery.isError : allQuery.isError,
     error: useApi ? apiQuery.error : allQuery.error,
     isBrowsing: !useApi && !useMonsterPool,
     queryParams: useApi ? queryParams : INITIAL_BROWSE_PARAMS,
+    refetch: () => (useApi ? apiQuery.refetch() : allQuery.refetch()),
   };
 }

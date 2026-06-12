@@ -9,12 +9,6 @@ const footerLinks = {
     { label: "Decks", href: "/decks" },
     { label: "My Decks", href: "/my-decks" },
   ],
-  Company: [
-    { label: "About", href: "/about" },
-    { label: "Blog", href: "/blog" },
-    { label: "Privacy", href: "/privacy" },
-    { label: "Terms", href: "/terms" },
-  ],
 };
 
 export function Footer() {
@@ -22,7 +16,7 @@ export function Footer() {
     <footer className="border-t border-(--color-border) bg-(--color-bg-surface)">
       <Container>
         <div className="py-12">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
                 <Layers className="size-5 text-(--color-primary)" />

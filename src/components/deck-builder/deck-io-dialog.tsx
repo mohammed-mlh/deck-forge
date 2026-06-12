@@ -44,11 +44,15 @@ export function DeckIoDialog({ deck, mode, onClose, onImport }: DeckIoDialogProp
   );
 
   const handleImportFile = async (file: File) => {
-    const content = await file.text();
-    const format = detectDeckFormat(content, file.name);
-    setImportFormat(format);
-    setPaste(content);
-    setMessage(`Detected: ${DECK_FORMATS.find((f) => f.id === format)?.label ?? format}`);
+    try {
+      const content = await file.text();
+      const format = detectDeckFormat(content, file.name);
+      setImportFormat(format);
+      setPaste(content);
+      setMessage(`Detected: ${DECK_FORMATS.find((f) => f.id === format)?.label ?? format}`);
+    } catch {
+      setMessage("Could not read file. Try again.");
+    }
   };
 
   const handleImport = async () => {
@@ -164,7 +168,7 @@ export function DeckIoDialog({ deck, mode, onClose, onImport }: DeckIoDialogProp
                   loading && "opacity-60"
                 )}
               >
-                {loading ? "Importing…" : "Import"}
+                {loading ? "Resolving cards…" : "Import"}
               </button>
             </>
           ) : (

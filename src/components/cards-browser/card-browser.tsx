@@ -30,7 +30,7 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
 
   const debouncedSearch = useDebounce(search, 350);
 
-  const { cards, isLoading, isFetching, isError, error, isBrowsing } =
+  const { cards, isLoading, isFetching, isError, error, isBrowsing, refetch } =
     useBrowseCards(debouncedSearch, filters);
 
   const updateFilters = (next: CardFilters) => setFilters(next);
@@ -97,8 +97,10 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
             cards={cards}
             isLoading={isLoading}
             isError={isError}
-            errorMessage={error?.message}
+            errorMessage="Failed to load cards. Try again."
+            onRetry={() => void refetch()}
             onCardClick={handleCardClick}
+            selectedCardId={selectedCard?.id ?? null}
           />
         </div>
       </div>

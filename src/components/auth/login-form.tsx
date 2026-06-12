@@ -29,7 +29,7 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="rounded-md border border-dashed border-(--color-border) bg-(--color-bg-elevated) p-3">
         <p className="mb-2 text-xs font-medium text-(--color-foreground-subtle)">
-          Demo accounts
+          Quick sign in
         </p>
         <div className="flex flex-col gap-1.5">
           {DUMMY_ACCOUNTS.map((account) => (
@@ -88,7 +88,7 @@ export function LoginForm() {
       </PrimaryButton>
 
       <p className="text-center text-xs text-(--color-foreground-subtle)">
-        Demo login — any selected account signs in instantly.
+        Sign in is stored locally in your browser.
       </p>
 
       <p className="text-center text-sm text-(--color-foreground-muted)">

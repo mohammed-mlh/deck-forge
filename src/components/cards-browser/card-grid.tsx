@@ -17,6 +17,7 @@ interface CardGridProps {
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: string;
+  onRetry?: () => void;
   onCardClick?: (card: YugiohCard) => void;
   onCardDoubleClick?: (card: YugiohCard) => void;
   selectedCardId?: number | null;
@@ -29,7 +30,8 @@ export function CardGrid({
   cards,
   isLoading,
   isError,
-  errorMessage = "Failed to load cards. Please try again.",
+  errorMessage = "Failed to load cards. Try again.",
+  onRetry,
   onCardClick,
   onCardDoubleClick,
   selectedCardId,
@@ -42,10 +44,20 @@ export function CardGrid({
     return (
       <EmptyState
         icon={<Search className="size-5" />}
-        title="Search failed"
+        title="Failed to load cards"
         description={errorMessage}
         className="py-16"
-      />
+      >
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
+          >
+            Try again
+          </button>
+        )}
+      </EmptyState>
     );
   }
 

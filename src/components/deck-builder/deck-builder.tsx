@@ -1,29 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
+import { DeckNotFound } from "@/components/deck-builder/deck-not-found";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
 import { DeckIoDialog } from "@/components/deck-builder/deck-io-dialog";
 import { ImportResultToast } from "@/components/deck-builder/import-result-toast";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
+import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
 import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { DeckZone } from "@/types/deck";
+import type { DeckZone, SavedDeck } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
-export function DeckBuilder() {
+interface DeckBuilderContentProps {
+  deckId: string | null;
+  initialDeck?: SavedDeck;
+}
+
+function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const router = useRouter();
-  const params = useParams();
-  const deckId = typeof params.id === "string" ? params.id : null;
-  const { save, getById } = useSavedDecks();
+  const { save } = useSavedDecks();
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
-    useDeck();
+    useDeck(initialDeck);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
   const [importNotes, setImportNotes] = useState<{
@@ -31,21 +36,7 @@ export function DeckBuilder() {
     warnings: string[];
   } | null>(null);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
-  const loadedIdRef = useRef<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!deckId) {
-      loadedIdRef.current = null;
-      return;
-    }
-    if (deckId === loadedIdRef.current) return;
-    const saved = getById(deckId);
-    if (saved) {
-      replaceDeck(saved);
-      loadedIdRef.current = deckId;
-    }
-  }, [deckId, getById, replaceDeck]);
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
 
@@ -173,5 +164,29 @@ export function DeckBuilder() {
         />
       </div>
     </DragDropProvider>
+  );
+}
+
+export function DeckBuilder() {
+  const params = useParams();
+  const deckId = typeof params.id === "string" ? params.id : null;
+  const { ready, getById } = useSavedDecks();
+
+  if (deckId && !ready) {
+    return <DeckBuilderSkeleton />;
+  }
+
+  const savedDeck = deckId && ready ? getById(deckId) : undefined;
+
+  if (deckId && ready && !savedDeck) {
+    return <DeckNotFound />;
+  }
+
+  return (
+    <DeckBuilderContent
+      key={deckId ?? "new"}
+      deckId={deckId}
+      initialDeck={savedDeck}
+    />
   );
 }
