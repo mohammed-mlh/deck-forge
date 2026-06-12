@@ -52,12 +52,12 @@ export function DeckZonePanel({
 
   return (
     <div className={cn("flex shrink-0 flex-col", className)}>
-      <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-foreground)]">
+      <div className="flex shrink-0 items-center justify-between border-b border-(--color-border) bg-(--color-surface-2) px-3 py-1.5">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-(--color-foreground)">
           {meta.label}{" "}
-          <span className="text-[var(--color-foreground-muted)]">[{count}]</span>
+          <span className="text-(--color-foreground-muted)">[{count}]</span>
         </h3>
-        <span className="text-[10px] tabular-nums text-[var(--color-foreground-subtle)]">
+        <span className="text-[10px] tabular-nums text-(--color-foreground-subtle)">
           {count}/{capacity}
         </span>
       </div>
@@ -66,7 +66,7 @@ export function DeckZonePanel({
         ref={setNodeRef}
         className={cn(
           "p-1.5 transition-colors",
-          isOver && "bg-[var(--color-primary-muted)]"
+          isOver && "bg-(--color-primary-muted)"
         )}
       >
         <div

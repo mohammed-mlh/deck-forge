@@ -54,7 +54,7 @@ export function CardGrid({
         {Array.from({ length: columns === 3 ? 9 : 12 }).map((_, i) => (
           <Skeleton
             key={i}
-            className="aspect-[59/86] w-full rounded-[var(--radius-sm)]"
+            className="aspect-[59/86] w-full rounded-sm"
           />
         ))}
       </div>

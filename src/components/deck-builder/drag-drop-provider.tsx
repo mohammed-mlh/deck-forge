@@ -55,7 +55,7 @@ export function DragDropProvider({ children, onDropOnZone }: DragDropProviderPro
       {children}
       <DragOverlay dropAnimation={{ duration: 200, easing: "ease-out" }}>
         {activeCard ? (
-          <div className="w-24 overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-primary)] bg-[var(--color-surface-1)] shadow-md">
+          <div className="w-24 overflow-hidden rounded-md border border-(--color-primary) bg-(--color-surface-1) shadow-md">
             <Image
               src={getCardImageUrl(activeCard, "small")}
               alt={activeCard.name}

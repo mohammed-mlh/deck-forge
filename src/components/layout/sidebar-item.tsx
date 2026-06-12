@@ -18,10 +18,10 @@ export function SidebarItem({ label, href, icon: Icon, badge, collapsed }: Sideb
       href={href}
       title={collapsed ? label : undefined}
       className={cn(
-        "group flex items-center gap-2.5 rounded-[var(--radius-md)] px-3 py-2 text-sm transition-colors",
+        "group flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
         isActive
-          ? "bg-[var(--color-primary-muted)] font-medium text-[var(--color-primary)]"
-          : "font-normal text-[var(--color-foreground-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]",
+          ? "bg-(--color-primary-muted) font-medium text-(--color-primary)"
+          : "font-normal text-(--color-foreground-muted) hover:bg-(--color-surface-2) hover:text-(--color-foreground)",
         collapsed && "justify-center px-2"
       )}
     >
@@ -30,14 +30,14 @@ export function SidebarItem({ label, href, icon: Icon, badge, collapsed }: Sideb
           className={cn(
             "size-4 shrink-0",
             isActive
-              ? "text-[var(--color-primary)]"
-              : "text-[var(--color-foreground-subtle)] group-hover:text-[var(--color-foreground-muted)]"
+              ? "text-(--color-primary)"
+              : "text-(--color-foreground-subtle) group-hover:text-(--color-foreground-muted)"
           )}
         />
       )}
       {!collapsed && <span className="truncate">{label}</span>}
       {!collapsed && badge && (
-        <span className="ml-auto shrink-0 rounded-full bg-[var(--color-primary-muted)] px-1.5 py-0.5 text-xs font-medium text-[var(--color-primary)]">
+        <span className="ml-auto shrink-0 rounded-full bg-(--color-primary-muted) px-1.5 py-0.5 text-xs font-medium text-(--color-primary)">
           {badge}
         </span>
       )}

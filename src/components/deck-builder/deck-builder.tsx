@@ -80,7 +80,7 @@ export function DeckBuilder() {
           />
 
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <div className="flex flex-col divide-y divide-[var(--color-border)] border-b border-[var(--color-border)]">
+            <div className="flex flex-col divide-y divide-(--color-border) border-b border-(--color-border)">
               <DeckZonePanel
                 zone="main"
                 entries={deck.main}

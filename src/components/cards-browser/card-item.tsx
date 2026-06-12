@@ -53,8 +53,8 @@ export function CardItem({
     >
       <div
         className={cn(
-          "relative aspect-[59/86] w-full overflow-hidden rounded-[var(--radius-sm)] transition-transform duration-200 group-hover:scale-[1.02]",
-          selected && "ring-2 ring-[var(--color-primary)]"
+          "relative aspect-59/86 w-full overflow-hidden rounded-sm transition-transform duration-200 group-hover:scale-[1.02]",
+          selected && "ring-2 ring-(--color-primary)"
         )}
       >
         <Image

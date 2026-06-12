@@ -32,16 +32,16 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
         return (
           <div key={index} className="flex items-center gap-1">
             {index > 0 && (
-              <ChevronRight className="size-3.5 shrink-0 text-[var(--color-foreground-disabled)]" />
+              <ChevronRight className="size-3.5 shrink-0 text-(--color-foreground-disabled)" />
             )}
             {isLast || !crumb.href ? (
-              <span className="text-sm font-medium text-[var(--color-foreground)]">
+              <span className="text-sm font-medium text-(--color-foreground)">
                 {crumb.label}
               </span>
             ) : (
               <Link
                 href={crumb.href}
-                className="text-sm text-[var(--color-foreground-muted)] transition-colors hover:text-[var(--color-foreground)]"
+                className="text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
               >
                 {crumb.label}
               </Link>

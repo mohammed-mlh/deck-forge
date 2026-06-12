@@ -27,8 +27,8 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-3">
-        <p className="mb-2 text-xs font-medium text-[var(--color-foreground-subtle)]">
+      <div className="rounded-md border border-dashed border-(--color-border) bg-(--color-bg-elevated) p-3">
+        <p className="mb-2 text-xs font-medium text-(--color-foreground-subtle)">
           Demo accounts
         </p>
         <div className="flex flex-col gap-1.5">
@@ -38,14 +38,14 @@ export function LoginForm() {
               type="button"
               onClick={() => selectAccount(account)}
               className={cn(
-                "rounded-[var(--radius-md)] border px-3 py-2 text-left text-xs transition-colors",
+                "rounded-md border px-3 py-2 text-left text-xs transition-colors",
                 email === account.email
-                  ? "border-[var(--color-primary)] bg-[var(--color-primary-muted)] text-[var(--color-foreground)]"
-                  : "border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-foreground-muted)] hover:border-[var(--color-border-strong)]"
+                  ? "border-(--color-primary) bg-(--color-primary-muted) text-(--color-foreground)"
+                  : "border-(--color-border) bg-(--color-surface-1) text-(--color-foreground-muted) hover:border-(--color-border-strong)"
               )}
             >
-              <span className="font-medium text-[var(--color-foreground)]">{account.name}</span>
-              <span className="mt-0.5 block text-[var(--color-foreground-subtle)]">
+              <span className="font-medium text-(--color-foreground)">{account.name}</span>
+              <span className="mt-0.5 block text-(--color-foreground-subtle)">
                 {account.email}
               </span>
             </button>
@@ -54,7 +54,7 @@ export function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="email" className="text-sm font-medium text-[var(--color-foreground-muted)]">
+        <label htmlFor="email" className="text-sm font-medium text-(--color-foreground-muted)">
           Email
         </label>
         <input
@@ -64,12 +64,12 @@ export function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="email"
-          className="h-10 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 text-sm text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-focus)]"
+          className="h-10 rounded-md border border-(--color-border) bg-(--color-surface-1) px-3 text-sm text-(--color-foreground) outline-none transition-colors focus:border-(--color-border-focus)"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="password" className="text-sm font-medium text-[var(--color-foreground-muted)]">
+        <label htmlFor="password" className="text-sm font-medium text-(--color-foreground-muted)">
           Password
         </label>
         <input
@@ -79,7 +79,7 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="current-password"
-          className="h-10 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 text-sm text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-focus)]"
+          className="h-10 rounded-md border border-(--color-border) bg-(--color-surface-1) px-3 text-sm text-(--color-foreground) outline-none transition-colors focus:border-(--color-border-focus)"
         />
       </div>
 
@@ -87,15 +87,15 @@ export function LoginForm() {
         Sign in
       </PrimaryButton>
 
-      <p className="text-center text-xs text-[var(--color-foreground-subtle)]">
+      <p className="text-center text-xs text-(--color-foreground-subtle)">
         Demo login — any selected account signs in instantly.
       </p>
 
-      <p className="text-center text-sm text-[var(--color-foreground-muted)]">
+      <p className="text-center text-sm text-(--color-foreground-muted)">
         No account?{" "}
         <Link
           href="/register"
-          className="font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-primary-hover)]"
+          className="font-medium text-(--color-primary) transition-colors hover:text-(--color-primary-hover)"
         >
           Create account
         </Link>

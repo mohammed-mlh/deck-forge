@@ -16,7 +16,7 @@ export function SiteLayout({ children }: SiteLayoutProps) {
   return (
     <div
       className={cn(
-        "flex flex-col bg-[var(--color-bg-base)]",
+        "flex flex-col bg-(--color-bg-base)",
         isBuilder ? "h-screen overflow-hidden" : "min-h-screen"
       )}
     >

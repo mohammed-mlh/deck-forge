@@ -15,25 +15,25 @@ export function CardDetailViewer({ card, className }: CardDetailViewerProps) {
   return (
     <aside
       className={cn(
-        "flex h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-[var(--color-border)] bg-[var(--color-bg-surface)]",
+        "flex h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-(--color-border) bg-(--color-bg-surface)",
         className
       )}
     >
-      <div className="shrink-0 border-b border-[var(--color-border)] px-3 py-2.5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-foreground-subtle)]">
+      <div className="shrink-0 border-b border-(--color-border) px-3 py-2.5">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-(--color-foreground-subtle)">
           Card Details
         </h2>
       </div>
 
       {!card ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
-          <div className="flex size-12 items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] bg-[var(--color-surface-1)]">
-            <Layers className="size-5 text-[var(--color-foreground-disabled)]" />
+          <div className="flex size-12 items-center justify-center rounded-lg border border-dashed border-(--color-border) bg-(--color-surface-1)">
+            <Layers className="size-5 text-(--color-foreground-disabled)" />
           </div>
-          <p className="text-sm text-[var(--color-foreground-muted)]">
+          <p className="text-sm text-(--color-foreground-muted)">
             Select a card to view details
           </p>
-          <p className="text-[11px] text-[var(--color-foreground-subtle)]">
+          <p className="text-[11px] text-(--color-foreground-subtle)">
             Click a card in search or your deck
           </p>
         </div>
@@ -50,11 +50,11 @@ function CardDetailContent({ card }: { card: YugiohCard }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <div className="shrink-0 border-b border-[var(--color-border)] p-3">
-        <h3 className="mb-3 text-sm font-semibold leading-snug text-[var(--color-foreground)]">
+      <div className="shrink-0 border-b border-(--color-border) p-3">
+        <h3 className="mb-3 text-sm font-semibold leading-snug text-(--color-foreground)">
           {card.name}
         </h3>
-        <div className="mx-auto max-w-[200px] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)]">
+        <div className="mx-auto max-w-[200px] overflow-hidden rounded-md border border-(--color-border)">
           <Image
             src={getCardImageUrl(card, "full")}
             alt={card.name}
@@ -82,19 +82,19 @@ function CardDetailContent({ card }: { card: YugiohCard }) {
         </div>
 
         {hasStats && (
-          <div className="grid grid-cols-2 gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3">
+          <div className="grid grid-cols-2 gap-2 rounded-md border border-(--color-border) bg-(--color-surface-1) p-3">
             {card.atk !== undefined && (
               <div>
-                <p className="text-[10px] uppercase text-[var(--color-foreground-subtle)]">ATK</p>
-                <p className="text-base font-semibold tabular-nums text-[var(--color-foreground)]">
+                <p className="text-[10px] uppercase text-(--color-foreground-subtle)">ATK</p>
+                <p className="text-base font-semibold tabular-nums text-(--color-foreground)">
                   {card.atk === -1 ? "?" : card.atk}
                 </p>
               </div>
             )}
             {card.def !== undefined && (
               <div>
-                <p className="text-[10px] uppercase text-[var(--color-foreground-subtle)]">DEF</p>
-                <p className="text-base font-semibold tabular-nums text-[var(--color-foreground)]">
+                <p className="text-[10px] uppercase text-(--color-foreground-subtle)">DEF</p>
+                <p className="text-base font-semibold tabular-nums text-(--color-foreground)">
                   {card.def === -1 ? "?" : card.def}
                 </p>
               </div>
@@ -103,10 +103,10 @@ function CardDetailContent({ card }: { card: YugiohCard }) {
         )}
 
         <div>
-          <h4 className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-[var(--color-foreground-subtle)]">
+          <h4 className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-(--color-foreground-subtle)">
             Effect
           </h4>
-          <p className="whitespace-pre-wrap text-xs leading-relaxed text-[var(--color-foreground-muted)]">
+          <p className="whitespace-pre-wrap text-xs leading-relaxed text-(--color-foreground-muted)">
             {card.desc}
           </p>
         </div>
@@ -127,8 +127,8 @@ function DetailBadge({
       className={cn(
         "rounded-full px-2 py-0.5 text-[10px]",
         variant === "primary"
-          ? "bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
-          : "bg-[var(--color-surface-2)] text-[var(--color-foreground-muted)]"
+          ? "bg-(--color-primary-muted) text-(--color-primary)"
+          : "bg-(--color-surface-2) text-(--color-foreground-muted)"
       )}
     >
       {children}

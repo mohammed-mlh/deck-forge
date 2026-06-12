@@ -31,18 +31,18 @@ function StatPill({
   const underMin = min !== undefined && count < min;
 
   return (
-    <span className="whitespace-nowrap text-sm text-[var(--color-foreground-muted)]">
+    <span className="whitespace-nowrap text-sm text-(--color-foreground-muted)">
       {label}{" "}
       <span
         className={cn(
-          "font-semibold tabular-nums text-[var(--color-foreground)]",
-          overMax && "text-[var(--color-danger)]",
-          underMin && "text-[var(--color-warning)]"
+          "font-semibold tabular-nums text-(--color-foreground)",
+          overMax && "text-(--color-danger)",
+          underMin && "text-(--color-warning)"
         )}
       >
         {count}
       </span>
-      <span className="text-[var(--color-foreground-subtle)]">/{max}</span>
+      <span className="text-(--color-foreground-subtle)">/{max}</span>
     </span>
   );
 }
@@ -59,13 +59,13 @@ export function DeckPanelHeader({
   onExport,
 }: DeckPanelHeaderProps) {
   return (
-    <div className="grid shrink-0 grid-cols-1 items-center gap-2 border-b border-[var(--color-border)] px-4 py-2.5 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+    <div className="grid shrink-0 grid-cols-1 items-center gap-2 border-b border-(--color-border) px-4 py-2.5 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
       <input
         type="text"
         value={deckName}
         onChange={(e) => onDeckNameChange(e.target.value)}
         placeholder="Deck name"
-        className="min-w-0 rounded-[var(--radius-md)] border border-transparent bg-transparent px-2 py-1 text-sm font-semibold text-[var(--color-foreground)] outline-none transition-colors placeholder:text-[var(--color-foreground-disabled)] focus:border-[var(--color-border)] focus:bg-[var(--color-surface-2)] sm:max-w-[180px]"
+        className="min-w-0 rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-semibold text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-disabled) focus:border-(--color-border) focus:bg-(--color-surface-2) sm:max-w-[180px]"
       />
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:justify-center">
@@ -76,12 +76,12 @@ export function DeckPanelHeader({
 
       <div className="flex items-center gap-2 sm:justify-end">
         {saveStatus === "saved" && (
-          <span className="text-xs text-[var(--color-success)]">Saved</span>
+          <span className="text-xs text-(--color-success)">Saved</span>
         )}
         <button
           type="button"
           onClick={onClear}
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-transparent px-3 py-1.5 text-xs text-[var(--color-foreground-muted)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
+          className="inline-flex items-center gap-1.5 rounded-md border border-(--color-border) bg-transparent px-3 py-1.5 text-xs text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)"
         >
           <Trash2 className="size-3.5" />
           Clear
@@ -89,7 +89,7 @@ export function DeckPanelHeader({
         <button
           type="button"
           onClick={onExport}
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-xs text-[var(--color-foreground-muted)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-3)]"
+          className="inline-flex items-center gap-1.5 rounded-md border border-(--color-border) bg-(--color-surface-2) px-3 py-1.5 text-xs text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
         >
           <Download className="size-3.5" />
           Export .txt
@@ -97,7 +97,7 @@ export function DeckPanelHeader({
         <button
           type="button"
           onClick={onSave}
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+          className="inline-flex items-center gap-1.5 rounded-md bg-(--color-primary) px-3 py-1.5 text-xs font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
         >
           <Save className="size-3.5" />
           Save

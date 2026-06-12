@@ -15,16 +15,16 @@ function DeckListSkeleton() {
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="flex h-[168px] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)]"
+          className="flex h-[168px] overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)"
         >
           <div className="flex flex-1 flex-col justify-between p-4">
             <div className="space-y-2">
-              <div className="h-6 w-2/3 animate-pulse rounded bg-[var(--color-surface-2)]" />
-              <div className="h-4 w-1/2 animate-pulse rounded bg-[var(--color-surface-2)]" />
+              <div className="h-6 w-2/3 animate-pulse rounded bg-(--color-surface-2)" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-(--color-surface-2)" />
             </div>
-            <div className="h-3 w-28 animate-pulse rounded bg-[var(--color-surface-2)]" />
+            <div className="h-3 w-28 animate-pulse rounded bg-(--color-surface-2)" />
           </div>
-          <div className="w-[40%] animate-pulse bg-[var(--color-surface-2)]" />
+          <div className="w-[40%] animate-pulse bg-(--color-surface-2)" />
         </div>
       ))}
     </div>
@@ -48,7 +48,7 @@ export function MyDecksView() {
       >
         <Link
           href="/deck-builder"
-          className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+          className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
         >
           <Plus className="size-4" />
           New Deck
@@ -73,7 +73,7 @@ export function MyDecksView() {
         >
           <Link
             href="/deck-builder"
-            className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+            className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
           >
             <Plus className="size-4" />
             Open Builder

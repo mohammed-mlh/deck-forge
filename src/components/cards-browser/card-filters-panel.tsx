@@ -18,7 +18,7 @@ const TYPES: { value: CardTypeFilter; label: string }[] = [
 ];
 
 const selectClass =
-  "h-8 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 text-sm text-[var(--color-foreground)] outline-none focus:border-[var(--color-border-focus)]";
+  "h-8 w-full rounded-md border border-(--color-border) bg-(--color-surface-2) px-2 text-sm text-(--color-foreground) outline-none focus:border-(--color-border-focus)";
 
 interface CardFiltersPanelProps {
   filters: CardFilters;
@@ -53,8 +53,8 @@ export function CardFiltersPanel({
             className={cn(
               "rounded-full border px-2.5 py-1 text-xs transition-colors",
               filters.type === opt.value
-                ? "border-[var(--color-primary)] bg-[var(--color-primary-muted)] text-[var(--color-primary)]"
-                : "border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-foreground-muted)]"
+                ? "border-(--color-primary) bg-(--color-primary-muted) text-(--color-primary)"
+                : "border-(--color-border) bg-(--color-surface-2) text-(--color-foreground-muted)"
             )}
           >
             {opt.label}
@@ -83,7 +83,7 @@ export function CardFiltersPanel({
           value={filters.archetype ?? ""}
           onChange={(e) => patch({ archetype: e.target.value || undefined })}
           placeholder="Archetype"
-          className={cn(selectClass, "placeholder:text-[var(--color-foreground-disabled)]")}
+          className={cn(selectClass, "placeholder:text-(--color-foreground-disabled)")}
         />
         <datalist id={archetypeListId}>
           {archetypes.map((a) => (
@@ -129,7 +129,7 @@ export function CardFiltersPanel({
         <button
           type="button"
           onClick={() => onChange({ ...DEFAULT_CARD_FILTERS })}
-          className="text-left text-xs text-[var(--color-foreground-muted)] hover:text-[var(--color-foreground)]"
+          className="text-left text-xs text-(--color-foreground-muted) hover:text-(--color-foreground)"
         >
           Reset filters
         </button>
@@ -155,7 +155,7 @@ function RangeInputs({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs text-[var(--color-foreground-muted)]">{label}</span>
+      <span className="text-xs text-(--color-foreground-muted)">{label}</span>
       <div className="grid grid-cols-2 gap-2">
         <input
           type="number"

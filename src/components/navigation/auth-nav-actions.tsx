@@ -12,13 +12,13 @@ export function AuthNavActions({ className }: { className?: string }) {
   if (user) {
     return (
       <div className={className}>
-        <span className="hidden text-sm text-[var(--color-foreground-muted)] sm:inline">
+        <span className="hidden text-sm text-(--color-foreground-muted) sm:inline">
           {user.name}
         </span>
         <button
           type="button"
           onClick={logout}
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] px-3 py-1.5 text-sm text-[var(--color-foreground-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
+          className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-2) hover:text-(--color-foreground)"
         >
           <LogOut className="size-3.5" />
           <span className="hidden sm:inline">Logout</span>
@@ -31,13 +31,13 @@ export function AuthNavActions({ className }: { className?: string }) {
     <div className={className}>
       <Link
         href="/login"
-        className="rounded-[var(--radius-md)] px-3 py-1.5 text-sm text-[var(--color-foreground-muted)] transition-colors hover:text-[var(--color-foreground)]"
+        className="rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
       >
         Login
       </Link>
       <Link
         href="/register"
-        className="rounded-[var(--radius-md)] bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+        className="rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
       >
         Get Started
       </Link>

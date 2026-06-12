@@ -29,15 +29,15 @@ function ZoneStat({
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-[var(--color-foreground-subtle)]">{label}</span>
+      <span className="text-xs text-(--color-foreground-subtle)">{label}</span>
       <span
         className={cn(
           "text-sm font-semibold tabular-nums",
           hasError || isWarning
             ? count > max
-              ? "text-[var(--color-danger)]"
-              : "text-[var(--color-warning)]"
-            : "text-[var(--color-foreground)]"
+              ? "text-(--color-danger)"
+              : "text-(--color-warning)"
+            : "text-(--color-foreground)"
         )}
       >
         {count}/{max}
@@ -52,7 +52,7 @@ export function DeckStatsBar({ main, extra, side, issues }: DeckStatsBarProps) {
   const isValid = errors.length === 0 && warnings.length === 0 && main >= DECK_LIMITS.main.min;
 
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-(--color-border) bg-(--color-surface-1) p-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap gap-6">
           <ZoneStat
@@ -81,13 +81,13 @@ export function DeckStatsBar({ main, extra, side, issues }: DeckStatsBarProps) {
         <div className="flex items-center gap-2">
           {isValid ? (
             <>
-              <CheckCircle2 className="size-4 text-[var(--color-success)]" />
-              <span className="text-xs font-medium text-[var(--color-success)]">Valid deck</span>
+              <CheckCircle2 className="size-4 text-(--color-success)" />
+              <span className="text-xs font-medium text-(--color-success)">Valid deck</span>
             </>
           ) : (
             <>
-              <AlertTriangle className="size-4 text-[var(--color-warning)]" />
-              <span className="text-xs text-[var(--color-foreground-muted)]">
+              <AlertTriangle className="size-4 text-(--color-warning)" />
+              <span className="text-xs text-(--color-foreground-muted)">
                 {errors.length > 0
                   ? `${errors.length} error${errors.length > 1 ? "s" : ""}`
                   : `${warnings.length} warning${warnings.length > 1 ? "s" : ""}`}
@@ -98,15 +98,15 @@ export function DeckStatsBar({ main, extra, side, issues }: DeckStatsBarProps) {
       </div>
 
       {issues.length > 0 && (
-        <ul className="flex flex-col gap-1 border-t border-[var(--color-border)] pt-3">
+        <ul className="flex flex-col gap-1 border-t border-(--color-border) pt-3">
           {issues.slice(0, 4).map((issue, i) => (
             <li
               key={i}
               className={cn(
                 "text-xs",
                 issue.severity === "error"
-                  ? "text-[var(--color-danger)]"
-                  : "text-[var(--color-warning)]"
+                  ? "text-(--color-danger)"
+                  : "text-(--color-warning)"
               )}
             >
               {issue.message}

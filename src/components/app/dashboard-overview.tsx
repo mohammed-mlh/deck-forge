@@ -57,19 +57,19 @@ export function DashboardOverview() {
         <div className="grid gap-3 sm:grid-cols-2">
           {quickActions.map((action) => (
             <Link key={action.title} href={action.href} className="block">
-              <div className="group flex items-center gap-4 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-4 transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-primary-muted)]">
-                  <action.icon className="size-4 text-[var(--color-primary)]" />
+              <div className="group flex items-center gap-4 rounded-lg border border-(--color-border) bg-(--color-surface-1) p-4 transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-(--color-primary-muted)">
+                  <action.icon className="size-4 text-(--color-primary)" />
                 </div>
                 <div className="flex min-w-0 flex-col">
-                  <span className="text-sm font-medium text-[var(--color-foreground)]">
+                  <span className="text-sm font-medium text-(--color-foreground)">
                     {action.title}
                   </span>
-                  <span className="truncate text-xs text-[var(--color-foreground-muted)]">
+                  <span className="truncate text-xs text-(--color-foreground-muted)">
                     {action.description}
                   </span>
                 </div>
-                <ArrowRight className="ml-auto size-4 shrink-0 text-[var(--color-foreground-subtle)] transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="ml-auto size-4 shrink-0 text-(--color-foreground-subtle) transition-transform group-hover:translate-x-0.5" />
               </div>
             </Link>
           ))}

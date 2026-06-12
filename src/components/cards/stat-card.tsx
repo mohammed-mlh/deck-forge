@@ -10,9 +10,9 @@ interface StatCardProps {
 }
 
 const trendConfig = {
-  up:      { icon: TrendingUp,   color: "text-[var(--color-success)]" },
-  down:    { icon: TrendingDown, color: "text-[var(--color-danger)]"  },
-  neutral: { icon: Minus,        color: "text-[var(--color-foreground-subtle)]" },
+  up:      { icon: TrendingUp,   color: "text-(--color-success)" },
+  down:    { icon: TrendingDown, color: "text-(--color-danger)"  },
+  neutral: { icon: Minus,        color: "text-(--color-foreground-subtle)" },
 };
 
 export function StatCard({ label, value, change, trend = "neutral", className }: StatCardProps) {
@@ -21,13 +21,13 @@ export function StatCard({ label, value, change, trend = "neutral", className }:
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5",
+        "flex flex-col gap-4 rounded-lg border border-(--color-border) bg-(--color-surface-1) p-5",
         className
       )}
     >
-      <span className="text-sm text-[var(--color-foreground-muted)]">{label}</span>
+      <span className="text-sm text-(--color-foreground-muted)">{label}</span>
       <div className="flex items-end justify-between gap-2">
-        <span className="text-2xl font-semibold tabular-nums text-[var(--color-foreground)]">
+        <span className="text-2xl font-semibold tabular-nums text-(--color-foreground)">
           {value}
         </span>
         {change && (

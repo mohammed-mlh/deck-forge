@@ -46,11 +46,11 @@ export function CardSearchPanel({
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-bg-surface)]",
+        "flex h-full min-h-0 flex-col border-l border-(--color-border) bg-(--color-bg-surface)",
         className
       )}
     >
-      <div className="flex shrink-0 flex-col gap-2 border-b border-[var(--color-border)] p-3">
+      <div className="flex shrink-0 flex-col gap-2 border-b border-(--color-border) p-3">
         <SearchBar
           value={search}
           onChange={setSearch}
@@ -62,7 +62,7 @@ export function CardSearchPanel({
           compact
           className="border-0 bg-transparent p-0"
         />
-        <p className="shrink-0 text-[11px] text-[var(--color-foreground-subtle)]">
+        <p className="shrink-0 text-[11px] text-(--color-foreground-subtle)">
           {isLoading
             ? "Loading cards…"
             : `${cards.length} results — click to preview, drag or double-click to add`}

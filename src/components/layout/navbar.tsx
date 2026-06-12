@@ -15,11 +15,11 @@ const navItems: NavItem[] = [
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-bg-base)]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-(--color-border) bg-(--color-bg-base)/90 backdrop-blur-md">
       <Container>
         <div className="flex h-14 items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5 font-semibold text-[var(--color-foreground)]">
-            <Layers className="size-5 text-[var(--color-primary)]" />
+          <Link href="/" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
+            <Layers className="size-5 text-(--color-primary)" />
             <span className="text-sm">DeckForge</span>
           </Link>
 

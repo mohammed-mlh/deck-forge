@@ -22,12 +22,12 @@ export function BrowseDeckZone({ zone, entries }: BrowseDeckZoneProps) {
   const capacity = DECK_LIMITS[zone].max;
 
   return (
-    <section className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)]">
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-foreground)]">
+    <section className="overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)">
+      <div className="flex items-center justify-between border-b border-(--color-border) bg-(--color-surface-2) px-4 py-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-(--color-foreground)">
           {ZONE_LABELS[zone]}
         </h3>
-        <span className="text-[10px] tabular-nums text-[var(--color-foreground-subtle)]">
+        <span className="text-[10px] tabular-nums text-(--color-foreground-subtle)">
           {count}/{capacity}
         </span>
       </div>

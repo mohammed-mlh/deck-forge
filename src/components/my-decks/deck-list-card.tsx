@@ -23,9 +23,9 @@ function formatUpdated(iso: string) {
 }
 
 const badgeStyles = {
-  success: "bg-[var(--color-success)]/20 text-[var(--color-success)]",
-  warning: "bg-[var(--color-warning)]/20 text-[var(--color-warning)]",
-  danger: "bg-[var(--color-danger)]/20 text-[var(--color-danger)]",
+  success: "bg-(--color-success)/20 text-(--color-success)",
+  warning: "bg-(--color-warning)/20 text-(--color-warning)",
+  danger: "bg-(--color-danger)/20 text-(--color-danger)",
 };
 
 interface DeckListCardProps {
@@ -49,19 +49,19 @@ export function DeckListCard({ deck, onDelete }: DeckListCardProps) {
   return (
     <Link
       href={`/deck-builder/${deck.id}`}
-      className="group relative flex h-[168px] overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-1)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
+      className="group relative flex h-[168px] overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)"
     >
       <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between p-4 pr-2">
         <div className="min-w-0">
-          <h3 className="truncate text-lg font-semibold text-[var(--color-foreground)]">
+          <h3 className="truncate text-lg font-semibold text-(--color-foreground)">
             {deck.name}
           </h3>
-          <p className="mt-2 text-sm tabular-nums text-[var(--color-foreground-muted)]">
+          <p className="mt-2 text-sm tabular-nums text-(--color-foreground-muted)">
             Main: {main} Extra: {extra} Side: {side}
           </p>
         </div>
 
-        <p className="text-xs text-[var(--color-foreground-subtle)]">
+        <p className="text-xs text-(--color-foreground-subtle)">
           Updated: {formatUpdated(deck.updatedAt)}
         </p>
       </div>
@@ -77,11 +77,11 @@ export function DeckListCard({ deck, onDelete }: DeckListCardProps) {
               className="object-cover object-[center_20%]"
               unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-surface-1)] via-[var(--color-surface-1)]/70 to-transparent transition-colors group-hover:from-[var(--color-surface-2)] group-hover:via-[var(--color-surface-2)]/70" />
+            <div className="absolute inset-0 bg-gradient-to-r from-(--color-surface-1) via-(--color-surface-1)/70 to-transparent transition-colors group-hover:from-(--color-surface-2) group-hover:via-(--color-surface-2)/70" />
           </>
         ) : (
-          <div className="flex h-full items-center justify-center bg-[var(--color-bg-elevated)]">
-            <Layers className="size-8 text-[var(--color-foreground-disabled)]" />
+          <div className="flex h-full items-center justify-center bg-(--color-bg-elevated)">
+            <Layers className="size-8 text-(--color-foreground-disabled)" />
           </div>
         )}
 
@@ -98,7 +98,7 @@ export function DeckListCard({ deck, onDelete }: DeckListCardProps) {
       <button
         type="button"
         onClick={handleDelete}
-        className="absolute left-3 top-3 z-20 rounded-[var(--radius-md)] bg-[var(--color-surface-1)]/80 p-1.5 text-[var(--color-foreground-subtle)] opacity-0 backdrop-blur-sm transition-all hover:text-[var(--color-danger)] group-hover:opacity-100"
+        className="absolute left-3 top-3 z-20 rounded-md bg-(--color-surface-1)/80 p-1.5 text-(--color-foreground-subtle) opacity-0 backdrop-blur-sm transition-all hover:text-(--color-danger) group-hover:opacity-100"
         aria-label={`Delete ${deck.name}`}
       >
         <Trash2 className="size-4" />

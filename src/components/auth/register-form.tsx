@@ -22,7 +22,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="register-email" className="text-sm font-medium text-[var(--color-foreground-muted)]">
+        <label htmlFor="register-email" className="text-sm font-medium text-(--color-foreground-muted)">
           Email
         </label>
         <input
@@ -32,12 +32,12 @@ export function RegisterForm() {
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"
           placeholder="you@example.com"
-          className="h-10 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 text-sm text-[var(--color-foreground)] outline-none transition-colors placeholder:text-[var(--color-foreground-disabled)] focus:border-[var(--color-border-focus)]"
+          className="h-10 rounded-md border border-(--color-border) bg-(--color-surface-1) px-3 text-sm text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-disabled) focus:border-(--color-border-focus)"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="register-password" className="text-sm font-medium text-[var(--color-foreground-muted)]">
+        <label htmlFor="register-password" className="text-sm font-medium text-(--color-foreground-muted)">
           Password
         </label>
         <input
@@ -46,7 +46,7 @@ export function RegisterForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
-          className="h-10 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 text-sm text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-focus)]"
+          className="h-10 rounded-md border border-(--color-border) bg-(--color-surface-1) px-3 text-sm text-(--color-foreground) outline-none transition-colors focus:border-(--color-border-focus)"
         />
       </div>
 
@@ -54,15 +54,15 @@ export function RegisterForm() {
         Create account
       </PrimaryButton>
 
-      <p className="text-center text-xs text-[var(--color-foreground-subtle)]">
+      <p className="text-center text-xs text-(--color-foreground-subtle)">
         Demo register — creates a local session instantly.
       </p>
 
-      <p className="text-center text-sm text-[var(--color-foreground-muted)]">
+      <p className="text-center text-sm text-(--color-foreground-muted)">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-primary-hover)]"
+          className="font-medium text-(--color-primary) transition-colors hover:text-(--color-primary-hover)"
         >
           Sign in
         </Link>

@@ -21,7 +21,7 @@ export function BrowseDecksView() {
         ))}
       </div>
 
-      <p className="flex items-center justify-center gap-2 text-xs text-[var(--color-foreground-subtle)]">
+      <p className="flex items-center justify-center gap-2 text-xs text-(--color-foreground-subtle)">
         <Compass className="size-3.5" />
         {decks.length} public decks available
       </p>

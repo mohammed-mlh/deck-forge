@@ -16,11 +16,11 @@ const sidebarItems: NavItem[] = [
 
 export function Sidebar() {
   return (
-    <aside className="flex h-full w-[220px] shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+    <aside className="flex h-full w-[220px] shrink-0 flex-col border-r border-(--color-border) bg-(--color-bg-surface)">
       {/* Logo */}
-      <div className="flex h-14 items-center border-b border-[var(--color-border)] px-4">
-        <Link href="/deck-builder" className="flex items-center gap-2.5 font-semibold text-[var(--color-foreground)]">
-          <Layers className="size-5 text-[var(--color-primary)]" />
+      <div className="flex h-14 items-center border-b border-(--color-border) px-4">
+        <Link href="/deck-builder" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
+          <Layers className="size-5 text-(--color-primary)" />
           <span className="text-sm">DeckForge</span>
         </Link>
       </div>
@@ -33,12 +33,12 @@ export function Sidebar() {
       </nav>
 
       {/* User */}
-      <div className="border-t border-[var(--color-border)] p-2">
-        <div className="flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 transition-colors hover:bg-[var(--color-surface-2)]">
-          <div className="size-7 shrink-0 rounded-full bg-[var(--color-surface-3)]" />
+      <div className="border-t border-(--color-border) p-2">
+        <div className="flex items-center gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-(--color-surface-2)">
+          <div className="size-7 shrink-0 rounded-full bg-(--color-surface-3)" />
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-medium text-[var(--color-foreground)]">User Name</span>
-            <span className="truncate text-xs text-[var(--color-foreground-subtle)]">user@example.com</span>
+            <span className="truncate text-sm font-medium text-(--color-foreground)">User Name</span>
+            <span className="truncate text-xs text-(--color-foreground-subtle)">user@example.com</span>
           </div>
         </div>
       </div>

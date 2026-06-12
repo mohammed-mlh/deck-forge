@@ -11,9 +11,9 @@ export function SectionHeader({ title, description, children, className }: Secti
   return (
     <div className={cn("flex items-end justify-between gap-4", className)}>
       <div className="flex flex-col gap-1">
-        <h2 className="text-base font-semibold text-[var(--color-foreground)]">{title}</h2>
+        <h2 className="text-base font-semibold text-(--color-foreground)">{title}</h2>
         {description && (
-          <p className="text-sm text-[var(--color-foreground-muted)]">{description}</p>
+          <p className="text-sm text-(--color-foreground-muted)">{description}</p>
         )}
       </div>
       {children && (

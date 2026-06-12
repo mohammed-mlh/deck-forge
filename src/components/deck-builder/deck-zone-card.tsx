@@ -28,7 +28,7 @@ export function DeckZoneCard({
         onClick={() => onSelect?.(card)}
         className={cn(
           "relative block w-full overflow-hidden rounded-[2px] transition-transform hover:scale-[1.02]",
-          selected && "ring-2 ring-[var(--color-primary)]"
+          selected && "ring-2 ring-(--color-primary)"
         )}
         aria-label={`View ${card.name}`}
       >
@@ -46,7 +46,7 @@ export function DeckZoneCard({
       <button
         type="button"
         onClick={onRemove}
-        className="absolute -right-0.5 -top-0.5 hidden size-3.5 items-center justify-center rounded-full bg-[var(--color-surface-3)] text-[var(--color-foreground)] shadow-sm transition-colors group-hover:flex hover:bg-[var(--color-danger)] hover:text-white"
+        className="absolute -right-0.5 -top-0.5 hidden size-3.5 items-center justify-center rounded-full bg-(--color-surface-3) text-(--color-foreground) shadow-sm transition-colors group-hover:flex hover:bg-(--color-danger) hover:text-white"
         aria-label={`Remove ${card.name}`}
       >
         <Minus className="size-2" />

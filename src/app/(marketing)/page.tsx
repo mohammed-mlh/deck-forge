@@ -42,31 +42,31 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="border-b border-[var(--color-border)]">
+      <section className="border-b border-(--color-border)">
         <Container>
           <div className="flex flex-col items-center gap-6 py-24 text-center md:py-36">
-            <div className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-foreground-muted)]">
+            <div className="rounded-full border border-(--color-border) px-3 py-1 text-xs text-(--color-foreground-muted)">
               Now in public beta
             </div>
-            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-[var(--color-foreground)] md:text-[3rem] md:leading-tight">
+            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-(--color-foreground) md:text-[3rem] md:leading-tight">
               The professional deck building platform for{" "}
-              <span className="text-[var(--color-primary)]">competitive play</span>
+              <span className="text-(--color-primary)">competitive play</span>
             </h1>
-            <p className="max-w-lg text-base text-[var(--color-foreground-muted)]">
+            <p className="max-w-lg text-base text-(--color-foreground-muted)">
               Build, analyze, and refine your Yu-Gi-Oh decks with tools designed for serious players.
               From card search to AI-powered optimization.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+                className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-5 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
               >
                 Start Building
                 <ArrowRight className="size-4" />
               </Link>
               <Link
                 href="/cards"
-                className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-5 py-2.5 text-sm font-medium text-[var(--color-foreground)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-3)]"
+                className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-5 py-2.5 text-sm font-medium text-(--color-foreground) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
               >
                 Browse Cards
               </Link>
@@ -76,9 +76,9 @@ export default function HomePage() {
       </section>
 
       {/* Stats strip */}
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+      <section className="border-b border-(--color-border) bg-(--color-bg-surface)">
         <Container>
-          <div className="grid grid-cols-2 divide-x divide-[var(--color-border)] md:grid-cols-4">
+          <div className="grid grid-cols-2 divide-x divide-(--color-border) md:grid-cols-4">
             {[
               { value: "12,000+", label: "Cards" },
               { value: "50,000+", label: "Decks Built" },
@@ -86,10 +86,10 @@ export default function HomePage() {
               { value: "Weekly",  label: "Meta Updates" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col items-center gap-1 py-8 text-center">
-                <span className="text-2xl font-semibold tabular-nums text-[var(--color-foreground)]">
+                <span className="text-2xl font-semibold tabular-nums text-(--color-foreground)">
                   {stat.value}
                 </span>
-                <span className="text-sm text-[var(--color-foreground-muted)]">{stat.label}</span>
+                <span className="text-sm text-(--color-foreground-muted)">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -115,18 +115,18 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-surface)] py-20">
+      <section className="border-t border-(--color-border) bg-(--color-bg-surface) py-20">
         <Container>
           <div className="flex flex-col items-center gap-6 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-[var(--color-foreground)]">
+            <h2 className="text-3xl font-semibold tracking-tight text-(--color-foreground)">
               Ready to build your next deck?
             </h2>
-            <p className="max-w-md text-sm text-[var(--color-foreground-muted)]">
+            <p className="max-w-md text-sm text-(--color-foreground-muted)">
               Join thousands of duelists who use DeckForge to stay ahead of the meta.
             </p>
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary-foreground)] transition-colors hover:bg-[var(--color-primary-hover)]"
+              className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-5 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
             >
               Get Started Free
               <ArrowRight className="size-4" />
