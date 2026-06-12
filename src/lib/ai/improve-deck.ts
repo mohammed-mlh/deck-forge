@@ -8,8 +8,11 @@ export async function improveDeck(
   input: Deck | DeckContext,
   provider: AiProvider = getAiProvider()
 ): Promise<DeckDoctorResult> {
-  const deck = "rawCards" in input ? null : input;
-  const context = deck ? buildDeckContext(deck) : input;
+  if ("rawCards" in input) {
+    return provider.improveDeck(input);
+  }
+
+  const context = buildDeckContext(input);
   const result = await provider.improveDeck(context);
-  return deck ? sanitizeDeckDoctorResult(result, deck) : result;
+  return sanitizeDeckDoctorResult(result, input);
 }

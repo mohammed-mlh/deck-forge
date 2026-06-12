@@ -52,7 +52,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
-                href="/register"
+                href="/sign-up"
                 className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-5 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
               >
                 Start Building

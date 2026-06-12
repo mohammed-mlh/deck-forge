@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteLayout } from "@/components/layout/site-layout";
-import { AuthProvider } from "@/providers/auth-context";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 
@@ -46,11 +46,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen antialiased">
-        <QueryProvider>
-          <AuthProvider>
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInFallbackRedirectUrl="/deck-builder"
+          signUpFallbackRedirectUrl="/deck-builder"
+        >
+          <QueryProvider>
             <SiteLayout>{children}</SiteLayout>
-          </AuthProvider>
-        </QueryProvider>
+          </QueryProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

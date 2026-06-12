@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: ["/", "/cards", "/decks"],
-      disallow: ["/my-decks", "/deck-builder", "/login", "/register"],
+      disallow: ["/my-decks", "/deck-builder", "/sign-in", "/sign-up"],
     },
     sitemap: `${base}/sitemap.xml`,
   };

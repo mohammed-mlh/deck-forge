@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Layers, LogOut, Menu, X } from "lucide-react";
+import {
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
+import { Layers, Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { useAuth } from "@/providers/auth-context";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types";
 
@@ -31,49 +36,41 @@ function DesktopNav({ items, className }: { items: NavItem[]; className?: string
 }
 
 function AuthNavActions({ className }: { className?: string }) {
-  const { user, ready, logout } = useAuth();
-
-  if (!ready) return null;
-
-  if (user) {
-    return (
-      <div className={className}>
-        <span className="hidden text-sm text-(--color-foreground-muted) sm:inline">
-          {user.name}
-        </span>
-        <button
-          type="button"
-          onClick={logout}
-          className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-2) hover:text-(--color-foreground)"
-        >
-          <LogOut className="size-3.5" />
-          <span className="hidden sm:inline">Logout</span>
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className={className}>
-      <Link
-        href="/login"
-        className="rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
-      >
-        Login
-      </Link>
-      <Link
-        href="/register"
-        className="rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
-      >
-        Get Started
-      </Link>
+      <Show when="signed-out">
+        <SignInButton mode="redirect">
+          <button
+            type="button"
+            className="rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
+          >
+            Sign In
+          </button>
+        </SignInButton>
+        <SignUpButton mode="redirect">
+          <button
+            type="button"
+            className="rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
+          >
+            Get Started
+          </button>
+        </SignUpButton>
+      </Show>
+      <Show when="signed-in">
+        <UserButton
+          appearance={{
+            elements: {
+              avatarBox: "size-8",
+            },
+          }}
+        />
+      </Show>
     </div>
   );
 }
 
 function MobileNav({ items, className }: { items: NavItem[]; className?: string }) {
   const [open, setOpen] = useState(false);
-  const { user, logout } = useAuth();
 
   return (
     <div className={cn("relative md:hidden", className)}>
@@ -99,37 +96,27 @@ function MobileNav({ items, className }: { items: NavItem[]; className?: string 
               </Link>
             ))}
             <div className="my-1 border-t border-(--color-border)" />
-            {user ? (
-              <>
-                <p className="px-3 py-1 text-xs text-(--color-foreground-subtle)">
-                  Signed in as {user.name}
-                </p>
+            <Show when="signed-out">
+              <SignInButton mode="redirect">
+                <button type="button" onClick={() => setOpen(false)} className={navLinkClass}>
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="redirect">
                 <button
                   type="button"
-                  onClick={() => {
-                    logout();
-                    setOpen(false);
-                  }}
-                  className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-2) hover:text-(--color-foreground)"
-                >
-                  <LogOut className="size-3.5" />
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" onClick={() => setOpen(false)} className={navLinkClass}>
-                  Login
-                </Link>
-                <Link
-                  href="/register"
                   onClick={() => setOpen(false)}
                   className="rounded-md bg-(--color-primary) px-3 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
                 >
                   Get Started
-                </Link>
-              </>
-            )}
+                </button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <div className="flex items-center justify-between px-3 py-2">
+                <UserButton appearance={{ elements: { avatarBox: "size-7" } }} />
+              </div>
+            </Show>
           </nav>
         </div>
       )}
