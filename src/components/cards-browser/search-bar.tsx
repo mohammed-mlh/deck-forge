@@ -1,5 +1,6 @@
 "use client";
 
+import { forwardRef } from "react";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,12 +11,11 @@ interface SearchBarProps {
   className?: string;
 }
 
-export function SearchBar({
-  value,
-  onChange,
-  placeholder = "Search cards by name…",
-  className,
-}: SearchBarProps) {
+export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
+  function SearchBar(
+    { value, onChange, placeholder = "Search cards by name…", className },
+    ref
+  ) {
   return (
     <div
       className={cn(
@@ -25,6 +25,7 @@ export function SearchBar({
     >
       <Search className="size-4 shrink-0 text-(--color-foreground-subtle)" />
       <input
+        ref={ref}
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -43,4 +44,5 @@ export function SearchBar({
       )}
     </div>
   );
-}
+  }
+);

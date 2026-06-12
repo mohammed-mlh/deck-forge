@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Layers } from "lucide-react";
+import { DeckBuilderStartPrompt } from "@/components/deck-builder/deck-builder-start-prompt";
 import { getCardImageUrl, getCardTypeLabel } from "@/lib/ygoprodeck";
 import type { YugiohCard } from "@/types/yugioh";
 import { cn } from "@/lib/utils";
@@ -9,9 +9,16 @@ import { cn } from "@/lib/utils";
 interface CardDetailViewerProps {
   card: YugiohCard | null;
   className?: string;
+  onSearchCards?: () => void;
+  onImportDeck?: () => void;
 }
 
-export function CardDetailViewer({ card, className }: CardDetailViewerProps) {
+export function CardDetailViewer({
+  card,
+  className,
+  onSearchCards,
+  onImportDeck,
+}: CardDetailViewerProps) {
   return (
     <aside
       className={cn(
@@ -26,17 +33,10 @@ export function CardDetailViewer({ card, className }: CardDetailViewerProps) {
       </div>
 
       {!card ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
-          <div className="flex size-12 items-center justify-center rounded-lg border border-dashed border-(--color-border) bg-(--color-surface-1)">
-            <Layers className="size-5 text-(--color-foreground-disabled)" />
-          </div>
-          <p className="text-sm text-(--color-foreground-muted)">
-            Select a card to view details
-          </p>
-          <p className="text-[11px] text-(--color-foreground-subtle)">
-            Click a card in search or your deck
-          </p>
-        </div>
+        <DeckBuilderStartPrompt
+          onSearchCards={onSearchCards}
+          onImportDeck={onImportDeck}
+        />
       ) : (
         <CardDetailContent card={card} />
       )}

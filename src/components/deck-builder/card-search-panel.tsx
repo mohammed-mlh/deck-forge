@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { SearchBar } from "@/components/cards-browser/search-bar";
 import {
   CardFiltersPanel,
@@ -21,12 +21,11 @@ interface CardSearchPanelProps {
   className?: string;
 }
 
-export function CardSearchPanel({
-  onAddCard,
-  onSelectCard,
-  selectedCardId,
-  className,
-}: CardSearchPanelProps) {
+export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps>(
+  function CardSearchPanel(
+    { onAddCard, onSelectCard, selectedCardId, className },
+    searchRef
+  ) {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState(DEFAULT_CARD_FILTERS);
 
@@ -52,6 +51,7 @@ export function CardSearchPanel({
     >
       <div className="flex max-h-[45%] shrink-0 flex-col gap-2 overflow-y-auto border-b border-(--color-border) p-3">
         <SearchBar
+          ref={searchRef}
           value={search}
           onChange={setSearch}
           placeholder="Search cards..."
@@ -89,4 +89,5 @@ export function CardSearchPanel({
       </div>
     </div>
   );
-}
+  }
+);

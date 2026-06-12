@@ -30,6 +30,7 @@ export function DeckBuilder() {
   } | null>(null);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const loadedIdRef = useRef<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!deckId) {
@@ -67,6 +68,8 @@ export function DeckBuilder() {
         <CardDetailViewer
           card={selectedCard}
           className="w-[clamp(220px,22vw,280px)]"
+          onSearchCards={() => searchInputRef.current?.focus()}
+          onImportDeck={() => setIoMode("import")}
         />
 
         <section className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
@@ -147,6 +150,7 @@ export function DeckBuilder() {
         </section>
 
         <CardSearchPanel
+          ref={searchInputRef}
           onAddCard={handleAdd}
           onSelectCard={setSelectedCard}
           selectedCardId={selectedCard?.id ?? null}
