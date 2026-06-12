@@ -9,7 +9,7 @@ export function BrowseDecksView() {
   const decks = getPrebuiltDecks();
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <PageHeader
         title="Browse Decks"
         description="Explore community-built decks for inspiration before you craft your own."

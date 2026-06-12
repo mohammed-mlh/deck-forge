@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BrowseDeckDetail } from "@/components/browse-decks/browse-deck-detail";
+import { Container } from "@/components/layout/container";
 import { getPrebuiltDeck } from "@/lib/prebuilt-decks";
 
 interface BrowseDeckPageProps {
@@ -20,8 +21,8 @@ export default async function BrowseDeckPage({ params }: BrowseDeckPageProps) {
   if (!deck) notFound();
 
   return (
-    <div className="min-h-full">
+    <Container>
       <BrowseDeckDetail deck={deck} />
-    </div>
+    </Container>
   );
 }

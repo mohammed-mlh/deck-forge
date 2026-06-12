@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { MyDecksView } from "@/components/my-decks/my-decks-view";
+import { Container } from "@/components/layout/container";
 
 export const metadata: Metadata = { title: "My Decks" };
 
 export default function DecksPage() {
   return (
-    <div className="min-h-full">
+    <Container>
       <MyDecksView />
-    </div>
+    </Container>
   );
 }

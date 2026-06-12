@@ -41,7 +41,7 @@ export function MyDecksView() {
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <PageHeader
         title="My Decks"
         description="Open a saved deck to keep building, or start fresh."
