@@ -1,66 +1,109 @@
+import { card, entries, staples } from "@/lib/decks/deck-utils";
 import type { DeckCardEntry } from "@/types/deck";
-import type { PrebuiltDeck } from "@/types/prebuilt-deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { DeckDifficulty, PublicDeck } from "@/types/public-deck";
 
-type CardDef = [id: number, name: string, type: string, qty: number, atk?: number];
+interface LegacyOfficialDeck {
+  id: string;
+  name: string;
+  author: string;
+  archetype: string;
+  description: string;
+  updatedAt: string;
+  main: DeckCardEntry[];
+  extra: DeckCardEntry[];
+  side: DeckCardEntry[];
+}
 
-function card(
-  id: number,
-  name: string,
-  type: string,
-  opts: {
-    atk?: number;
-    def?: number;
-    level?: number;
-    attribute?: string;
-    race?: string;
-    frameType?: string;
-    archetype?: string;
-  } = {}
-): YugiohCard {
-  const base = `https://images.ygoprodeck.com/images`;
+const DECK_META: Record<
+  string,
+  { slug: string; tags: string[]; difficulty: DeckDifficulty }
+> = {
+  "prebuilt-blue-eyes": {
+    slug: "blue-eyes-chronicle",
+    tags: ["Blue-Eyes", "Dragon", "Beatdown"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-dark-magician": {
+    slug: "dark-magician-legacy",
+    tags: ["Dark Magician", "Control", "Spellcaster"],
+    difficulty: "beginner",
+  },
+  "prebuilt-sky-striker": {
+    slug: "sky-striker-mobilize",
+    tags: ["Sky Striker", "Control", "Link"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-eldlich": {
+    slug: "eldlich-golden",
+    tags: ["Eldlich", "Zombie", "Control"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-stardust": {
+    slug: "stardust-synchron",
+    tags: ["Stardust", "Synchro", "Dragon"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-blackwing": {
+    slug: "blackwing-assault",
+    tags: ["Blackwing", "Synchro", "Winged Beast"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-utopia": {
+    slug: "utopia-rising",
+    tags: ["Utopia", "Xyz", "Warrior"],
+    difficulty: "beginner",
+  },
+  "prebuilt-photon": {
+    slug: "photon-galaxy",
+    tags: ["Photon", "Galaxy", "Xyz"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-odd-eyes": {
+    slug: "odd-eyes-pendulum",
+    tags: ["Odd-Eyes", "Pendulum", "Dragon"],
+    difficulty: "advanced",
+  },
+  "prebuilt-raidraptor": {
+    slug: "raid-raptors-strike",
+    tags: ["Raidraptor", "Xyz", "Winged Beast"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-salamangreat": {
+    slug: "salamangreat-blaze",
+    tags: ["Salamangreat", "Link", "Cyberse"],
+    difficulty: "intermediate",
+  },
+  "prebuilt-rokket": {
+    slug: "rokket-reload",
+    tags: ["Rokket", "Borreload", "Link"],
+    difficulty: "advanced",
+  },
+};
+
+function toPublicDeck(legacy: LegacyOfficialDeck): PublicDeck {
+  const meta = DECK_META[legacy.id];
+  if (!meta) throw new Error(`Missing deck metadata for ${legacy.id}`);
+
   return {
-    id,
-    name,
-    type,
-    desc: "",
-    atk: opts.atk,
-    def: opts.def,
-    level: opts.level,
-    attribute: opts.attribute,
-    race: opts.race,
-    archetype: opts.archetype,
-    frameType: opts.frameType ?? "effect",
-    card_images: [
-      {
-        id,
-        image_url: `${base}/cards/${id}.jpg`,
-        image_url_small: `${base}/cards_small/${id}.jpg`,
-        image_url_cropped: `${base}/cards_cropped/${id}.jpg`,
-      },
-    ],
+    id: legacy.id,
+    slug: meta.slug,
+    name: legacy.name,
+    source: "official",
+    author: { name: "DeckForge" },
+    visibility: "public",
+    description: legacy.description,
+    archetype: legacy.archetype,
+    tags: meta.tags,
+    difficulty: meta.difficulty,
+    main: legacy.main,
+    extra: legacy.extra,
+    side: legacy.side,
+    createdAt: legacy.updatedAt,
+    updatedAt: legacy.updatedAt,
   };
 }
 
-function entries(defs: CardDef[]): DeckCardEntry[] {
-  return defs.map(([id, name, type, qty, atk]) => ({
-    card: card(id, name, type, { atk }),
-    quantity: qty,
-  }));
-}
-
-const staples = {
-  ash: [14558127, "Ash Blossom & Joyous Spring", "Tuner Monster", 3, 0] as CardDef,
-  veiler: [97268402, "Effect Veiler", "Tuner Monster", 2, 0] as CardDef,
-  called: [24224830, "Called by the Grave", "Spell Card", 2] as CardDef,
-  imperm: [10045474, "Infinite Impermanence", "Trap Card", 2] as CardDef,
-  raigeki: [12538374, "Raigeki", "Spell Card", 1] as CardDef,
-  duster: [38505587, "Harpie's Feather Duster", "Spell Card", 1] as CardDef,
-  prosperity: [75574498, "Pot of Prosperity", "Spell Card", 1] as CardDef,
-  superPoly: [48130397, "Super Polymerization", "Spell Card", 1] as CardDef,
-};
-
-const PREBUILT_DECKS: PrebuiltDeck[] = [
+const LEGACY_OFFICIAL_DECKS: LegacyOfficialDeck[] = [
   {
     id: "prebuilt-blue-eyes",
     name: "Blue-Eyes Chronicle",
@@ -742,10 +785,20 @@ const PREBUILT_DECKS: PrebuiltDeck[] = [
   },
 ];
 
-export function getPrebuiltDecks(): PrebuiltDeck[] {
-  return PREBUILT_DECKS;
+const PUBLIC_DECKS: PublicDeck[] = LEGACY_OFFICIAL_DECKS.map(toPublicDeck);
+
+export function getPublicDecks(): PublicDeck[] {
+  return PUBLIC_DECKS;
 }
 
-export function getPrebuiltDeck(id: string): PrebuiltDeck | undefined {
-  return PREBUILT_DECKS.find((deck) => deck.id === id);
+export function getPublicDeckBySlug(slug: string): PublicDeck | undefined {
+  return PUBLIC_DECKS.find((deck) => deck.slug === slug);
+}
+
+export function getPublicDeckById(id: string): PublicDeck | undefined {
+  return PUBLIC_DECKS.find((deck) => deck.id === id);
+}
+
+export function resolvePublicDeck(idOrSlug: string): PublicDeck | undefined {
+  return getPublicDeckBySlug(idOrSlug) ?? getPublicDeckById(idOrSlug);
 }

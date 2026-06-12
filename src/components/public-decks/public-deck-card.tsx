@@ -5,14 +5,20 @@ import Link from "next/link";
 import { Layers, User } from "lucide-react";
 import { getMostPowerfulMonster, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
-import type { PrebuiltDeck } from "@/types/prebuilt-deck";
+import type { PublicDeck } from "@/types/public-deck";
 import { cn } from "@/lib/utils";
 
-interface BrowseDeckCardProps {
-  deck: PrebuiltDeck;
+interface PublicDeckCardProps {
+  deck: PublicDeck;
 }
 
-export function BrowseDeckCard({ deck }: BrowseDeckCardProps) {
+const SOURCE_LABELS = {
+  official: "Official",
+  community: "Community",
+  user: "User",
+} as const;
+
+export function PublicDeckCard({ deck }: PublicDeckCardProps) {
   const main = countZone(deck.main);
   const extra = countZone(deck.extra);
   const side = countZone(deck.side);
@@ -20,7 +26,7 @@ export function BrowseDeckCard({ deck }: BrowseDeckCardProps) {
 
   return (
     <Link
-      href={`/browse-decks/${deck.id}`}
+      href={`/decks/${deck.slug}`}
       className="group relative flex h-[168px] overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)"
     >
       <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between p-4 pr-2">
@@ -33,7 +39,7 @@ export function BrowseDeckCard({ deck }: BrowseDeckCardProps) {
           </h3>
           <p className="mt-1 flex items-center gap-1 text-xs text-(--color-foreground-subtle)">
             <User className="size-3" />
-            {deck.author}
+            {deck.author?.name ?? "Unknown"}
           </p>
           <p className="mt-2 text-sm tabular-nums text-(--color-foreground-muted)">
             Main: {main} Extra: {extra} Side: {side}
@@ -65,7 +71,7 @@ export function BrowseDeckCard({ deck }: BrowseDeckCardProps) {
             "absolute right-3 top-3 rounded bg-(--color-success)/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-success)"
           )}
         >
-          Public
+          {SOURCE_LABELS[deck.source]}
         </span>
       </div>
     </Link>

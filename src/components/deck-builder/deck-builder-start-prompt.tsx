@@ -34,7 +34,7 @@ export function DeckBuilderStartPrompt({
           </Link>
         )}
 
-        <Link href="/browse-decks" className={btnClass}>
+        <Link href="/decks" className={btnClass}>
           <FolderOpen className="size-3.5" />
           Browse Decks
         </Link>

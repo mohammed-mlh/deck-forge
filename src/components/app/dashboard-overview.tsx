@@ -19,7 +19,7 @@ const quickActions = [
     title: "My Decks",
     description: "View and manage your saved decks.",
     icon: FolderOpen,
-    href: "/decks",
+    href: "/my-decks",
   },
 ];
 

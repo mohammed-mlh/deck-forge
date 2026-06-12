@@ -9,8 +9,8 @@ import type { NavItem } from "@/types";
 const navItems: NavItem[] = [
   { label: "Cards", href: "/cards" },
   { label: "Deck Builder", href: "/deck-builder" },
-  { label: "Browse Decks", href: "/browse-decks" },
-  { label: "My Decks", href: "/decks" },
+  { label: "Decks", href: "/decks" },
+  { label: "My Decks", href: "/my-decks" },
 ];
 
 export function Navbar() {

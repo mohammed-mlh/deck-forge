@@ -11,7 +11,7 @@ import type { NavItem } from "@/types";
 
 const sidebarItems: NavItem[] = [
   { label: "Builder",  href: "/deck-builder", icon: Hammer     },
-  { label: "My Decks", href: "/decks",        icon: FolderOpen },
+  { label: "My Decks", href: "/my-decks",        icon: FolderOpen },
 ];
 
 export function Sidebar() {

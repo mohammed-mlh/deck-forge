@@ -1,23 +1,23 @@
 "use client";
 
 import { Compass } from "lucide-react";
-import { BrowseDeckCard } from "@/components/browse-decks/browse-deck-card";
+import { PublicDeckCard } from "@/components/public-decks/public-deck-card";
 import { PageHeader } from "@/components/layout/page-header";
-import { getPrebuiltDecks } from "@/lib/prebuilt-decks";
+import { getPublicDecks } from "@/lib/decks/public-decks";
 
-export function BrowseDecksView() {
-  const decks = getPrebuiltDecks();
+export function DeckDiscoveryView() {
+  const decks = getPublicDecks();
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Browse Decks"
-        description="Explore community-built decks for inspiration before you craft your own."
+        title="Decks"
+        description="Discover official and community decks for inspiration before you craft your own."
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
         {decks.map((deck) => (
-          <BrowseDeckCard key={deck.id} deck={deck} />
+          <PublicDeckCard key={deck.id} deck={deck} />
         ))}
       </div>
 

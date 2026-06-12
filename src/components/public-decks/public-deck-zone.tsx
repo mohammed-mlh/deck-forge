@@ -12,12 +12,12 @@ const ZONE_LABELS: Record<DeckZone, string> = {
   side: "Side Deck",
 };
 
-interface BrowseDeckZoneProps {
+interface PublicDeckZoneProps {
   zone: DeckZone;
   entries: DeckCardEntry[];
 }
 
-export function BrowseDeckZone({ zone, entries }: BrowseDeckZoneProps) {
+export function PublicDeckZone({ zone, entries }: PublicDeckZoneProps) {
   const count = countZone(entries);
   const capacity = DECK_LIMITS[zone].max;
 
@@ -33,10 +33,10 @@ export function BrowseDeckZone({ zone, entries }: BrowseDeckZoneProps) {
       </div>
 
       <div className="flex flex-wrap gap-1.5 p-3">
-        {entries.flatMap((entry) =>
+        {entries.flatMap((entry, entryIndex) =>
           Array.from({ length: entry.quantity }, (_, copy) => (
             <div
-              key={`${entry.card.id}-${copy}`}
+              key={`${entryIndex}-${entry.card.id}-${copy}`}
               className="relative w-[52px] shrink-0 overflow-hidden rounded-[2px] sm:w-[60px]"
               title={entry.card.name}
             >

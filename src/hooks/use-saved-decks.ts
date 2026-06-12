@@ -7,7 +7,7 @@ import {
   getDeckById,
   loadDecks,
   saveDeck as persistDeck,
-} from "@/lib/deck-storage";
+} from "@/lib/decks/deck-storage";
 
 export function useSavedDecks() {
   const [decks, setDecks] = useState<SavedDeck[]>([]);
