@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Layers } from "lucide-react";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { RegisterForm } from "@/components/auth/register-form";
-import { Container } from "@/components/layout/container";
 
 export const metadata: Metadata = {
   title: "Register",
@@ -11,25 +9,11 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <Container size="sm" className="flex min-h-[calc(100dvh-3.5rem)] items-center py-16">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
-            <Layers className="size-5 text-(--color-primary)" />
-            <span className="text-sm">DeckForge</span>
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-(--color-foreground)">
-            Create your account
-          </h1>
-          <p className="text-sm text-(--color-foreground-muted)">
-            Start building and saving decks for free.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-(--color-border) bg-(--color-surface-1) p-6">
-          <RegisterForm />
-        </div>
-      </div>
-    </Container>
+    <AuthPageShell
+      title="Create your account"
+      description="Start building and saving decks for free."
+    >
+      <RegisterForm />
+    </AuthPageShell>
   );
 }

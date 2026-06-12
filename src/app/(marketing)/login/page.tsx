@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Layers } from "lucide-react";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { LoginForm } from "@/components/auth/login-form";
-import { Container } from "@/components/layout/container";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -11,25 +9,8 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Container size="sm" className="flex min-h-[calc(100dvh-3.5rem)] items-center py-16">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
-            <Layers className="size-5 text-(--color-primary)" />
-            <span className="text-sm">DeckForge</span>
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-(--color-foreground)">
-            Welcome back
-          </h1>
-          <p className="text-sm text-(--color-foreground-muted)">
-            Sign in to access your saved decks.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-(--color-border) bg-(--color-surface-1) p-6">
-          <LoginForm />
-        </div>
-      </div>
-    </Container>
+    <AuthPageShell title="Welcome back" description="Sign in to access your saved decks.">
+      <LoginForm />
+    </AuthPageShell>
   );
 }

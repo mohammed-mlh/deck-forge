@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FolderOpen, Plus } from "lucide-react";
-import { DeckListCard } from "@/components/my-decks/deck-list-card";
+import { SavedDeckCard } from "@/components/decks/deck-cards";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
@@ -31,7 +31,7 @@ function DeckListSkeleton() {
   );
 }
 
-export function MyDecksView() {
+export function MyDecksContent() {
   const { decks, remove, ready } = useSavedDecks();
 
   const totalCards = decks.reduce(
@@ -96,7 +96,7 @@ export function MyDecksView() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {decks.map((deck) => (
-            <DeckListCard key={deck.id} deck={deck} onDelete={() => remove(deck.id)} />
+            <SavedDeckCard key={deck.id} deck={deck} onDelete={() => remove(deck.id)} />
           ))}
         </div>
       )}

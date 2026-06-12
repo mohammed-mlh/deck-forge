@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FolderOpen, Hammer, Database, Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { SectionHeader } from "@/components/layout/section-header";
+import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createPageMetadata } from "@/lib/site-metadata";
 
@@ -94,7 +94,8 @@ export default function HomePage() {
       <section className="py-20">
         <Container>
           <div className="flex flex-col gap-12">
-            <SectionHeader
+            <PageHeader
+              variant="section"
               title="Everything you need to compete"
               description="Professional tools built for players who take the game seriously."
               className="mx-auto max-w-lg text-center *:mx-auto"

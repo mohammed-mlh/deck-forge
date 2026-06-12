@@ -2,7 +2,6 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import { DeckZoneCard } from "@/components/deck-builder/deck-zone-card";
-import { DeckEmptySlot } from "@/components/deck-builder/deck-empty-slot";
 import {
   buildSlotGrid,
   DECK_GRID_COLUMNS,
@@ -87,6 +86,19 @@ export function DeckZonePanel({
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function DeckEmptySlot({ index }: { index: number }) {
+  return (
+    <div
+      className="relative flex aspect-[59/86] w-full items-center justify-center rounded-[2px] border border-(--color-border) bg-(--color-bg-base)"
+      aria-hidden
+    >
+      <span className="text-[10px] font-medium tabular-nums text-(--color-foreground-disabled)">
+        {index}
+      </span>
     </div>
   );
 }

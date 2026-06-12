@@ -1,14 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
-import { DeckNotFound } from "@/components/deck-builder/deck-not-found";
 import { DeckZonePanel } from "@/components/deck-builder/deck-zone";
 import { DeckIoDialog } from "@/components/deck-builder/deck-io-dialog";
-import { ImportResultToast } from "@/components/deck-builder/import-result-toast";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
 import { useDeck } from "@/hooks/use-deck";
@@ -18,6 +18,74 @@ import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import type { DeckZone, SavedDeck } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
+
+function DeckNotFound() {
+  return (
+    <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-center">
+      <h2 className="text-lg font-semibold text-(--color-foreground)">Deck not found</h2>
+      <p className="max-w-sm text-sm text-(--color-foreground-muted)">
+        This deck may have been deleted or the link is invalid.
+      </p>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Link
+          href="/deck-builder"
+          className="rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
+        >
+          New deck
+        </Link>
+        <Link
+          href="/my-decks"
+          className="rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
+        >
+          My Decks
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function ImportResultToast({
+  errors,
+  warnings,
+  onClose,
+}: {
+  errors: string[];
+  warnings: string[];
+  onClose: () => void;
+}) {
+  if (errors.length === 0 && warnings.length === 0) return null;
+
+  return (
+    <div className="absolute bottom-4 left-4 right-4 z-10 max-h-40 overflow-y-auto rounded-lg border border-(--color-border) bg-(--color-surface-1) p-3 shadow-lg">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-xs font-semibold text-(--color-foreground)">
+          {errors.length > 0 ? "Import completed with issues" : "Import notes"}
+        </span>
+        <button type="button" onClick={onClose} className="text-(--color-foreground-muted)">
+          <X className="size-3.5" />
+        </button>
+      </div>
+      <ul className="space-y-1 text-xs text-(--color-foreground-muted)">
+        {warnings.map((w) => (
+          <li key={w} className="text-(--color-warning)">
+            {w}
+          </li>
+        ))}
+        {errors.length > 0 && (
+          <li className="font-medium text-(--color-danger)">Unresolved cards:</li>
+        )}
+        {errors.slice(0, 8).map((e) => (
+          <li key={e} className="pl-2 text-(--color-danger)">
+            {e}
+          </li>
+        ))}
+        {errors.length > 8 && (
+          <li className="text-(--color-foreground-subtle)">+{errors.length - 8} more</li>
+        )}
+      </ul>
+    </div>
+  );
+}
 
 interface DeckBuilderContentProps {
   deckId: string | null;
