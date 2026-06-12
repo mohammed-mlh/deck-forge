@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, Wand2 } from "lucide-react";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckAnalysisPanel } from "@/components/deck-builder/deck-analysis-panel";
+import { DeckDoctorPanel } from "@/components/deck-builder/deck-doctor-panel";
 import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 import { cn } from "@/lib/utils";
 
-export type DeckBuilderRightPanel = "search" | "analysis";
+export type DeckBuilderRightPanel = "search" | "analysis" | "doctor";
 
 interface DeckRightPanelProps {
   deck: Deck;
@@ -77,6 +78,12 @@ export function DeckRightPanel({
           icon={Sparkles}
           label="Analyze"
         />
+        <PanelTab
+          active={panel === "doctor"}
+          onClick={() => setPanel("doctor")}
+          icon={Wand2}
+          label="Doctor"
+        />
       </div>
 
       <div className={cn("min-h-0 flex-1", panel !== "search" && "hidden")}>
@@ -91,6 +98,10 @@ export function DeckRightPanel({
 
       <div className={cn("min-h-0 flex-1", panel !== "analysis" && "hidden")}>
         <DeckAnalysisPanel embedded deck={deck} />
+      </div>
+
+      <div className={cn("min-h-0 flex-1", panel !== "doctor" && "hidden")}>
+        <DeckDoctorPanel embedded deck={deck} />
       </div>
     </div>
   );

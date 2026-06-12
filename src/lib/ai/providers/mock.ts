@@ -1,4 +1,4 @@
-import type { AiProvider, DeckAnalysis, DeckContext } from "@/lib/ai/types";
+import type { AiProvider, DeckAnalysis, DeckContext, DeckDoctorResult } from "@/lib/ai/types";
 
 export class MockAiProvider implements AiProvider {
   async analyzeDeck(context: DeckContext): Promise<DeckAnalysis> {
@@ -92,5 +92,41 @@ export class MockAiProvider implements AiProvider {
     });
 
     return { summary, strengths, weaknesses, suggestions };
+  }
+
+  async improveDeck(context: DeckContext): Promise<DeckDoctorResult> {
+    const deckNames = new Set(context.rawCards.map((c) => c.name.toLowerCase()));
+    const remove = context.consistencySignals.duplicatesOver3.slice(0, 2).map((name) => ({
+      name,
+      quantity: 1,
+      zone: "main" as const,
+    }));
+
+    if (remove.length === 0 && context.keyCards.length > 0) {
+      const trim = context.keyCards.find((c) => c.count > 2 && !c.name.includes("Ash Blossom"));
+      if (trim) {
+        remove.push({ name: trim.name, quantity: 1, zone: "main" });
+      }
+    }
+
+    const add: DeckDoctorResult["add"] = [];
+
+    if (!deckNames.has("ash blossom & joyous spring")) {
+      add.push({ name: "Ash Blossom & Joyous Spring", quantity: 1, zone: "main" });
+    }
+    if (!deckNames.has("infinite impermanence") && add.length < 2) {
+      add.push({ name: "Infinite Impermanence", quantity: 1, zone: "main" });
+    }
+    if (context.consistencySignals.under40Main && add.length < 3) {
+      add.push({ name: "Pot of Prosperity", quantity: 1, zone: "main" });
+    }
+
+    const archetype = context.archetype.name ?? context.identity.archetype ?? "this strategy";
+    const reason =
+      remove.length > 0
+        ? `Trim ${remove.map((c) => c.name).join(" and ")} to reduce dead draws, then add ${add.map((c) => c.name).join(" and ")} for more disruption and consistency in ${archetype} lines.`
+        : `Add ${add.map((c) => c.name).join(" and ")} to improve interaction and stabilize ${archetype} without changing the core game plan.`;
+
+    return { remove, add, reason };
   }
 }

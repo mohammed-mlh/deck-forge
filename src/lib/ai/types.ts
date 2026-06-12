@@ -94,6 +94,21 @@ export interface DeckAnalysis {
   suggestions: DeckSuggestion[];
 }
 
+export interface DeckDoctorCardChange {
+  name: string;
+  quantity: number;
+  zone?: DeckZoneHint;
+}
+
+export type DeckZoneHint = "main" | "extra" | "side";
+
+export interface DeckDoctorResult {
+  remove: DeckDoctorCardChange[];
+  add: DeckDoctorCardChange[];
+  reason: string;
+}
+
 export interface AiProvider {
   analyzeDeck(context: DeckContext): Promise<DeckAnalysis>;
+  improveDeck(context: DeckContext): Promise<DeckDoctorResult>;
 }
