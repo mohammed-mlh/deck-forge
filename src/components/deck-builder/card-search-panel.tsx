@@ -50,7 +50,7 @@ export function CardSearchPanel({
         className
       )}
     >
-      <div className="flex shrink-0 flex-col gap-2 border-b border-(--color-border) p-3">
+      <div className="flex max-h-[45%] shrink-0 flex-col gap-2 overflow-y-auto border-b border-(--color-border) p-3">
         <SearchBar
           value={search}
           onChange={setSearch}
@@ -59,7 +59,6 @@ export function CardSearchPanel({
         <CardFiltersPanel
           filters={filters}
           onChange={setFilters}
-          compact
           className="border-0 bg-transparent p-0"
         />
         <p className="shrink-0 text-[11px] text-(--color-foreground-subtle)">
@@ -80,7 +79,7 @@ export function CardSearchPanel({
           onCardDoubleClick={handleCardDoubleClick}
           selectedCardId={selectedCardId}
           draggable
-          columns={3}
+          columns={4}
           emptyMessage={
             debouncedSearch
               ? `No cards found for "${debouncedSearch}".`

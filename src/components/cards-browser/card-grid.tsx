@@ -6,8 +6,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Search } from "lucide-react";
 import type { YugiohCard } from "@/types/yugioh";
 
-const GRID_COLS: Record<3 | 6, string> = {
+const GRID_COLS: Record<3 | 4 | 6, string> = {
   3: "grid-cols-3 gap-2",
+  4: "grid-cols-4 gap-1.5",
   6: "grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
 };
 
@@ -21,7 +22,7 @@ interface CardGridProps {
   selectedCardId?: number | null;
   draggable?: boolean;
   emptyMessage?: string;
-  columns?: 3 | 6;
+  columns?: 3 | 4 | 6;
 }
 
 export function CardGrid({
@@ -51,7 +52,7 @@ export function CardGrid({
   if (isLoading) {
     return (
       <div className={`grid ${gridClass}`}>
-        {Array.from({ length: columns === 3 ? 9 : 12 }).map((_, i) => (
+        {Array.from({ length: columns === 6 ? 12 : columns * 3 }).map((_, i) => (
           <Skeleton
             key={i}
             className="aspect-[59/86] w-full rounded-sm"
