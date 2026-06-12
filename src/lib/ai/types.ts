@@ -69,16 +69,22 @@ export interface DeckContext {
   rawCards: RawDeckCard[];
 }
 
+export type SuggestionPriority = "low" | "medium" | "high";
+
 export interface DeckStrength {
+  title: string;
   description: string;
 }
 
 export interface DeckWeakness {
+  title: string;
   description: string;
 }
 
 export interface DeckSuggestion {
+  title: string;
   description: string;
+  priority: SuggestionPriority;
 }
 
 export interface DeckAnalysis {
@@ -86,4 +92,8 @@ export interface DeckAnalysis {
   strengths: DeckStrength[];
   weaknesses: DeckWeakness[];
   suggestions: DeckSuggestion[];
+}
+
+export interface AiProvider {
+  analyzeDeck(context: DeckContext): Promise<DeckAnalysis>;
 }

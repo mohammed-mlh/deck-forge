@@ -1,13 +1,12 @@
+import { buildDeckContext } from "@/lib/ai/deck-context";
+import { getAiProvider, type AiProvider } from "@/lib/ai/provider";
 import type { DeckAnalysis, DeckContext } from "@/lib/ai/types";
 import type { Deck } from "@/types/deck";
 
-const MOCK_DECK_ANALYSIS: DeckAnalysis = {
-  summary: "",
-  strengths: [],
-  weaknesses: [],
-  suggestions: [],
-};
-
-export function analyzeDeck(_input: Deck | DeckContext): DeckAnalysis {
-  return MOCK_DECK_ANALYSIS;
+export async function analyzeDeck(
+  input: Deck | DeckContext,
+  provider: AiProvider = getAiProvider()
+): Promise<DeckAnalysis> {
+  const context = "rawCards" in input ? input : buildDeckContext(input);
+  return provider.analyzeDeck(context);
 }

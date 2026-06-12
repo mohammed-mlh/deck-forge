@@ -1,0 +1,1102 @@
+{
+  "model": "deepseek-v4-flash",
+  "deckCount": 3,
+  "totalDurationMs": 22998,
+  "analyzedAt": "2026-06-12T20:34:34.187Z",
+  "results": [
+    {
+      "deckId": "prebuilt-blue-eyes",
+      "deckName": "Blue-Eyes Chronicle",
+      "model": "deepseek-v4-flash",
+      "durationMs": 7948,
+      "context": {
+        "name": "Blue-Eyes Chronicle",
+        "archetype": {
+          "name": "Blue-Eyes",
+          "confidence": 0
+        },
+        "identity": {
+          "archetype": "Blue-Eyes",
+          "playstyle": null
+        },
+        "stats": {
+          "mainSize": 37,
+          "extraSize": 9,
+          "sideSize": 15
+        },
+        "typeDistribution": {
+          "monsters": 31,
+          "spells": 24,
+          "traps": 6
+        },
+        "monsterBreakdown": {
+          "normal": 0,
+          "effect": 31,
+          "fusion": 0,
+          "synchro": 0,
+          "xyz": 0,
+          "link": 0,
+          "pendulum": 0
+        },
+        "averageMonsterStats": {
+          "atk": 1426,
+          "def": null,
+          "level": null
+        },
+        "keyCards": [
+          {
+            "name": "Ash Blossom & Joyous Spring",
+            "count": 4
+          },
+          {
+            "name": "Infinite Impermanence",
+            "count": 4
+          },
+          {
+            "name": "Blue-Eyes Alternative White Dragon",
+            "count": 3
+          },
+          {
+            "name": "Blue-Eyes White Dragon",
+            "count": 3
+          },
+          {
+            "name": "Called by the Grave",
+            "count": 3
+          },
+          {
+            "name": "Effect Veiler",
+            "count": 3
+          },
+          {
+            "name": "Majesty of the White Dragons",
+            "count": 3
+          },
+          {
+            "name": "Melody of Awakening Dragon",
+            "count": 3
+          },
+          {
+            "name": "Sage with Eyes of Blue",
+            "count": 3
+          },
+          {
+            "name": "Trade-In",
+            "count": 3
+          },
+          {
+            "name": "Bingo Machine, Go!!!",
+            "count": 2
+          },
+          {
+            "name": "Dragon Spirit of White",
+            "count": 2
+          },
+          {
+            "name": "Droll & Lock Bird",
+            "count": 2
+          },
+          {
+            "name": "Harpie's Feather Duster",
+            "count": 2
+          },
+          {
+            "name": "Maiden with Eyes of Blue",
+            "count": 2
+          }
+        ],
+        "consistencySignals": {
+          "duplicatesOver3": [
+            "Ash Blossom & Joyous Spring",
+            "Infinite Impermanence"
+          ],
+          "under40Main": true,
+          "extraDeckOverfilled": false
+        },
+        "rawCards": [
+          {
+            "id": 14558127,
+            "name": "Ash Blossom & Joyous Spring",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 4
+          },
+          {
+            "id": 88264978,
+            "name": "Bingo Machine, Go!!!",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 56532353,
+            "name": "Black Rose Moonlight Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 3851777,
+            "name": "Blue-Eyes Alternative White Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 38589334,
+            "name": "Blue-Eyes Spirit Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 21143940,
+            "name": "Blue-Eyes Twin Burst Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 89631139,
+            "name": "Blue-Eyes White Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 24224830,
+            "name": "Called by the Grave",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 53129443,
+            "name": "Cards of Consonance",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 50588353,
+            "name": "Crystron Halqifibrax",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 45467446,
+            "name": "Dragon Spirit of White",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 94145021,
+            "name": "Droll & Lock Bird",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 97268402,
+            "name": "Effect Veiler",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 3834233,
+            "name": "Elder Entity N'tss",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 38505587,
+            "name": "Harpie's Feather Duster",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 65741786,
+            "name": "I:P Masquerena",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 10045474,
+            "name": "Infinite Impermanence",
+            "type": "Trap",
+            "race": null,
+            "attribute": null,
+            "quantity": 4
+          },
+          {
+            "id": 22871736,
+            "name": "Maiden with Eyes of Blue",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 59438930,
+            "name": "Majesty of the White Dragons",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 3510565,
+            "name": "Melody of Awakening Dragon",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 83764718,
+            "name": "Monster Reborn",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 15673984,
+            "name": "Neo Blue-Eyes Ultimate Dragon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 70744296,
+            "name": "Number 38: Hope Harbinger Dragon Titanic Galaxy",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 95474755,
+            "name": "Number 90: Galaxy-Eyes Photon Lord",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 75574498,
+            "name": "Pot of Prosperity",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 12538374,
+            "name": "Raigeki",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 8930028,
+            "name": "Sage with Eyes of Blue",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 48130397,
+            "name": "Super Polymerization",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 22878496,
+            "name": "Trade-In",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 4019153,
+            "name": "True Light",
+            "type": "Trap",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          }
+        ]
+      },
+      "analysis": {
+        "summary": "The deck is a Blue-Eyes build with a heavy hand trap lineup and strong draw/search power, but it lacks a cohesive extra deck and has too many hand traps, reducing consistency.",
+        "strengths": [
+          {
+            "title": "High Hand Trap Count",
+            "description": "With 4 Ash Blossom, 4 Infinite Impermanence, 3 Effect Veiler, and 2 Droll & Lock Bird, the deck can disrupt opponent plays effectively."
+          },
+          {
+            "title": "Strong Draw and Search Power",
+            "description": "Cards like Trade-In, Melody of Awakening Dragon, Bingo Machine Go!!!, and Cards of Consonance provide high consistency in finding key pieces."
+          },
+          {
+            "title": "Good Removal Options",
+            "description": "Harpie's Feather Duster, Raigeki, and Super Polymerization offer board-breaking capabilities."
+          }
+        ],
+        "weaknesses": [
+          {
+            "title": "Extra Deck Lacks Synergy",
+            "description": "The extra deck includes generic cards like Crystron Halqifibrax and I:P Masquerena but lacks Blue-Eyes specific synchros and fusions, limiting the deck's end board potential."
+          },
+          {
+            "title": "Over-reliance on Hand Traps",
+            "description": "With 13 hand traps (including 4 Ash and 3 Veiler), the deck may draw too many disruption cards and not enough engine pieces to establish a strong board."
+          },
+          {
+            "title": "Low Monster Count for Blue-Eyes",
+            "description": "Only 3 Blue-Eyes White Dragon and 3 Alternative, with limited ways to summon them consistently, can lead to brick hands."
+          },
+          {
+            "title": "No Clear Win Condition",
+            "description": "The deck lacks a focused strategy; it mixes control elements with beatdown but doesn't excel at either."
+          }
+        ],
+        "suggestions": [
+          {
+            "title": "Add Blue-Eyes Spirit Dragon and Azure-Eyes Silver Dragon",
+            "description": "Include Blue-Eyes Spirit Dragon (already in extra) and Azure-Eyes Silver Dragon to provide protection and recovery, improving the end board.",
+            "priority": "high"
+          },
+          {
+            "title": "Reduce Hand Trap Count",
+            "description": "Cut 1 Ash Blossom and 1 Infinite Impermanence to free up space for more Blue-Eyes support cards like The White Stone of Ancients or Dragon Shrine.",
+            "priority": "high"
+          },
+          {
+            "title": "Add The White Stone of Ancients",
+            "description": "This card searches Blue-Eyes and provides graveyard setup, improving consistency and recovery.",
+            "priority": "high"
+          },
+          {
+            "title": "Include Blue-Eyes Chaos MAX Dragon",
+            "description": "Add 1-2 copies of Chaos MAX and a way to summon it (e.g., Advanced Ritual Art) for a powerful, hard-to-remove threat.",
+            "priority": "medium"
+          },
+          {
+            "title": "Streamline Extra Deck",
+            "description": "Replace generic cards like Crystron Halqifibrax and I:P Masquerena with Blue-Eyes specific fusions like Blue-Eyes Twin Burst Dragon (already in) and Neo Blue-Eyes Ultimate Dragon, and add Linkuriboh for Link climbing.",
+            "priority": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "deckId": "prebuilt-sky-striker",
+      "deckName": "Sky Striker Mobilize",
+      "model": "deepseek-v4-flash",
+      "durationMs": 7290,
+      "context": {
+        "name": "Sky Striker Mobilize",
+        "archetype": {
+          "name": "Sky Striker",
+          "confidence": 0
+        },
+        "identity": {
+          "archetype": "Sky Striker",
+          "playstyle": null
+        },
+        "stats": {
+          "mainSize": 32,
+          "extraSize": 8,
+          "sideSize": 16
+        },
+        "typeDistribution": {
+          "monsters": 19,
+          "spells": 30,
+          "traps": 7
+        },
+        "monsterBreakdown": {
+          "normal": 0,
+          "effect": 19,
+          "fusion": 0,
+          "synchro": 0,
+          "xyz": 0,
+          "link": 0,
+          "pendulum": 0
+        },
+        "averageMonsterStats": {
+          "atk": 884,
+          "def": null,
+          "level": null
+        },
+        "keyCards": [
+          {
+            "name": "Ash Blossom & Joyous Spring",
+            "count": 4
+          },
+          {
+            "name": "Infinite Impermanence",
+            "count": 4
+          },
+          {
+            "name": "Called by the Grave",
+            "count": 3
+          },
+          {
+            "name": "Sky Striker Ace - Raye",
+            "count": 3
+          },
+          {
+            "name": "Sky Striker Mecha - Hornet Drones",
+            "count": 3
+          },
+          {
+            "name": "Sky Striker Mecha - Widow Anchor",
+            "count": 3
+          },
+          {
+            "name": "Sky Striker Mecha Modules - Multirole",
+            "count": 3
+          },
+          {
+            "name": "Sky Striker Mobilize - Engage!",
+            "count": 3
+          },
+          {
+            "name": "Droll & Lock Bird",
+            "count": 2
+          },
+          {
+            "name": "Effect Veiler",
+            "count": 2
+          },
+          {
+            "name": "Harpie's Feather Duster",
+            "count": 2
+          },
+          {
+            "name": "Pot of Prosperity",
+            "count": 2
+          },
+          {
+            "name": "Raigeki",
+            "count": 2
+          },
+          {
+            "name": "Sky Striker Mecha - Afterburners",
+            "count": 2
+          },
+          {
+            "name": "Sky Striker Mecha - Dame",
+            "count": 2
+          }
+        ],
+        "consistencySignals": {
+          "duplicatesOver3": [
+            "Ash Blossom & Joyous Spring",
+            "Infinite Impermanence"
+          ],
+          "under40Main": true,
+          "extraDeckOverfilled": false
+        },
+        "rawCards": [
+          {
+            "id": 3834233,
+            "name": "Accesscode Talker",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 74677422,
+            "name": "Apollousa, Bow of the Goddess",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 14558127,
+            "name": "Ash Blossom & Joyous Spring",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 4
+          },
+          {
+            "id": 24224830,
+            "name": "Called by the Grave",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 50588353,
+            "name": "Crystron Halqifibrax",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 94145021,
+            "name": "Droll & Lock Bird",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 97268402,
+            "name": "Effect Veiler",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 38505587,
+            "name": "Harpie's Feather Duster",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 65741786,
+            "name": "I:P Masquerena",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 10045474,
+            "name": "Infinite Impermanence",
+            "type": "Trap",
+            "race": null,
+            "attribute": null,
+            "quantity": 4
+          },
+          {
+            "id": 75574498,
+            "name": "Pot of Prosperity",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 12538374,
+            "name": "Raigeki",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 63288573,
+            "name": "Sky Striker Ace - Hayate",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 37541648,
+            "name": "Sky Striker Ace - Kagari",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 8198620,
+            "name": "Sky Striker Ace - Kaina",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 26077387,
+            "name": "Sky Striker Ace - Raye",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 31226195,
+            "name": "Sky Striker Ace - Shizuku",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 7578560,
+            "name": "Sky Striker Mecha - Eagle Booster",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 9833839,
+            "name": "Sky Striker Mecha - Hornet Drones",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 56733747,
+            "name": "Sky Striker Mecha - Shark Cannon",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 1700468,
+            "name": "Sky Striker Mecha - Widow Anchor",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 98338195,
+            "name": "Sky Striker Mobilize - Engage!",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 15
+          },
+          {
+            "id": 48130397,
+            "name": "Super Polymerization",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          }
+        ]
+      },
+      "analysis": {
+        "summary": "This Sky Striker deck focuses on control and disruption with a heavy hand trap lineup, but has a small main deck (32 cards) and an incomplete extra deck (8 cards). It lacks consistency and key Sky Striker spells.",
+        "strengths": [
+          {
+            "title": "Strong Hand Trap Lineup",
+            "description": "Includes 4 Ash Blossom, 4 Infinite Impermanence, 2 Droll & Lock Bird, 2 Effect Veiler, and 3 Called by the Grave for robust disruption."
+          },
+          {
+            "title": "Core Sky Striker Engine",
+            "description": "Has 3 Raye, 3 Engage, 3 Hornet Drones, 3 Multirole, and 2 Widow Anchor, providing the foundation for the archetype's control playstyle."
+          },
+          {
+            "title": "Board Wipe Options",
+            "description": "Includes 2 Raigeki and 2 Harpie's Feather Duster to clear opponent's boards."
+          }
+        ],
+        "weaknesses": [
+          {
+            "title": "Under 40 Main Deck",
+            "description": "The main deck has only 32 cards, which is illegal in official tournaments (minimum 40). This also reduces consistency."
+          },
+          {
+            "title": "Incomplete Extra Deck",
+            "description": "Only 8 extra deck cards, missing key Sky Striker links like a second Kagari and Selene, and lacks generic extenders."
+          },
+          {
+            "title": "Missing Key Sky Striker Spells",
+            "description": "Only 1 Eagle Booster and 1 Shark Cannon; typically 2-3 of each are run for consistency and utility."
+          },
+          {
+            "title": "High Count of Non-Engine Cards",
+            "description": "4 Ash Blossom and 4 Impermanence are over the limit, and 15 Engage is clearly a data error (should be 3). This inflates the count and misrepresents the deck."
+          }
+        ],
+        "suggestions": [
+          {
+            "title": "Increase Main Deck to 40",
+            "description": "Add cards like 1 more Eagle Booster, 1 more Shark Cannon, 1 more Widow Anchor, and 2-3 hand traps (e.g., Ghost Ogre) to reach 40 cards.",
+            "priority": "high"
+          },
+          {
+            "title": "Fix Card Counts",
+            "description": "Correct Engage to 3 copies (not 15). Reduce Ash Blossom and Impermanence to 3 each to comply with limits.",
+            "priority": "high"
+          },
+          {
+            "title": "Complete Extra Deck",
+            "description": "Add a second Kagari, Selene, Queen of the Master Magicians, and a second Hayate or Kaina. Consider Dharc the Dark Charmer or Knightmare Unicorn for utility.",
+            "priority": "high"
+          },
+          {
+            "title": "Add Consistency Boosters",
+            "description": "Include 3 Upstart Goblin or 3 Pot of Desires to improve draw power and consistency.",
+            "priority": "medium"
+          }
+        ]
+      }
+    },
+    {
+      "deckId": "prebuilt-eldlich",
+      "deckName": "Eldlich Golden",
+      "model": "deepseek-v4-flash",
+      "durationMs": 7746,
+      "context": {
+        "name": "Eldlich Golden",
+        "archetype": {
+          "name": "Eldlich",
+          "confidence": 0
+        },
+        "identity": {
+          "archetype": "Eldlich",
+          "playstyle": null
+        },
+        "stats": {
+          "mainSize": 37,
+          "extraSize": 8,
+          "sideSize": 16
+        },
+        "typeDistribution": {
+          "monsters": 26,
+          "spells": 18,
+          "traps": 17
+        },
+        "monsterBreakdown": {
+          "normal": 0,
+          "effect": 26,
+          "fusion": 0,
+          "synchro": 0,
+          "xyz": 0,
+          "link": 0,
+          "pendulum": 0
+        },
+        "averageMonsterStats": {
+          "atk": 1415,
+          "def": null,
+          "level": null
+        },
+        "keyCards": [
+          {
+            "name": "Ash Blossom & Joyous Spring",
+            "count": 5
+          },
+          {
+            "name": "Eldlich the Conquistador",
+            "count": 5
+          },
+          {
+            "name": "Eldlich the Golden Lord",
+            "count": 4
+          },
+          {
+            "name": "Haunted Shrine",
+            "count": 4
+          },
+          {
+            "name": "Infinite Impermanence",
+            "count": 4
+          },
+          {
+            "name": "Called by the Grave",
+            "count": 3
+          },
+          {
+            "name": "Conquistador of the Golden Land",
+            "count": 3
+          },
+          {
+            "name": "Effect Veiler",
+            "count": 3
+          },
+          {
+            "name": "Eldlich the Guardian",
+            "count": 3
+          },
+          {
+            "name": "Guardian of the Golden Land",
+            "count": 3
+          },
+          {
+            "name": "Zombie World",
+            "count": 3
+          },
+          {
+            "name": "Droll & Lock Bird",
+            "count": 2
+          },
+          {
+            "name": "Eldlixir of Black Awakening",
+            "count": 2
+          },
+          {
+            "name": "Eldlixir of Scarlet Sanguine",
+            "count": 2
+          },
+          {
+            "name": "Harpie's Feather Duster",
+            "count": 2
+          }
+        ],
+        "consistencySignals": {
+          "duplicatesOver3": [
+            "Ash Blossom & Joyous Spring",
+            "Eldlich the Conquistador",
+            "Eldlich the Golden Lord",
+            "Haunted Shrine",
+            "Infinite Impermanence"
+          ],
+          "under40Main": true,
+          "extraDeckOverfilled": false
+        },
+        "rawCards": [
+          {
+            "id": 14558127,
+            "name": "Ash Blossom & Joyous Spring",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 5
+          },
+          {
+            "id": 24224830,
+            "name": "Called by the Grave",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 50588353,
+            "name": "Crystron Halqifibrax",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 94145021,
+            "name": "Droll & Lock Bird",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 97268402,
+            "name": "Effect Veiler",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          },
+          {
+            "id": 3834233,
+            "name": "Elder Entity N'tss",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 93860227,
+            "name": "Eldlich the Conquistador",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 12
+          },
+          {
+            "id": 95475765,
+            "name": "Eldlich the Golden Lord",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 8
+          },
+          {
+            "id": 87669967,
+            "name": "Eldlich the Guardian",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 9
+          },
+          {
+            "id": 38505587,
+            "name": "Harpie's Feather Duster",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 65741786,
+            "name": "I:P Masquerena",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 10045474,
+            "name": "Infinite Impermanence",
+            "type": "Trap",
+            "race": null,
+            "attribute": null,
+            "quantity": 4
+          },
+          {
+            "id": 83764718,
+            "name": "Monster Reborn",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 70744296,
+            "name": "Number 38: Hope Harbinger Dragon Titanic Galaxy",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 75574498,
+            "name": "Pot of Prosperity",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 12538374,
+            "name": "Raigeki",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 2
+          },
+          {
+            "id": 74677422,
+            "name": "Red-Eyes Dark Dragoon",
+            "type": "Monster",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 48130397,
+            "name": "Super Polymerization",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 1
+          },
+          {
+            "id": 40641314,
+            "name": "Zombie World",
+            "type": "Spell",
+            "race": null,
+            "attribute": null,
+            "quantity": 3
+          }
+        ]
+      },
+      "analysis": {
+        "summary": "The deck is a 37-card main deck with an Eldlich core, heavy on hand traps and disruption, but lacks a clear win condition beyond Eldlich the Golden Lord. The extra deck is small and includes generic boss monsters like Red-Eyes Dark Dragoon and Number 38, but consistency is hurt by odd card counts (e.g., 5 Ash Blossom, 12 Eldlich the Conquistador) and missing key Eldlich spells/traps.",
+        "strengths": [
+          {
+            "title": "Strong Disruption Suite",
+            "description": "Multiple copies of Ash Blossom, Infinite Impermanence, Effect Veiler, and Droll & Lock Bird provide strong hand trap interruption."
+          },
+          {
+            "title": "Eldlich Engine",
+            "description": "Eldlich the Golden Lord and its support cards offer recurring advantage and field presence."
+          },
+          {
+            "title": "Generic Boss Monsters",
+            "description": "Red-Eyes Dark Dragoon and Number 38 provide powerful end-board options."
+          }
+        ],
+        "weaknesses": [
+          {
+            "title": "Inconsistent Card Counts",
+            "description": "Multiple cards have illegal counts (e.g., 5 Ash Blossom, 12 Eldlich the Conquistador), suggesting a deckbuilding error or misinput. This violates the 3-copy limit and makes the deck illegal for tournament play."
+          },
+          {
+            "title": "Missing Key Eldlich Spells/Traps",
+            "description": "The deck lacks Eldlixir of Scarlet Sanguine (only 2 copies) and has no Golden Land traps like Eldlixir of White Destiny or Haunted Shrine (listed but count may be wrong). This reduces consistency."
+          },
+          {
+            "title": "Small Extra Deck",
+            "description": "Only 8 extra deck cards, limiting toolbox options and making it harder to adapt to various situations."
+          },
+          {
+            "title": "No Clear Win Condition",
+            "description": "Relies heavily on Eldlich the Golden Lord and generic boss monsters, but lacks a consistent combo or lockdown strategy."
+          }
+        ],
+        "suggestions": [
+          {
+            "title": "Fix Card Counts",
+            "description": "Adjust all cards to legal quantities (max 3 per card). Reduce Ash Blossom to 3, Eldlich the Conquistador to 3, etc.",
+            "priority": "high"
+          },
+          {
+            "title": "Add More Eldlich Traps",
+            "description": "Include 3 copies of Eldlixir of Scarlet Sanguine and 3 of Haunted Shrine to improve consistency and recursion.",
+            "priority": "high"
+          },
+          {
+            "title": "Expand Extra Deck",
+            "description": "Add more generic links (e.g., Knightmare Unicorn, Accesscode Talker) and synchros (e.g., Baronne de Fleur) to increase versatility.",
+            "priority": "medium"
+          },
+          {
+            "title": "Include Pot of Prosperity",
+            "description": "Add 3 copies of Pot of Prosperity to search key cards and improve consistency.",
+            "priority": "medium"
+          }
+        ]
+      }
+    }
+  ]
+}
