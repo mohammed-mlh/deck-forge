@@ -2,6 +2,7 @@ import {
   canAddCardToZone,
   getDefaultZoneForCard,
 } from "@/lib/deck-rules";
+import { sanitizeDeckDoctorResult } from "@/lib/ai/sanitize-deck-doctor";
 import { fetchCards } from "@/lib/ygoprodeck";
 import type { DeckDoctorResult, DeckZoneHint } from "@/lib/ai/types";
 import type { Deck, DeckCardEntry, DeckZone } from "@/types/deck";
@@ -121,7 +122,9 @@ export async function applyDeckDoctor(
     return { deck: current, warnings, errors: ["No changes to apply"] };
   }
 
-  for (const change of suggestion.remove) {
+  const { remove, add } = sanitizeDeckDoctorResult(suggestion, deck);
+
+  for (const change of remove) {
     const { deck: next, removed } = removeCopies(
       current,
       change.name,
@@ -133,12 +136,14 @@ export async function applyDeckDoctor(
       errors.push(`Could not remove ${change.name} — not found in deck`);
     } else if (removed < change.quantity) {
       warnings.push(`Removed ${removed}/${change.quantity} copies of ${change.name}`);
+    } else {
+      warnings.push(`Removed ${removed}x ${change.name}`);
     }
 
     current = next;
   }
 
-  const uniqueAddNames = [...new Set(suggestion.add.map((change) => change.name))];
+  const uniqueAddNames = [...new Set(add.map((change) => change.name))];
   const resolved = new Map<string, YugiohCard | null>();
 
   await Promise.all(
@@ -147,7 +152,7 @@ export async function applyDeckDoctor(
     })
   );
 
-  for (const change of suggestion.add) {
+  for (const change of add) {
     const card = resolved.get(change.name);
 
     if (!card) {
@@ -169,6 +174,8 @@ export async function applyDeckDoctor(
       errors.push(`Could not add ${change.name}`);
     } else if (added < change.quantity) {
       warnings.push(`Added ${added}/${change.quantity} copies of ${change.name}`);
+    } else if (added > 0) {
+      warnings.push(`Added ${added}x ${change.name}`);
     }
   }
 
