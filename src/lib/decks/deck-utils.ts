@@ -57,7 +57,7 @@ export const staples = {
   imperm: [10045474, "Infinite Impermanence", "Trap Card", 2] as CardDef,
   raigeki: [12538374, "Raigeki", "Spell Card", 1] as CardDef,
   duster: [38505587, "Harpie's Feather Duster", "Spell Card", 1] as CardDef,
-  prosperity: [75574498, "Pot of Prosperity", "Spell Card", 1] as CardDef,
+  prosperity: [84211599, "Pot of Prosperity", "Spell Card", 1] as CardDef,
   superPoly: [48130397, "Super Polymerization", "Spell Card", 1] as CardDef,
 };
 

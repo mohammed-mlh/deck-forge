@@ -219,7 +219,7 @@
             "quantity": 3
           },
           {
-            "id": 3834233,
+            "id": 80532587,
             "name": "Elder Entity N'tss",
             "type": "Monster",
             "race": null,
@@ -307,7 +307,7 @@
             "quantity": 1
           },
           {
-            "id": 75574498,
+            "id": 84211599,
             "name": "Pot of Prosperity",
             "type": "Spell",
             "race": null,
@@ -530,7 +530,7 @@
         },
         "rawCards": [
           {
-            "id": 3834233,
+            "id": 86066372,
             "name": "Accesscode Talker",
             "type": "Monster",
             "race": null,
@@ -610,7 +610,7 @@
             "quantity": 4
           },
           {
-            "id": 75574498,
+            "id": 84211599,
             "name": "Pot of Prosperity",
             "type": "Spell",
             "race": null,
@@ -927,7 +927,7 @@
             "quantity": 3
           },
           {
-            "id": 3834233,
+            "id": 80532587,
             "name": "Elder Entity N'tss",
             "type": "Monster",
             "race": null,
@@ -999,7 +999,7 @@
             "quantity": 1
           },
           {
-            "id": 75574498,
+            "id": 84211599,
             "name": "Pot of Prosperity",
             "type": "Spell",
             "race": null,
