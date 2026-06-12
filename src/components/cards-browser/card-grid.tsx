@@ -74,7 +74,7 @@ export function CardGrid({
 
   return (
     <div className={`grid ${gridClass}`}>
-      {cards.map((card) => (
+      {cards.map((card, index) => (
         <CardItem
           key={card.id}
           card={card}
@@ -83,6 +83,7 @@ export function CardGrid({
           selected={selectedCardId === card.id}
           draggable={draggable}
           dragId={`search-${card.id}`}
+          priority={index < columns * 2}
         />
       ))}
     </div>

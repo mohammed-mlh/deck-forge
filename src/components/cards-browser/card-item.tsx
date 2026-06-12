@@ -14,6 +14,7 @@ interface CardItemProps {
   selected?: boolean;
   draggable?: boolean;
   dragId?: string;
+  priority?: boolean;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ export function CardItem({
   selected,
   draggable = false,
   dragId,
+  priority,
   className,
 }: CardItemProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -63,6 +65,7 @@ export function CardItem({
           fill
           sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 150px"
           className="object-contain"
+          priority={priority}
           unoptimized
         />
       </div>
