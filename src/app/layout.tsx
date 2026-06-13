@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteLayout } from "@/components/layout/site-layout";
+import { clerkAppearance } from "@/lib/clerk-appearance";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 
@@ -47,8 +48,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen antialiased">
         <ClerkProvider
-          signInUrl="/sign-in"
-          signUpUrl="/sign-up"
+          appearance={clerkAppearance}
           signInFallbackRedirectUrl="/deck-builder"
           signUpFallbackRedirectUrl="/deck-builder"
         >

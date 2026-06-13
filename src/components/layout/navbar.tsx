@@ -39,7 +39,7 @@ function AuthNavActions({ className }: { className?: string }) {
   return (
     <div className={className}>
       <Show when="signed-out">
-        <SignInButton mode="redirect">
+        <SignInButton mode="modal">
           <button
             type="button"
             className="rounded-md px-3 py-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
@@ -47,7 +47,7 @@ function AuthNavActions({ className }: { className?: string }) {
             Sign In
           </button>
         </SignInButton>
-        <SignUpButton mode="redirect">
+        <SignUpButton mode="modal">
           <button
             type="button"
             className="rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
@@ -97,12 +97,12 @@ function MobileNav({ items, className }: { items: NavItem[]; className?: string 
             ))}
             <div className="my-1 border-t border-(--color-border)" />
             <Show when="signed-out">
-              <SignInButton mode="redirect">
+              <SignInButton mode="modal">
                 <button type="button" onClick={() => setOpen(false)} className={navLinkClass}>
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="redirect">
+              <SignUpButton mode="modal">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}

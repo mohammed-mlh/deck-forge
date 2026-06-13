@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, FolderOpen, Hammer, Database, Layers } from "lucide-react";
+import { FolderOpen, Hammer, Database, Layers } from "lucide-react";
+import { GetStartedButton } from "@/components/auth/get-started-button";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,13 +52,7 @@ export default function HomePage() {
               and shareable public decks.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-5 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
-              >
-                Start Building
-                <ArrowRight className="size-4" />
-              </Link>
+              <GetStartedButton>Start Building</GetStartedButton>
               <Link
                 href="/cards"
                 className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-5 py-2.5 text-sm font-medium text-(--color-foreground) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
@@ -129,13 +124,7 @@ export default function HomePage() {
             <p className="max-w-md text-sm text-(--color-foreground-muted)">
               Start with the card database or copy an official deck into the builder.
             </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-5 py-2.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
-            >
-              Get Started Free
-              <ArrowRight className="size-4" />
-            </Link>
+            <GetStartedButton>Get Started Free</GetStartedButton>
           </div>
         </Container>
       </section>
