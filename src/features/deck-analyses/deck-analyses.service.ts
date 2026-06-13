@@ -3,7 +3,7 @@ import {
   findDeckAnalysesByDeckId,
   insertDeckAnalysis,
 } from "@/features/deck-analyses/deck-analyses.repository";
-import type { CreateDeckAnalysisInput } from "@/features/deck-analyses/deck-analyses.types";
+import type { CreateDeckAnalysisInput } from "@/features/deck-analyses/deck-analyses.schema";
 import type { DeckAnalysisRecord } from "@/db/schema/deck-analyses";
 
 export async function getDeckAnalyses(

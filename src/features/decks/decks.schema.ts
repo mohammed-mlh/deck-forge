@@ -20,5 +20,8 @@ export const createDeckSchema = z.object({
 
 export const updateDeckSchema = createDeckSchema.partial();
 
+export type DeckCardRef = z.infer<typeof deckCardRefSchema>;
+export type DeckZoneRefs = z.infer<typeof deckZoneRefsSchema>;
+export type DeckVisibility = z.infer<typeof deckVisibilitySchema>;
 export type CreateDeckInput = z.infer<typeof createDeckSchema>;
 export type UpdateDeckInput = z.infer<typeof updateDeckSchema>;

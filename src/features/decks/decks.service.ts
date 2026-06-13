@@ -6,7 +6,7 @@ import {
   updateDeckById,
 } from "@/features/decks/decks.repository";
 import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
-import type { CreateDeckInput, UpdateDeckInput } from "@/features/decks/decks.types";
+import type { CreateDeckInput, UpdateDeckInput } from "@/features/decks/decks.schema";
 
 function slugify(value: string): string {
   return value
