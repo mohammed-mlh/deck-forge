@@ -153,6 +153,28 @@ export function validateDeck(deck: Deck): DeckValidationIssue[] {
   const zones: DeckZone[] = ["main", "extra", "side"];
   for (const zone of zones) {
     for (const entry of deck[zone]) {
+      const isExtra = isExtraDeckCard(entry.card);
+      if (zone === "extra" && !isExtra) {
+        issues.push({
+          zone,
+          cardId: entry.card.id,
+          message: `${entry.card.name} cannot be in Extra Deck`,
+          severity: "error",
+        });
+      }
+      if ((zone === "main" || zone === "side") && isExtra) {
+        issues.push({
+          zone,
+          cardId: entry.card.id,
+          message: `${entry.card.name} must be in Extra Deck`,
+          severity: "error",
+        });
+      }
+    }
+  }
+
+  for (const zone of zones) {
+    for (const entry of deck[zone]) {
       if (seen.has(entry.card.id)) continue;
       seen.add(entry.card.id);
       const total = countCardInDeck(deck, entry.card.id);
@@ -167,6 +189,28 @@ export function validateDeck(deck: Deck): DeckValidationIssue[] {
   }
 
   return issues;
+}
+
+export function deckFromRefs(
+  main: DeckZoneRefs,
+  extra: DeckZoneRefs,
+  side: DeckZoneRefs,
+  byId: Map<number, YugiohCard>
+): Deck {
+  const toEntries = (refs: DeckZoneRefs): DeckCardEntry[] =>
+    refs.map((ref) => {
+      const card = byId.get(ref.id);
+      if (!card) throw new Error(`Unknown card ID ${ref.id}`);
+      return { card, quantity: ref.quantity };
+    });
+
+  return {
+    id: "validation",
+    name: "",
+    main: toEntries(main),
+    extra: toEntries(extra),
+    side: toEntries(side),
+  };
 }
 
 export function createEmptyDeck(name = "New Deck"): Deck {

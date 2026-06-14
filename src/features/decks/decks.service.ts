@@ -9,8 +9,9 @@ import {
   updateDeckById,
 } from "@/features/decks/decks.repository";
 import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
-import type { CreateDeckInput, UpdateDeckInput } from "@/features/decks/decks.schema";
-import { validateDeckRefs } from "@/lib/deck-rules";
+import type { CreateDeckInput, DeckZoneRefs, UpdateDeckInput } from "@/features/decks/decks.schema";
+import { deckFromRefs, validateDeck, validateDeckRefs } from "@/lib/deck-rules";
+import { fetchCardsByIds } from "@/lib/ygoprodeck";
 
 function slugify(value: string): string {
   return value
@@ -26,8 +27,31 @@ function defaultSlug(name: string): string {
   return base || "deck";
 }
 
-function assertValidDeckInput(input: Pick<CreateDeckInput, "main" | "extra" | "side">) {
-  const issues = validateDeckRefs(input.main ?? [], input.extra ?? [], input.side ?? []);
+function collectRefIds(main: DeckZoneRefs, extra: DeckZoneRefs, side: DeckZoneRefs): number[] {
+  const ids = new Set<number>();
+  for (const refs of [main, extra, side]) {
+    for (const ref of refs) ids.add(ref.id);
+  }
+  return [...ids];
+}
+
+async function assertValidDeckInput(
+  input: Pick<CreateDeckInput, "main" | "extra" | "side">
+) {
+  const main = input.main ?? [];
+  const extra = input.extra ?? [];
+  const side = input.side ?? [];
+
+  const issues = validateDeckRefs(main, extra, side);
+
+  const ids = collectRefIds(main, extra, side);
+  if (ids.length > 0) {
+    const cards = await fetchCardsByIds(ids);
+    const byId = new Map(cards.map((card) => [card.id, card]));
+    const deck = deckFromRefs(main, extra, side, byId);
+    issues.push(...validateDeck(deck));
+  }
+
   const errors = issues.filter((issue) => issue.severity === "error");
   if (errors.length > 0) {
     throw new Error(errors[0]?.message ?? "Invalid deck");
@@ -65,7 +89,7 @@ export async function getPublicDeckById(deckId: string): Promise<DeckRecord | nu
 }
 
 export async function createDeck(userId: string, input: CreateDeckInput): Promise<DeckRecord> {
-  assertValidDeckInput(input);
+  await assertValidDeckInput(input);
 
   const slug = input.slug ? slugify(input.slug) : await uniqueSlug(userId, input.name);
 
@@ -100,7 +124,7 @@ export async function updateDeck(
     const existing = await getDeckById(userId, deckId);
     if (!existing) return null;
 
-    assertValidDeckInput({
+    await assertValidDeckInput({
       main: input.main ?? existing.main,
       extra: input.extra ?? existing.extra,
       side: input.side ?? existing.side,
