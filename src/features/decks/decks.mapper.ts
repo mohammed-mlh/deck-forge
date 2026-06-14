@@ -40,6 +40,7 @@ export function deckRecordToSavedDeck(record: DeckRecord): SavedDeck {
     main: refsToEntries(record.main),
     extra: refsToEntries(record.extra),
     side: refsToEntries(record.side),
+    visibility: record.visibility,
     updatedAt: record.updatedAt.toISOString(),
   };
 }
@@ -50,5 +51,6 @@ export function deckToCreateInput(deck: Deck): CreateDeckInput {
     main: entriesToRefs(deck.main),
     extra: entriesToRefs(deck.extra),
     side: entriesToRefs(deck.side),
+    visibility: deck.visibility ?? "private",
   };
 }

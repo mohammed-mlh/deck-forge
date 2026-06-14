@@ -6,63 +6,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/browse-decks", destination: "/decks", permanent: true },
       {
-        source: "/browse-decks/prebuilt-blue-eyes",
-        destination: "/decks/blue-eyes-chronicle",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-dark-magician",
-        destination: "/decks/dark-magician-legacy",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-sky-striker",
-        destination: "/decks/sky-striker-mobilize",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-eldlich",
-        destination: "/decks/eldlich-golden",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-stardust",
-        destination: "/decks/stardust-synchron",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-blackwing",
-        destination: "/decks/blackwing-assault",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-utopia",
-        destination: "/decks/utopia-rising",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-photon",
-        destination: "/decks/photon-galaxy",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-odd-eyes",
-        destination: "/decks/odd-eyes-pendulum",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-raidraptor",
-        destination: "/decks/raid-raptors-strike",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-salamangreat",
-        destination: "/decks/salamangreat-blaze",
-        permanent: true,
-      },
-      {
-        source: "/browse-decks/prebuilt-rokket",
-        destination: "/decks/rokket-reload",
+        source: "/browse-decks/prebuilt-:slug",
+        destination: "/decks",
         permanent: true,
       },
       { source: "/app", destination: "/deck-builder", permanent: true },

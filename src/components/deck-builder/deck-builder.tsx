@@ -96,7 +96,7 @@ interface DeckBuilderContentProps {
 function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const router = useRouter();
   const { save } = useSavedDecks();
-  const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
+  const { deck, stats, addCard, removeCard, resetDeck, setDeckName, setDeckVisibility, replaceDeck } =
     useDeck(initialDeck);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
@@ -163,6 +163,8 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
           <DeckPanelHeader
             deckName={deck.name}
             onDeckNameChange={setDeckName}
+            visibility={deck.visibility ?? "private"}
+            onVisibilityChange={setDeckVisibility}
             main={stats.main}
             extra={stats.extra}
             side={stats.side}

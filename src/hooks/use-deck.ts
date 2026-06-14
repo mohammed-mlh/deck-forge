@@ -51,6 +51,10 @@ export function useDeck(initial?: Deck) {
     setDeck(next);
   }, []);
 
+  const setDeckVisibility = useCallback((visibility: Deck["visibility"]) => {
+    setDeck((prev) => ({ ...prev, visibility }));
+  }, []);
+
   return {
     deck,
     stats,
@@ -60,6 +64,7 @@ export function useDeck(initial?: Deck) {
     moveCard,
     resetDeck,
     setDeckName,
+    setDeckVisibility,
     replaceDeck,
   };
 }

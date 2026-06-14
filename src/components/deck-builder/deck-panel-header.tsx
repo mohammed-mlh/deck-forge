@@ -1,12 +1,14 @@
 "use client";
 
 import { Download, Save, Trash2, Upload } from "lucide-react";
-import { DECK_LIMITS } from "@/types/deck";
+import { DECK_LIMITS, type Deck } from "@/types/deck";
 import { cn } from "@/lib/utils";
 
 interface DeckPanelHeaderProps {
   deckName: string;
   onDeckNameChange: (name: string) => void;
+  visibility: NonNullable<Deck["visibility"]>;
+  onVisibilityChange: (visibility: NonNullable<Deck["visibility"]>) => void;
   main: number;
   extra: number;
   side: number;
@@ -51,6 +53,8 @@ function StatPill({
 export function DeckPanelHeader({
   deckName,
   onDeckNameChange,
+  visibility,
+  onVisibilityChange,
   main,
   extra,
   side,
@@ -62,13 +66,27 @@ export function DeckPanelHeader({
 }: DeckPanelHeaderProps) {
   return (
     <div className="grid shrink-0 grid-cols-1 items-center gap-2 border-b border-(--color-border) px-4 py-2.5 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
-      <input
-        type="text"
-        value={deckName}
-        onChange={(e) => onDeckNameChange(e.target.value)}
-        placeholder="Deck name"
-        className="min-w-0 rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-semibold text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-disabled) focus:border-(--color-border) focus:bg-(--color-surface-2) sm:max-w-[180px]"
-      />
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <input
+          type="text"
+          value={deckName}
+          onChange={(e) => onDeckNameChange(e.target.value)}
+          placeholder="Deck name"
+          className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-semibold text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-disabled) focus:border-(--color-border) focus:bg-(--color-surface-2) sm:max-w-[180px]"
+        />
+        <select
+          value={visibility}
+          onChange={(e) =>
+            onVisibilityChange(e.target.value as NonNullable<Deck["visibility"]>)
+          }
+          aria-label="Deck visibility"
+          className="rounded-md border border-(--color-border) bg-(--color-surface-2) px-2 py-1 text-xs text-(--color-foreground-muted) outline-none transition-colors hover:border-(--color-border-strong) focus:border-(--color-border-strong)"
+        >
+          <option value="private">Private</option>
+          <option value="unlisted">Unlisted</option>
+          <option value="public">Public</option>
+        </select>
+      </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:justify-center">
         <StatPill label="Main" count={main} max={DECK_LIMITS.main.max} min={DECK_LIMITS.main.min} />
