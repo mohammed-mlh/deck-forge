@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { SiteLayout } from "@/components/layout/site-layout";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import { QueryProvider } from "@/providers/query-provider";
+import { AnalyticsProvider } from "@/providers/analytics-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,7 +54,9 @@ export default function RootLayout({
           signUpFallbackRedirectUrl="/deck-builder"
         >
           <QueryProvider>
-            <SiteLayout>{children}</SiteLayout>
+            <AnalyticsProvider>
+              <SiteLayout>{children}</SiteLayout>
+            </AnalyticsProvider>
           </QueryProvider>
         </ClerkProvider>
       </body>

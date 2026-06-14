@@ -163,9 +163,11 @@ Added unit tests:
 
 Still missing: API route integration tests, `requireUserId`, hooks.
 
-### 22. Analytics stub
+### ~~22. Analytics stub~~ ✓
 
-- `src/lib/analytics.ts` — `setAnalyticsProvider()` never called; events `console.log` only.
+- `analytics_events` table + `features/analytics/` service/repository.
+- `POST /api/analytics/events` persists events (Clerk userId when signed in).
+- `AnalyticsProvider` wires `setAnalyticsProvider` → API.
 
 ### 23. SEO inconsistency
 
