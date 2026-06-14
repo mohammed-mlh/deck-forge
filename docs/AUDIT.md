@@ -169,11 +169,9 @@ Still missing: API route integration tests, `requireUserId`, hooks.
 - `POST /api/analytics/events` persists events (Clerk userId when signed in).
 - `track()` in `src/lib/analytics.ts` POSTs directly to `/api/analytics/events`.
 
-### 23. SEO inconsistency
+### ~~23. SEO inconsistency~~ ✓
 
-- `src/app/sitemap.ts` includes `/my-decks`.
-- `src/app/my-decks/page.tsx` sets `noIndex: true`.
-- `src/app/robots.ts` disallows `/my-decks`.
+- Removed `/my-decks` from `sitemap.ts` (matches `noIndex` + `robots.ts` disallow).
 
 ### 24. `src/types/index.ts` misnamed
 
