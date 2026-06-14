@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
-import { getPublicDecks } from "@/lib/decks/public-decks";
+import { getPublicDecks } from "@/features/decks/decks.service";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const now = new Date();
+  const publicDecks = await getPublicDecks();
 
-  const publicDeckEntries = getPublicDecks().map((deck) => ({
-    url: `${base}/decks/${deck.slug}`,
-    lastModified: new Date(deck.updatedAt),
+  const publicDeckEntries = publicDecks.map((deck) => ({
+    url: `${base}/decks/${deck.id}`,
+    lastModified: deck.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));

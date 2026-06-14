@@ -1,7 +1,76 @@
 import type { Deck, DeckCardEntry, DeckValidationIssue, DeckZone } from "@/types/deck";
 import { DECK_LIMITS } from "@/types/deck";
+import type { DeckZoneRefs } from "@/features/decks/decks.schema";
 import type { YugiohCard } from "@/types/yugioh";
 import { isExtraDeckCard } from "@/lib/ygoprodeck";
+
+function countRefs(refs: DeckZoneRefs): number {
+  return refs.reduce((sum, ref) => sum + ref.quantity, 0);
+}
+
+function countRefInZones(
+  main: DeckZoneRefs,
+  extra: DeckZoneRefs,
+  side: DeckZoneRefs,
+  cardId: number
+): number {
+  const zones = [main, extra, side];
+  return zones.reduce((total, refs) => {
+    const ref = refs.find((r) => r.id === cardId);
+    return total + (ref?.quantity ?? 0);
+  }, 0);
+}
+
+export function validateDeckRefs(
+  main: DeckZoneRefs,
+  extra: DeckZoneRefs,
+  side: DeckZoneRefs
+): DeckValidationIssue[] {
+  const issues: DeckValidationIssue[] = [];
+  const mainCount = countRefs(main);
+  const extraCount = countRefs(extra);
+  const sideCount = countRefs(side);
+
+  if (mainCount > DECK_LIMITS.main.max) {
+    issues.push({
+      zone: "main",
+      message: `Main Deck exceeds ${DECK_LIMITS.main.max} cards`,
+      severity: "error",
+    });
+  }
+  if (extraCount > DECK_LIMITS.extra.max) {
+    issues.push({
+      zone: "extra",
+      message: `Extra Deck exceeds ${DECK_LIMITS.extra.max} cards`,
+      severity: "error",
+    });
+  }
+  if (sideCount > DECK_LIMITS.side.max) {
+    issues.push({
+      zone: "side",
+      message: `Side Deck exceeds ${DECK_LIMITS.side.max} cards`,
+      severity: "error",
+    });
+  }
+
+  const seen = new Set<number>();
+  for (const refs of [main, extra, side]) {
+    for (const ref of refs) {
+      if (seen.has(ref.id)) continue;
+      seen.add(ref.id);
+      const total = countRefInZones(main, extra, side, ref.id);
+      if (total > DECK_LIMITS.maxCopies) {
+        issues.push({
+          cardId: ref.id,
+          message: `Card ${ref.id}: ${total} copies (max ${DECK_LIMITS.maxCopies})`,
+          severity: "error",
+        });
+      }
+    }
+  }
+
+  return issues;
+}
 
 export function countZone(entries: DeckCardEntry[]): number {
   return entries.reduce((sum, e) => sum + e.quantity, 0);

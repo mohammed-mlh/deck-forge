@@ -1,7 +1,7 @@
 import { updateDeckSchema } from "@/features/decks/decks.schema";
 import { deleteDeck, getDeckById, updateDeck } from "@/features/decks/decks.service";
+import { deckRecordToSavedDeck } from "@/features/decks/decks.mapper";
 import { requireUserId } from "@/lib/auth/require-user";
-import { deckRecordToSavedDeck } from "@/lib/decks/deck-db-mapper";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -39,7 +39,7 @@ export async function PATCH(req: Request, context: RouteContext) {
   } catch (err) {
     if (err instanceof Response) return err;
     const message = err instanceof Error ? err.message : "Failed to update deck";
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: message }, { status: 400 });
   }
 }
 

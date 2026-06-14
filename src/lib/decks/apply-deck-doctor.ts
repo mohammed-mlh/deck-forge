@@ -1,7 +1,8 @@
 import {
-  canAddCardToZone,
-  getDefaultZoneForCard,
-} from "@/lib/deck-rules";
+  addCardToDeck,
+  removeOneDeckEntry,
+} from "@/lib/decks/deck-editor";
+import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import { sanitizeDeckDoctorResult } from "@/lib/ai/sanitize-deck-doctor";
 import { fetchCards } from "@/lib/ygoprodeck";
 import type { DeckDoctorResult, DeckZoneHint } from "@/lib/ai/types";
@@ -20,20 +21,8 @@ function normalizeName(name: string): string {
   return name.trim().toLowerCase();
 }
 
-function upsertEntry(entries: DeckCardEntry[], card: YugiohCard): DeckCardEntry[] {
-  const existing = entries.find((e) => e.card.id === card.id);
-  if (existing) {
-    return entries.map((e) =>
-      e.card.id === card.id ? { ...e, quantity: e.quantity + 1 } : e
-    );
-  }
-  return [...entries, { card, quantity: 1 }];
-}
-
 function removeOneEntry(entries: DeckCardEntry[], cardId: number): DeckCardEntry[] {
-  return entries
-    .map((e) => (e.card.id === cardId ? { ...e, quantity: e.quantity - 1 } : e))
-    .filter((e) => e.quantity > 0);
+  return removeOneDeckEntry(entries, cardId);
 }
 
 function findEntry(
@@ -87,17 +76,14 @@ function addCopies(
 
   for (let i = 0; i < quantity; i++) {
     const zone = zoneHint ?? getDefaultZoneForCard(card);
-    const check = canAddCardToZone(current, card, zone);
+    const result = addCardToDeck(current, card, zone);
 
-    if (!check.ok) {
-      errors.push(`${card.name}: ${check.reason ?? "Cannot add to deck"}`);
+    if (!result.ok) {
+      errors.push(`${card.name}: ${result.reason ?? "Cannot add to deck"}`);
       break;
     }
 
-    current = {
-      ...current,
-      [zone]: upsertEntry(current[zone], card),
-    };
+    current = result.deck;
     added++;
   }
 

@@ -1,1 +1,0 @@
-i want also in analysis, to have info about tokens input count and output, response time, average cost for it, and some other technical details

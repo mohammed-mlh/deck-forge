@@ -2,8 +2,8 @@
 
 import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deckToCreateInput } from "@/features/decks/decks.mapper";
 import type { Deck, SavedDeck } from "@/types/deck";
-import { deckToCreateInput } from "@/lib/decks/deck-db-mapper";
 
 const DECKS_QUERY_KEY = ["user-decks"] as const;
 
@@ -61,6 +61,24 @@ export function useSavedDecks() {
     },
   });
 
+  const forkMutation = useMutation({
+    mutationFn: async (payload: ReturnType<typeof deckToCreateInput>) => {
+      const res = await fetch("/api/decks/fork", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to copy deck");
+      }
+      const data = (await res.json()) as { deck: SavedDeck };
+      return data.deck;
+    },
+    onSuccess: (saved) => {
+      queryClient.setQueryData<SavedDeck[]>(DECKS_QUERY_KEY, (prev = []) => [saved, ...(prev ?? [])]);
+    },
+  });
+
   const removeMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/decks/${id}`, { method: "DELETE" });
@@ -100,6 +118,7 @@ export function useSavedDecks() {
   return {
     decks: listQuery.data ?? [],
     save: saveMutation.mutateAsync,
+    fork: forkMutation.mutateAsync,
     remove: removeMutation.mutateAsync,
     getById,
     fetchDeck,
@@ -109,7 +128,7 @@ export function useSavedDecks() {
 }
 
 export function useSavedDeckById(deckId: string | null) {
-  const { decks, ready, getById, fetchDeck } = useSavedDecks();
+  const { ready, getById, fetchDeck } = useSavedDecks();
 
   return useQuery({
     queryKey: ["deck", deckId],

@@ -1,12 +1,16 @@
 import {
   deleteDeckById,
   findDeckById,
+  findDeckByUserSlug,
   findDecksByUserId,
+  findPublicDeckById,
+  findPublicDecks,
   insertDeck,
   updateDeckById,
 } from "@/features/decks/decks.repository";
 import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
 import type { CreateDeckInput, UpdateDeckInput } from "@/features/decks/decks.schema";
+import { validateDeckRefs } from "@/lib/deck-rules";
 
 function slugify(value: string): string {
   return value
@@ -22,6 +26,26 @@ function defaultSlug(name: string): string {
   return base || "deck";
 }
 
+function assertValidDeckInput(input: Pick<CreateDeckInput, "main" | "extra" | "side">) {
+  const issues = validateDeckRefs(input.main ?? [], input.extra ?? [], input.side ?? []);
+  const errors = issues.filter((issue) => issue.severity === "error");
+  if (errors.length > 0) {
+    throw new Error(errors[0]?.message ?? "Invalid deck");
+  }
+}
+
+async function uniqueSlug(userId: string, name: string): Promise<string> {
+  let slug = defaultSlug(name);
+  let suffix = 2;
+
+  while (await findDeckByUserSlug(userId, slug)) {
+    slug = `${defaultSlug(name).slice(0, 58)}-${suffix}`;
+    suffix++;
+  }
+
+  return slug;
+}
+
 export async function getDeckById(userId: string, deckId: string): Promise<DeckRecord | null> {
   const deck = await findDeckById(deckId);
   if (!deck || deck.userId !== userId) return null;
@@ -32,8 +56,18 @@ export async function getUserDecks(userId: string): Promise<DeckRecord[]> {
   return findDecksByUserId(userId);
 }
 
+export async function getPublicDecks(): Promise<DeckRecord[]> {
+  return findPublicDecks();
+}
+
+export async function getPublicDeckById(deckId: string): Promise<DeckRecord | null> {
+  return findPublicDeckById(deckId);
+}
+
 export async function createDeck(userId: string, input: CreateDeckInput): Promise<DeckRecord> {
-  const slug = input.slug ? slugify(input.slug) : defaultSlug(input.name);
+  assertValidDeckInput(input);
+
+  const slug = input.slug ? slugify(input.slug) : await uniqueSlug(userId, input.name);
 
   const values: NewDeckRecord = {
     ...(input.id ? { id: input.id } : {}),
@@ -49,11 +83,30 @@ export async function createDeck(userId: string, input: CreateDeckInput): Promis
   return insertDeck(values);
 }
 
+export async function forkDeck(userId: string, input: CreateDeckInput): Promise<DeckRecord> {
+  return createDeck(userId, {
+    ...input,
+    name: input.name.trim(),
+    slug: undefined,
+  });
+}
+
 export async function updateDeck(
   userId: string,
   deckId: string,
   input: UpdateDeckInput
 ): Promise<DeckRecord | null> {
+  if (input.main !== undefined || input.extra !== undefined || input.side !== undefined) {
+    const existing = await getDeckById(userId, deckId);
+    if (!existing) return null;
+
+    assertValidDeckInput({
+      main: input.main ?? existing.main,
+      extra: input.extra ?? existing.extra,
+      side: input.side ?? existing.side,
+    });
+  }
+
   const patch: Partial<NewDeckRecord> = {
     updatedAt: new Date(),
   };

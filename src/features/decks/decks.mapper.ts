@@ -1,17 +1,36 @@
 import type { DeckRecord } from "@/db/schema/decks";
 import type { CreateDeckInput, DeckZoneRefs } from "@/features/decks/decks.schema";
-import { card } from "@/lib/decks/deck-utils";
 import type { Deck, DeckCardEntry, SavedDeck } from "@/types/deck";
+import type { YugiohCard } from "@/types/yugioh";
+
+function stubCard(id: number): YugiohCard {
+  const base = "https://images.ygoprodeck.com/images";
+  return {
+    id,
+    name: "Loading…",
+    type: "Unknown",
+    desc: "",
+    frameType: "effect",
+    card_images: [
+      {
+        id,
+        image_url: `${base}/cards/${id}.jpg`,
+        image_url_small: `${base}/cards_small/${id}.jpg`,
+        image_url_cropped: `${base}/cards_cropped/${id}.jpg`,
+      },
+    ],
+  };
+}
+
+export function entriesToRefs(entries: DeckCardEntry[]): DeckZoneRefs {
+  return entries.map(({ card: c, quantity }) => ({ id: c.id, quantity }));
+}
 
 function refsToEntries(refs: DeckZoneRefs): DeckCardEntry[] {
   return refs.map(({ id, quantity }) => ({
-    card: card(id, "Loading…", "Unknown"),
+    card: stubCard(id),
     quantity,
   }));
-}
-
-function entriesToRefs(entries: DeckCardEntry[]): DeckZoneRefs {
-  return entries.map(({ card: c, quantity }) => ({ id: c.id, quantity }));
 }
 
 export function deckRecordToSavedDeck(record: DeckRecord): SavedDeck {

@@ -8,6 +8,35 @@ export async function findDeckById(deckId: string): Promise<DeckRecord | null> {
   return rows[0] ?? null;
 }
 
+export async function findPublicDeckById(deckId: string): Promise<DeckRecord | null> {
+  const rows = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, deckId), eq(decks.visibility, "public")))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+export async function findPublicDecks(): Promise<DeckRecord[]> {
+  return db
+    .select()
+    .from(decks)
+    .where(eq(decks.visibility, "public"))
+    .orderBy(desc(decks.updatedAt));
+}
+
+export async function findDeckByUserSlug(
+  userId: string,
+  slug: string
+): Promise<DeckRecord | null> {
+  const rows = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.userId, userId), eq(decks.slug, slug)))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 export async function findDecksByUserId(userId: string): Promise<DeckRecord[]> {
   return db
     .select()

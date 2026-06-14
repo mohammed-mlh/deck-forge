@@ -1,33 +1,14 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import type { Deck, DeckCardEntry, DeckZone } from "@/types/deck";
 import {
-  canAddCardToZone,
-  countZone,
-  createEmptyDeck,
-  getDefaultZoneForCard,
-  validateDeck,
-} from "@/lib/deck-rules";
+  addCardToDeck,
+  moveCardInDeck,
+  removeCardFromDeck,
+} from "@/lib/decks/deck-editor";
+import { countZone, createEmptyDeck, validateDeck } from "@/lib/deck-rules";
+import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
-
-function upsertEntry(entries: DeckCardEntry[], card: YugiohCard): DeckCardEntry[] {
-  const existing = entries.find((e) => e.card.id === card.id);
-  if (existing) {
-    return entries.map((e) =>
-      e.card.id === card.id ? { ...e, quantity: e.quantity + 1 } : e
-    );
-  }
-  return [...entries, { card, quantity: 1 }];
-}
-
-function removeOneEntry(entries: DeckCardEntry[], cardId: number): DeckCardEntry[] {
-  return entries
-    .map((e) =>
-      e.card.id === cardId ? { ...e, quantity: e.quantity - 1 } : e
-    )
-    .filter((e) => e.quantity > 0);
-}
 
 export function useDeck(initial?: Deck) {
   const [deck, setDeck] = useState<Deck>(initial ?? createEmptyDeck());
@@ -44,41 +25,19 @@ export function useDeck(initial?: Deck) {
   );
 
   const addCard = useCallback((card: YugiohCard, zone?: DeckZone) => {
-    const targetZone = zone ?? getDefaultZoneForCard(card);
     setDeck((prev) => {
-      const check = canAddCardToZone(prev, card, targetZone);
-      if (!check.ok) return prev;
-      return {
-        ...prev,
-        [targetZone]: upsertEntry(prev[targetZone], card),
-      };
+      const result = addCardToDeck(prev, card, zone);
+      return result.ok ? result.deck : prev;
     });
   }, []);
 
   const removeCard = useCallback((cardId: number, zone: DeckZone) => {
-    setDeck((prev) => ({
-      ...prev,
-      [zone]: removeOneEntry(prev[zone], cardId),
-    }));
+    setDeck((prev) => removeCardFromDeck(prev, cardId, zone));
   }, []);
 
-  const moveCard = useCallback(
-    (cardId: number, from: DeckZone, to: DeckZone) => {
-      setDeck((prev) => {
-        const entry = prev[from].find((e) => e.card.id === cardId);
-        if (!entry) return prev;
-
-        const check = canAddCardToZone(prev, entry.card, to);
-        if (!check.ok) return prev;
-
-        const fromUpdated = removeOneEntry(prev[from], cardId);
-        const toUpdated = upsertEntry(prev[to], entry.card);
-
-        return { ...prev, [from]: fromUpdated, [to]: toUpdated };
-      });
-    },
-    []
-  );
+  const moveCard = useCallback((cardId: number, from: DeckZone, to: DeckZone) => {
+    setDeck((prev) => moveCardInDeck(prev, cardId, from, to));
+  }, []);
 
   const resetDeck = useCallback(() => {
     setDeck(createEmptyDeck());

@@ -1,18 +1,11 @@
 "use client";
 
-import { Trash2, User } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { DeckPreviewCard } from "@/components/decks/deck-preview-card";
 import { getMostPowerfulMonster } from "@/lib/deck-preview";
 import { countZone, validateDeck } from "@/lib/deck-rules";
 import { DECK_LIMITS, type Deck, type SavedDeck } from "@/types/deck";
-import type { PublicDeck } from "@/types/public-deck";
 import { cn } from "@/lib/utils";
-
-const SOURCE_LABELS = {
-  official: "Official",
-  community: "Community",
-  user: "User",
-} as const;
 
 const badgeStyles = {
   success: "bg-(--color-success)/20 text-(--color-success)",
@@ -42,28 +35,21 @@ function ZoneCounts({ deck }: { deck: Pick<Deck, "main" | "extra" | "side"> }) {
   );
 }
 
-export function PublicDeckCard({ deck }: { deck: PublicDeck }) {
+export function PublicDeckCard({ deck }: { deck: SavedDeck }) {
   const featured = getMostPowerfulMonster(deck);
 
   return (
     <DeckPreviewCard
-      href={`/decks/${deck.slug}`}
+      href={`/decks/${deck.id}`}
       featured={featured}
       badge={
         <span className="absolute right-3 top-3 rounded bg-(--color-success)/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-success)">
-          {SOURCE_LABELS[deck.source]}
+          Public
         </span>
       }
     >
       <div className="min-w-0">
-        <span className="mb-1 inline-block rounded bg-(--color-primary-muted) px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-(--color-primary)">
-          {deck.archetype}
-        </span>
         <h3 className="truncate text-lg font-semibold text-(--color-foreground)">{deck.name}</h3>
-        <p className="mt-1 flex items-center gap-1 text-xs text-(--color-foreground-subtle)">
-          <User className="size-3" />
-          {deck.author?.name ?? "Unknown"}
-        </p>
         <ZoneCounts deck={deck} />
       </div>
     </DeckPreviewCard>

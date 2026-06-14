@@ -95,9 +95,13 @@ export function CardDetailViewer({
   );
 }
 
+function isStatValue(value: number | null | undefined): value is number {
+  return typeof value === "number";
+}
+
 function CardDetailContent({ card }: { card: YugiohCard }) {
   const typeLabel = getCardTypeLabel(card);
-  const hasStats = card.atk !== undefined || card.def !== undefined;
+  const hasStats = isStatValue(card.atk) || isStatValue(card.def);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -153,9 +157,9 @@ function formatStatValue(value: number): string {
   return value === -1 ? "?" : value.toLocaleString();
 }
 
-function MonsterStats({ atk, def }: { atk?: number; def?: number }) {
-  const hasAtk = atk !== undefined;
-  const hasDef = def !== undefined;
+function MonsterStats({ atk, def }: { atk?: number | null; def?: number | null }) {
+  const hasAtk = isStatValue(atk);
+  const hasDef = isStatValue(def);
 
   if (!hasAtk && !hasDef) return null;
 

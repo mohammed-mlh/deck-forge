@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { getMostPowerfulMonster, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
-import type { PublicDeck } from "@/types/public-deck";
+import type { SavedDeck } from "@/types/deck";
 
-export function buildPublicDeckMetadata(deck: PublicDeck): Metadata {
+export function buildDeckMetadata(deck: SavedDeck): Metadata {
   const featured = getMostPowerfulMonster(deck);
   const imageUrl = featured ? getCardArtUrl(featured) : undefined;
   const main = countZone(deck.main);
   const extra = countZone(deck.extra);
   const side = countZone(deck.side);
-  const author = deck.author?.name ?? "Unknown";
-  const description = `${deck.description} · ${deck.archetype} · Main ${main} / Extra ${extra} / Side ${side} · by ${author}`;
+  const description = `${deck.name} · Main ${main} / Extra ${extra} / Side ${side}`;
 
   return {
     title: deck.name,
@@ -19,7 +18,7 @@ export function buildPublicDeckMetadata(deck: PublicDeck): Metadata {
       title: deck.name,
       description,
       type: "website",
-      url: `/decks/${deck.slug}`,
+      url: `/decks/${deck.id}`,
       siteName: "DeckForge",
       ...(imageUrl && {
         images: [
