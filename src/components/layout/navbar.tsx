@@ -11,7 +11,7 @@ import {
 import { Layers, Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { cn } from "@/lib/utils";
-import type { NavItem } from "@/types";
+import type { NavItem } from "@/types/nav";
 
 const navItems: NavItem[] = [
   { label: "Cards", href: "/cards" },

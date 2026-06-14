@@ -173,9 +173,9 @@ Still missing: API route integration tests, `requireUserId`, hooks.
 
 - Removed `/my-decks` from `sitemap.ts` (matches `noIndex` + `robots.ts` disallow).
 
-### 24. `src/types/index.ts` misnamed
+### ~~24. `src/types/index.ts` misnamed~~ ✓
 
-- Only `NavItem` / `BreadcrumbItem` — not a types barrel.
+- Moved `NavItem` to `src/types/nav.ts`; removed unused `BreadcrumbItem` and `index.ts`.
 
 ---
 

@@ -4,8 +4,3 @@ export interface NavItem {
   icon?: React.ComponentType<{ className?: string }>;
   badge?: string;
 }
-
-export interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
