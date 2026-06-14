@@ -18,10 +18,16 @@ export type AnalyticsPayload = Record<string, string | number | boolean | null |
 export function track(event: AnalyticsEvent, payload?: AnalyticsPayload) {
   if (typeof window === "undefined") return;
 
+  const cleanPayload = payload
+    ? Object.fromEntries(Object.entries(payload).filter(([, v]) => v !== undefined))
+    : undefined;
+
   void fetch("/api/analytics/events", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event, payload }),
+    body: JSON.stringify({ event, payload: cleanPayload }),
     keepalive: true,
+  }).catch(() => {
+    // Analytics must never break the app (e.g. DB unavailable, dev offline)
   });
 }

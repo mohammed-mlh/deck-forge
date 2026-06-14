@@ -74,44 +74,46 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
             filters={filters}
             onChange={updateFilters}
             className={cn(
-              "hidden w-56 shrink-0 self-start rounded-lg border border-(--color-border) bg-(--color-surface-1) p-4 lg:flex",
+              "hidden w-56 shrink-0 self-start rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 p-4 backdrop-blur-sm lg:flex",
               filtersOpen && "flex w-full lg:w-56"
             )}
           />
         )}
 
-        <div className="min-w-0 flex-1">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs text-(--color-foreground-subtle)">
-              {debouncedSearch
-                ? `Results for "${debouncedSearch}"`
-                : isBrowsing
-                  ? "Browse cards"
-                  : `${cards.length.toLocaleString()} filtered cards`}
-            </p>
-            {isFetching && !isLoading && (
-              <p className="text-xs text-(--color-foreground-subtle)">Updating…</p>
-            )}
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs text-(--color-foreground-subtle)">
+                {debouncedSearch
+                  ? `Results for "${debouncedSearch}"`
+                  : isBrowsing
+                    ? "Browse cards"
+                    : `${cards.length.toLocaleString()} filtered cards`}
+              </p>
+              {isFetching && !isLoading && (
+                <p className="text-xs text-(--color-foreground-subtle)">Updating…</p>
+              )}
+            </div>
+            <CardGrid
+              cards={cards}
+              isLoading={isLoading}
+              isError={isError}
+              errorMessage="Failed to load cards. Try again."
+              onRetry={() => void refetch()}
+              onCardClick={handleCardClick}
+              selectedCardId={selectedCard?.id ?? null}
+              columns={selectedCard ? 4 : 6}
+            />
           </div>
-          <CardGrid
-            cards={cards}
-            isLoading={isLoading}
-            isError={isError}
-            errorMessage="Failed to load cards. Try again."
-            onRetry={() => void refetch()}
-            onCardClick={handleCardClick}
-            selectedCardId={selectedCard?.id ?? null}
-          />
+
+          <CardDetailPanel card={selectedCard} onClose={() => setSelectedCard(null)} />
         </div>
       </div>
-
       {filtersOpen && (
-        <div className="rounded-lg border border-(--color-border) bg-(--color-surface-1) p-4 lg:hidden">
+        <div className="rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 p-4 backdrop-blur-sm lg:hidden">
           <CardFiltersPanel filters={filters} onChange={updateFilters} />
         </div>
       )}
-
-      <CardDetailPanel card={selectedCard} onClose={() => setSelectedCard(null)} />
     </div>
   );
 }
