@@ -1,7 +1,7 @@
 import type { Deck, DeckCardEntry } from "@/types/deck";
 import type { DeckZone } from "@/types/deck";
 import type { ImportResult, ParsedCardRef, ParsedDeckList } from "@/types/deck-io";
-import { fetchAllCards, fetchCardsByIds } from "@/lib/ygoprodeck";
+import { fetchCards, fetchCardsByIds } from "@/lib/ygoprodeck";
 import type { YugiohCard } from "@/types/yugioh";
 
 function readZoneEntries(raw: unknown): DeckCardEntry[] {
@@ -41,21 +41,20 @@ export function tryImportJsonFullDeck(content: string): ImportResult | null {
   }
 }
 
-async function buildCardMaps(): Promise<{
-  byId: Map<number, YugiohCard>;
-  byName: Map<string, YugiohCard>;
-}> {
-  const all = await fetchAllCards();
-  const byId = new Map<number, YugiohCard>();
+async function resolveCardsByName(names: string[]): Promise<Map<string, YugiohCard>> {
   const byName = new Map<string, YugiohCard>();
+  const unique = [...new Set(names.map((name) => name.trim()).filter(Boolean))];
 
-  for (const card of all) {
-    byId.set(card.id, card);
-    const key = card.name.toLowerCase();
-    if (!byName.has(key)) byName.set(key, card);
-  }
+  await Promise.all(
+    unique.map(async (name) => {
+      const cards = await fetchCards({ name });
+      const match =
+        cards.find((card) => card.name.toLowerCase() === name.toLowerCase()) ?? cards[0];
+      if (match) byName.set(name.toLowerCase(), match);
+    })
+  );
 
-  return { byId, byName };
+  return byName;
 }
 
 function refsToEntries(
@@ -92,17 +91,23 @@ export async function resolveParsedDeck(parsed: ParsedDeckList): Promise<ImportR
   const warnings: string[] = [];
 
   const idSet = new Set<number>();
+  const namesToResolve: string[] = [];
+
   for (const zone of [parsed.main, parsed.extra, parsed.side]) {
     for (const ref of zone) {
       if (ref.id) idSet.add(ref.id);
+      else if (ref.name) namesToResolve.push(ref.name);
     }
   }
 
+  const byId = new Map<number, YugiohCard>();
   const fetchedById = await fetchCardsByIds([...idSet]);
-  const { byId, byName } = await buildCardMaps();
-
   for (const card of fetchedById) {
     byId.set(card.id, card);
+  }
+
+  const byName = await resolveCardsByName(namesToResolve);
+  for (const card of fetchedById) {
     const key = card.name.toLowerCase();
     if (!byName.has(key)) byName.set(key, card);
   }

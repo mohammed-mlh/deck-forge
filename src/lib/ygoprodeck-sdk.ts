@@ -11,12 +11,9 @@ export const INITIAL_BROWSE_PARAMS: CardSearchParams = {
   offset: 0,
 };
 
-export const INITIAL_CARD_COUNT = 100;
-
 const cache = new Map<string, { data: YugiohCard[]; expiresAt: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const ID_FETCH_CHUNK = 80;
-let allCardsCache: Promise<YugiohCard[]> | null = null;
 
 function mapTypeFilter(type: CardSearchParams["type"]): string | undefined {
   if (!type || type === "all" || type === "monster") return undefined;
@@ -140,30 +137,6 @@ export async function fetchArchetypes(): Promise<string[]> {
   const rows = (await res.json()) as { archetype_name: string }[];
   return rows.map((row) => row.archetype_name);
 }
-
-export function fetchAllCards(): Promise<YugiohCard[]> {
-  if (allCardsCache) return allCardsCache;
-
-  allCardsCache = fetch(CARDINFO)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch cards");
-      return res.json() as Promise<YugiohApiResponse>;
-    })
-    .then((json) => json.data ?? [])
-    .catch((err) => {
-      allCardsCache = null;
-      throw err;
-    });
-
-  return allCardsCache;
-}
-
-export const allCardsQuery = queryOptions({
-  queryKey: ["ygo", "all-cards"],
-  queryFn: fetchAllCards,
-  staleTime: 1000 * 60 * 60,
-  gcTime: 1000 * 60 * 60 * 2,
-});
 
 export const archetypesQuery = queryOptions({
   queryKey: ["ygo", "archetypes"],

@@ -49,13 +49,13 @@ function sampleDeck(): Deck {
 }
 
 vi.mock("@/lib/ygoprodeck", () => ({
-  fetchAllCards: vi.fn(),
+  fetchCards: vi.fn(),
   fetchCardsByIds: vi.fn(),
 }));
 
-import { fetchAllCards, fetchCardsByIds } from "@/lib/ygoprodeck";
+import { fetchCards, fetchCardsByIds } from "@/lib/ygoprodeck";
 
-const mockedFetchAll = vi.mocked(fetchAllCards);
+const mockedFetchCards = vi.mocked(fetchCards);
 const mockedFetchByIds = vi.mocked(fetchCardsByIds);
 
 beforeEach(() => {
@@ -66,7 +66,11 @@ beforeEach(() => {
     mockCard(44508094, "Stardust Dragon"),
     mockCard(83764718, "Monster Reborn"),
   ];
-  mockedFetchAll.mockResolvedValue(pool);
+  mockedFetchCards.mockImplementation(async (params) => {
+    const name = params?.name?.toLowerCase();
+    if (!name) return [];
+    return pool.filter((card) => card.name.toLowerCase() === name);
+  });
   mockedFetchByIds.mockImplementation(async (ids: number[]) =>
     pool.filter((c) => ids.includes(c.id))
   );
@@ -224,6 +228,7 @@ describe("resolve", () => {
     expect(result?.main).toHaveLength(2);
     expect(result?.main[0].card.name).toBe("Blue-Eyes White Dragon");
     expect(result?.errors).toHaveLength(0);
-    expect(mockedFetchAll).not.toHaveBeenCalled();
+    expect(mockedFetchCards).not.toHaveBeenCalled();
+    expect(mockedFetchByIds).not.toHaveBeenCalled();
   });
 });

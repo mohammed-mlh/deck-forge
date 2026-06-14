@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useSyncExternalStore } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Range } from "react-range";
 import { useArchetypes } from "@/hooks/use-archetypes";
 import {
@@ -9,14 +8,13 @@ import {
   FILTER_BOUNDS,
   LINK_MARKERS,
   MONSTER_FRAMES,
+  MONSTER_RACES,
   SPELL_RACES,
   TRAP_RACES,
-  extractMonsterRaces,
   toggleInList,
   type CardFilters,
   type CardSort,
 } from "@/lib/card-filters";
-import { allCardsQuery } from "@/lib/ygoprodeck";
 import { CARD_ATTRIBUTES, type CardTypeFilter } from "@/types/yugioh";
 import { cn } from "@/lib/utils";
 
@@ -66,11 +64,8 @@ export function CardFiltersPanel({
   const monsterRaceListId = useId();
   const isClient = useIsClient();
   const { data: archetypes = [] } = useArchetypes();
-  const { data: allCards = [] } = useQuery(allCardsQuery);
-  const monsterRaces = extractMonsterRaces(allCards);
 
-  const patch = (partial: Partial<CardFilters>) => {
-    onChange({ ...filters, ...partial });
+  const patch = (partial: Partial<CardFilters>) => {    onChange({ ...filters, ...partial });
   };
 
   const showMonster = filters.type === "all" || filters.type === "monster";
@@ -169,11 +164,10 @@ export function CardFiltersPanel({
             />
             <datalist id={monsterRaceListId}>
               {isClient &&
-                monsterRaces.map((race) => (
+                MONSTER_RACES.map((race) => (
                   <option key={race} value={race} />
                 ))}
-            </datalist>
-          </FilterGroup>
+            </datalist>          </FilterGroup>
 
           <RangeSliderField
             label="Level / Rank"

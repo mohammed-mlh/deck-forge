@@ -58,6 +58,35 @@ export const SPELL_RACES = [
 
 export const TRAP_RACES = ["Normal", "Continuous", "Counter"] as const;
 
+export const MONSTER_RACES = [
+  "Aqua",
+  "Beast",
+  "Beast-Warrior",
+  "Creator God",
+  "Cyberse",
+  "Dinosaur",
+  "Divine-Beast",
+  "Dragon",
+  "Fairy",
+  "Fiend",
+  "Fish",
+  "Illusion",
+  "Insect",
+  "Machine",
+  "Plant",
+  "Psychic",
+  "Pyro",
+  "Reptile",
+  "Rock",
+  "Sea Serpent",
+  "Spellcaster",
+  "Thunder",
+  "Warrior",
+  "Winged Beast",
+  "Wyrm",
+  "Zombie",
+] as const;
+
 const BOUNDS = {
   level: { min: 0, max: 13 },
   atk: { min: 0, max: 5000 },
@@ -110,10 +139,6 @@ export function filtersNeedApi(search: string, filters: CardFilters): boolean {
       rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link) ||
       rangeActive(filters.scaleMin, filters.scaleMax, BOUNDS.scale)
   );
-}
-
-export function filtersUseMonsterPool(search: string, filters: CardFilters): boolean {
-  return filters.type === "monster" && !filtersNeedApi(search, filters);
 }
 
 export function filtersToApiParams(
@@ -190,14 +215,6 @@ function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
 
 export function finalizeCards(cards: YugiohCard[], filters: CardFilters): YugiohCard[] {
   return sortCards(filterCardsByType(cards, filters.type), filters.sort);
-}
-
-export function extractMonsterRaces(cards: YugiohCard[], limit = 200): string[] {
-  const races = new Set<string>();
-  cards.forEach((card) => {
-    if (card.type.includes("Monster") && card.race) races.add(card.race);
-  });
-  return [...races].sort().slice(0, limit);
 }
 
 export function toggleInList(values: string[], value: string): string[] {
