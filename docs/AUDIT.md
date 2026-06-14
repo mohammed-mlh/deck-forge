@@ -143,17 +143,14 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 =================================================
 
-### 19. Public deck author display
-
-- No Clerk username on browse cards after public-deck type removal.
 
 ---
 
 ## P3 — Cleanup / docs / tests
 
-### 20. Documentation stale
+### ~~20. Documentation stale~~ ✓
 
-- `PROJECT.md`, `docs/CODEBASE.md`, `docs/LIBRARIES.md` describe localStorage, prebuilt decks, `/browse-decks`, removed files (`deck-storage`, `prebuilt-decks`, etc.).
+- Updated `PROJECT.md`, `docs/CODEBASE.md`, `docs/LIBRARIES.md` for Clerk, Postgres, current routes, `ygoprodeck-sdk`, removed prebuilt/localStorage references.
 
 ### 21. Test coverage
 
@@ -195,3 +192,8 @@ Generated from codebase scan. Build passes; ordered by priority.
 6. Delete dead code (analysis-view, unused public API, unused types)
 7. Update homepage + docs
 8. Tests on `deck-rules` + `decks.service`
+
+
+### 19. Public deck author display
+
+- No Clerk username on browse cards after public-deck type removal.

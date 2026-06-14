@@ -2,9 +2,9 @@
 
 > Developer docs: [docs/README.md](./docs/README.md) · [CODEBASE.md](./docs/CODEBASE.md) · [LIBRARIES.md](./docs/LIBRARIES.md)
 
-DeckForge is a modern Yu-Gi-Oh deck building web app. Users can browse the full card database, build decks with drag-and-drop, save decks locally, explore community-style prebuilt lists, and import/export decks in many formats.
+DeckForge is a modern Yu-Gi-Oh deck building web app. Users can browse the card database, build decks with drag-and-drop, save decks to the cloud, browse public community decks, import/export in many formats, and run AI deck analysis.
 
-**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · TanStack Query · dnd-kit · YGOProDeck API
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · TanStack Query · dnd-kit · Clerk · Drizzle/Postgres · YGOProDeck API
 
 ---
 
@@ -21,9 +21,9 @@ DeckForge is a modern Yu-Gi-Oh deck building web app. Users can browse the full 
 |------|-------|
 | Cards | `/cards` |
 | Deck Builder | `/deck-builder` |
-| Browse Decks | `/browse-decks` |
-| My Decks | `/decks` |
-| Login / Register | `/login`, `/register` |
+| Decks | `/decks` |
+| My Decks | `/my-decks` |
+| Sign in / User menu | Clerk (`SignInButton`, `UserButton`) |
 
 ---
 
@@ -32,8 +32,6 @@ DeckForge is a modern Yu-Gi-Oh deck building web app. Users can browse the full 
 ### `/` — Home (Marketing)
 
 Landing page with hero, feature highlights, and CTAs to Cards and Deck Builder.
-
-> Note: Marketing copy references future features (AI Deck Doctor, Meta Tracker, Price Tracker) that are **not yet implemented**.
 
 ---
 
@@ -63,22 +61,25 @@ Three-panel builder layout:
 | Right | Card search + filters + 4-column result grid |
 
 **Features:**
-- Drag cards from search into zones (`@dnd-kit`)
+- Drag cards from search into zones (`@dnd-kit`); drag between zone slots
 - Click to preview, double-click to add
 - Deck name editing
 - Zone counts with min/max indicators (Main 40–60, Extra/Side 0–15)
-- Save to `localStorage` → redirects to `/deck-builder/{id}`
+- Save to Postgres → redirects to `/deck-builder/{id}` (requires Clerk sign-in)
 - Clear deck
 - **Import** — multi-format dialog (file upload or paste)
 - **Export** — format picker, copy, download
 - Import error/warning toast for unresolved cards
+- Validation issues banner; add/move rejection messages
+- **AI Analyze** — deck analysis panel (rate-limited, auth required)
+- **Deck Doctor** — AI improvement suggestions (rate-limited, auth required)
 - Deck rules: max 3 copies, extra-deck cards auto-routed to Extra
 
 ---
 
-### `/decks` — My Decks
+### `/my-decks` — My Decks
 
-Saved decks from browser `localStorage`.
+Saved decks for the signed-in user (Postgres via `/api/decks`).
 
 **Features:**
 - Deck list cards with preview art, zone counts, delete
@@ -88,49 +89,21 @@ Saved decks from browser `localStorage`.
 
 ---
 
-### `/browse-decks` — Browse Decks
+### `/decks` — Public Decks
 
-Grid of 12 static prebuilt decks (read-only inspiration).
-
-**Features:**
-- Deck cards with archetype tag, author, zone counts, featured monster art
-- Links to detail view
-
-### `/browse-decks/[id]` — Prebuilt Deck Detail
+Community decks with `visibility = public` from the database.
 
 **Features:**
-- Deck metadata (name, archetype, author, description)
-- Zone breakdowns (Main / Extra / Side) with card thumbnails
-- Read-only — no copy-to-builder yet
+- Deck cards with zone counts, featured monster art
+- Links to `/decks/[id]`
 
-**Prebuilt decks:**
-1. Blue-Eyes Chronicle
-2. Dark Magician Legacy
-3. Sky Striker Mobilize
-4. Eldlich Golden
-5. Stardust Synchron *(5D's)*
-6. Blackwing Assault *(5D's)*
-7. Utopia Rising *(ZEXAL)*
-8. Photon Galaxy *(ZEXAL)*
-9. Odd-Eyes Pendulum *(ARC-V)*
-10. Raid Raptors Strike *(ARC-V)*
-11. Salamangreat Blaze *(VRAINS)*
-12. Rokket Reload *(VRAINS)*
+### `/decks/[id]` — Public Deck Detail
 
----
+**Features:**
+- Deck metadata and zone breakdowns (Main / Extra / Side)
+- **Copy deck** → fork to your account (`POST /api/decks/fork`, requires sign-in)
 
-### `/login` · `/register` — Auth (Demo)
-
-Client-side dummy auth with prepopulated accounts:
-
-| Email | Password | Name |
-|-------|----------|------|
-| `duelist@deckforge.com` | `demo123` | Duelist |
-| `pro@deckforge.com` | `demo123` | Pro Player |
-
-- Session stored in `localStorage` (`deck-forge:user`)
-- No route protection — auth is UI-only for MVP
-- Register creates a local user entry (no backend)
+All new decks save as **private**; visibility is not user-editable in the UI.
 
 ---
 
@@ -144,7 +117,7 @@ Shared `CardFiltersPanel` on `/cards` and Deck Builder search. Logic in `src/lib
 |--------|---------|
 | Card type | All, Monster, Spell, Trap |
 | Attribute | DARK, LIGHT, EARTH, WATER, FIRE, WIND, DIVINE |
-| Archetype | Free text + datalist autocomplete |
+| Archetype | Free text + datalist (from `archetypes.php`) |
 | Sort | Name A–Z, ATK ↓, DEF ↓, Level ↓ |
 | Reset | Clears all filters |
 
@@ -202,7 +175,7 @@ Implemented in `src/lib/deck-io/`. UI: Import/Export buttons in Deck Builder hea
 ### Import flow
 
 1. Auto-detect format from content/extension (manual override available)
-2. Parse → resolve card IDs/names via YGOProDeck API + full card pool cache
+2. Parse → resolve card IDs/names via YGOProDeck API (`fetchCardsByIds`, `fetchCards({ name })`)
 3. Replace current deck zones; show unresolved card errors
 4. JSON full imports skip API lookup (uses embedded card data)
 
@@ -217,8 +190,6 @@ Implemented in `src/lib/deck-io/`. UI: Import/Export buttons in Deck Builder hea
 pnpm test src/lib/deck-io/__tests__/deck-io.test.ts
 ```
 
-12 tests covering parse, detect, export roundtrip, and resolve.
-
 ---
 
 ## Deck Rules & Validation
@@ -232,21 +203,20 @@ pnpm test src/lib/deck-io/__tests__/deck-io.test.ts
 | Extra deck monsters | Must go in Extra zone |
 | Main/Side monsters | Cannot be Fusion/Synchro/XYZ/Link |
 
-Validation issues surfaced via `validateDeck()` (warnings for under-40 main, errors for over-limit zones/copies).
+Validation via `validateDeck()` on client and server (with hydrated cards). Issues surfaced in builder UI.
 
 ---
 
 ## Data & Storage
 
-| Data | Storage | Key |
-|------|---------|-----|
-| Saved decks | `localStorage` | `deck-forge:decks` |
-| Auth user | `localStorage` | `deck-forge:user` |
-| Card API cache | In-memory (5 min TTL) | — |
-| Full card pool | TanStack Query cache (1 hr) | `["ygo","all-cards"]` |
-| Prebuilt decks | Static TS module | `src/lib/prebuilt-decks.ts` |
+| Data | Storage |
+|------|---------|
+| Saved decks | Postgres (`decks` table) via `/api/decks` |
+| Deck analyses | Postgres (`deck_analyses` table) |
+| Auth | Clerk |
+| Card API cache | In-memory (5 min TTL) in `ygoprodeck-sdk` |
 
-**Deck shape:**
+**Saved deck shape:**
 ```ts
 {
   id: string
@@ -254,19 +224,25 @@ Validation issues surfaced via `validateDeck()` (warnings for under-40 main, err
   main: { card: YugiohCard, quantity: number }[]
   extra: ...
   side: ...
-  updatedAt?: string  // saved decks only
+  visibility: "private" | "public"
+  updatedAt: string
 }
 ```
+
+Editor `Deck` type omits `visibility` — all creates default to `private`.
 
 ---
 
 ## External API
 
-**YGOProDeck v7** — `https://db.ygoprodeck.com/api/v7/cardinfo.php`
+**YGOProDeck v7** — `https://db.ygoprodeck.com/api/v7/`
 
-- Card images hosted at `images.ygoprodeck.com` (configured in `next.config.ts`)
-- Archetype list derived from full card pool
-- Bulk ID lookup for deck import (`fetchCardsByIds`)
+| Endpoint | Use |
+|----------|-----|
+| `cardinfo.php` | Browse, search, filter, bulk ID lookup |
+| `archetypes.php` | Archetype datalist |
+
+Card images hosted at `images.ygoprodeck.com` (configured in `next.config.ts`).
 
 ---
 
@@ -274,12 +250,14 @@ Validation issues surfaced via `validateDeck()` (warnings for under-40 main, err
 
 | From | To |
 |------|----|
+| `/browse-decks` | `/decks` |
+| `/browse-decks/prebuilt-*` | `/decks` |
 | `/app` | `/deck-builder` |
 | `/app/builder` | `/deck-builder` |
-| `/app/my-decks` | `/decks` |
+| `/app/my-decks` | `/my-decks` |
 | `/app/settings` | `/deck-builder` |
 | `/app/ai` | `/deck-builder` |
-| `/get-started` | `/register` |
+| `/get-started`, `/login`, `/register`, `/sign-in`, `/sign-up` | `/` |
 
 ---
 
@@ -288,25 +266,28 @@ Validation issues surfaced via `validateDeck()` (warnings for under-40 main, err
 ```
 src/
 ├── app/
-│   ├── (marketing)/     # Home, cards, login, register
-│   ├── deck-builder/    # Builder pages
-│   ├── decks/           # My decks
-│   └── browse-decks/    # Prebuilt decks
+│   ├── (marketing)/       # Home, cards
+│   ├── deck-builder/      # Builder pages
+│   ├── my-decks/          # User's saved decks
+│   ├── decks/             # Public decks + detail
+│   └── api/decks/         # CRUD + fork
 ├── components/
-│   ├── cards-browser/   # Grid, filters, search, detail
-│   ├── deck-builder/    # Builder UI, I/O dialog
-│   ├── browse-decks/    # Prebuilt deck views
-│   ├── my-decks/        # Saved deck list
-│   └── layout/          # Navbar, footer, container
+│   ├── cards-browser/
+│   ├── deck-builder/
+│   ├── decks/
+│   └── layout/
+├── features/
+│   ├── decks/             # Service, repository, mapper
+│   └── deck-analyses/
+├── db/                    # Drizzle schema
 ├── lib/
-│   ├── card-filters.ts  # Filter state + API mapping
-│   ├── deck-io/         # Import/export parsers
-│   ├── deck-rules.ts    # Validation + zone logic
-│   ├── deck-storage.ts  # localStorage CRUD
-│   ├── prebuilt-decks.ts
-│   └── ygoprodeck.ts    # API client
-├── hooks/               # useDeck, useBrowseCards, useSavedDecks
-└── types/               # deck, yugioh, deck-io, auth
+│   ├── card-filters.ts
+│   ├── deck-io/
+│   ├── deck-rules.ts
+│   ├── ygoprodeck-sdk.ts
+│   └── auth/
+├── hooks/
+└── types/
 ```
 
 ---
@@ -325,10 +306,7 @@ pnpm test         # Vitest (deck-io tests)
 
 ## Not Yet Implemented
 
-- Real backend auth / user accounts
-- Route protection for authenticated pages
-- Copy prebuilt deck → builder
-- AI suggestions, meta tracking, pricing (marketing placeholders)
+- User-editable deck visibility
+- Meta tracking, pricing (marketing placeholders)
 - Banlist filtering
-- Deck sharing / public URLs
 - Company pages linked in footer (`/about`, `/blog`, `/privacy`, `/terms`)
