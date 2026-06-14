@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { getMostPowerfulMonster, getCardArtUrl } from "@/lib/deck-preview";
+import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
 import type { SavedDeck } from "@/types/deck";
 
 export function buildDeckMetadata(deck: SavedDeck): Metadata {
-  const featured = getMostPowerfulMonster(deck);
+  const featured = getFeaturedCard(deck);
   const imageUrl = featured ? getCardArtUrl(featured) : undefined;
   const main = countZone(deck.main);
   const extra = countZone(deck.extra);

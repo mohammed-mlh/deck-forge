@@ -12,7 +12,7 @@ import { usePageView } from "@/hooks/use-page-view";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { deckToCreateInput } from "@/features/decks/decks.mapper";
-import { getMostPowerfulMonster, getCardArtUrl } from "@/lib/deck-preview";
+import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
 import { getCardImageUrl } from "@/lib/ygoprodeck";
 import type { DeckCardEntry, DeckZone, SavedDeck } from "@/types/deck";
@@ -75,7 +75,7 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
   const deck = hydratedDeck ?? initialDeck;
   const [copying, setCopying] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
-  const featured = getMostPowerfulMonster(deck);
+  const featured = getFeaturedCard(deck);
   const main = countZone(deck.main);
   const extra = countZone(deck.extra);
   const side = countZone(deck.side);

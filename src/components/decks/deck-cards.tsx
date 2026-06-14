@@ -2,8 +2,9 @@
 
 import { Trash2 } from "lucide-react";
 import { DeckPreviewCard } from "@/components/decks/deck-preview-card";
-import { getMostPowerfulMonster } from "@/lib/deck-preview";
-import { countZone, validateDeck } from "@/lib/deck-rules";
+import { entriesToRefs } from "@/features/decks/decks.mapper";
+import { getFeaturedCard } from "@/lib/deck-preview";
+import { countZone, validateDeckRefs } from "@/lib/deck-rules";
 import { DECK_LIMITS, type Deck, type SavedDeck } from "@/types/deck";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,11 @@ const badgeStyles = {
 
 function getDeckStatus(deck: SavedDeck) {
   const main = countZone(deck.main);
-  const issues = validateDeck(deck);
+  const issues = validateDeckRefs(
+    entriesToRefs(deck.main),
+    entriesToRefs(deck.extra),
+    entriesToRefs(deck.side)
+  );
   const hasErrors = issues.some((i) => i.severity === "error");
 
   if (hasErrors) return { label: "Invalid", tone: "danger" as const };
@@ -36,7 +41,7 @@ function ZoneCounts({ deck }: { deck: Pick<Deck, "main" | "extra" | "side"> }) {
 }
 
 export function PublicDeckCard({ deck }: { deck: SavedDeck }) {
-  const featured = getMostPowerfulMonster(deck);
+  const featured = getFeaturedCard(deck);
 
   return (
     <DeckPreviewCard
@@ -57,7 +62,7 @@ export function PublicDeckCard({ deck }: { deck: SavedDeck }) {
 }
 
 export function SavedDeckCard({ deck, onDelete }: { deck: SavedDeck; onDelete: () => void }) {
-  const featured = getMostPowerfulMonster(deck);
+  const featured = getFeaturedCard(deck);
   const status = getDeckStatus(deck);
 
   const handleDelete = (e: React.MouseEvent) => {

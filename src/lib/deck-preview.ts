@@ -12,18 +12,27 @@ function collectMonsters(entries: DeckCardEntry[]): YugiohCard[] {
     .flatMap((e) => Array.from({ length: e.quantity }, () => e.card));
 }
 
-export function getMostPowerfulMonster(deck: Deck): YugiohCard | null {
+/** Highest-ATK monster, or first card with art when stubs lack type/atk. */
+export function getFeaturedCard(deck: Deck): YugiohCard | null {
   const monsters = [
     ...collectMonsters(deck.main),
     ...collectMonsters(deck.extra),
     ...collectMonsters(deck.side),
   ];
 
-  if (monsters.length === 0) return null;
+  if (monsters.length > 0) {
+    return monsters.reduce((best, card) =>
+      normalizeAtk(card.atk) > normalizeAtk(best.atk) ? card : best
+    );
+  }
 
-  return monsters.reduce((best, card) =>
-    normalizeAtk(card.atk) > normalizeAtk(best.atk) ? card : best
-  );
+  for (const zone of ["extra", "main", "side"] as const) {
+    for (const entry of deck[zone]) {
+      if (entry.card.card_images[0]) return entry.card;
+    }
+  }
+
+  return null;
 }
 
 export function getCardArtUrl(card: YugiohCard): string {
