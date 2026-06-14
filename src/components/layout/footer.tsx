@@ -13,7 +13,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-(--color-border) bg-(--color-bg-surface)">
+    <footer className="border-t border-(--color-border)/60 bg-(--color-bg-surface)/50 backdrop-blur-sm">
       <Container>
         <div className="py-12">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-3">

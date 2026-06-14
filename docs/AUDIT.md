@@ -1,148 +1,99 @@
-# DeckForge — Code Audit (problems to fix)
+# DeckForge — Code Audit
 
-Generated from codebase scan. Build passes; ordered by priority.
-
----
-
-## P0 — Product broken / security
-
-### 1. Public decks cannot be published
-
-- DB has `visibility` (`src/db/schema/decks.ts`), service supports it (`src/features/decks/decks.service.ts`).
-- UI never sets it: `deckToCreateInput()` in `src/features/decks/decks.mapper.ts` omits `visibility`.
-- All saves default to `private` → `/decks` (`getPublicDecks()`) stays empty unless rows are updated manually in SQL.
-
-**Fix:** Visibility control in builder + pass through mapper/API.
-
-### 2. Legacy redirects → 404
-
-- `next.config.ts` redirects `/browse-decks/prebuilt-*` → `/decks/blue-eyes-chronicle`, etc.
-- App uses `/decks/[id]` with **UUID** + `visibility = 'public'` (`src/features/decks/decks.repository.ts`).
-- Human slug URLs always 404.
-
-**Fix:** Remove redirects or redirect to `/decks`; seed/migrate public decks with real UUIDs.
-
-### 3. AI routes unauthenticated / unbounded
-
-- `src/app/api/deck/analyze/route.ts` and `src/app/api/deck/improve/route.ts` accept any POST.
-- No Clerk auth, no rate limiting.
-- With `DEEPSEEK_API_KEY` set → open cost exposure.
-
-**Fix:** `requireUserId()`, rate limits, optional usage caps.
-
-### 4. Copy deck fails silently when signed out
-
-- `src/app/decks/[id]/content.tsx` → `fork()` → 401 from `/api/decks/fork`.
-- `catch` only resets `copying`; no sign-in prompt.
-
-**Fix:** Clerk modal / redirect; surface error message.
+Last verified against codebase. Build passes.
 
 ---
 
-## P1 — Bugs / incomplete refactors
+## P0 — Product / security
 
-### 5. Archetypes load full card DB
+### ~~1. Public decks cannot be published~~ — intentional
 
-- `src/hooks/use-archetypes.ts` uses `allCardsQuery` + `extractArchetypes()` (~12k cards).
-- YGOPro provides `https://db.ygoprodeck.com/api/v7/archetypes.php` (dedicated endpoint).
+- All decks save as `private`; no visibility UI or API field (`decks.service.ts`, `decks.mapper.ts`).
+- `/decks` stays empty until rows are set `public` in DB (admin/SQL).
+- **Not a bug** — product decision. Re-open if user-facing publish is needed.
 
-**Fix:** `archetypesQuery` in `src/lib/ygoprodeck.ts`; drop `extractArchetypes` + `use-archetypes` hook (or thin wrapper only).
+### ~~2. Legacy redirects → 404~~ ✓
 
-### 6. Global full-card prefetch on every page
+- `next.config.ts`: `/browse-decks` and `/browse-decks/prebuilt-*` → `/decks` (no slug URLs).
 
-- `src/providers/query-provider.tsx` prefetches browse params + entire `allCardsQuery` on app mount.
+### ~~3. AI routes unauthenticated / unbounded~~ ✓
 
-**Fix:** Remove prefetch; fetch on demand when user opens `/cards` or deck builder search.
+- `/api/deck/analyze` and `/api/deck/improve`: `requireUserId()` + `assertAiRateLimit()`.
 
-### 7. Save POST vs PATCH race
+### ~~4. Copy deck fails silently when signed out~~ ✓
 
-- `src/hooks/use-saved-decks.ts`: `existing = listQuery.data?.some(...)`.
-- Open `/deck-builder/[existing-id]` before list hydrates → POST duplicate UUID → PK conflict.
-
-**Fix:** Use PATCH when `deckId` in URL, or fetch-by-id before save, or upsert on server.
-
-### 8. Save errors not surfaced
-
-- `src/components/deck-builder/deck-builder.tsx` `handleSave`: no try/catch.
-- Failed save can still show "saved" and `router.replace`.
-
-**Fix:** try/catch + error toast/state.
-
-### 9. Clear desyncs URL
-
-- `resetDeck()` in `src/hooks/use-deck.ts` generates new UUID.
-- URL stays `/deck-builder/[old-id]`; refresh loads old DB deck.
-
-**Fix:** `router.replace('/deck-builder')` on clear, or reset in place without new id until save.
-
-
-=================================================
-### 10. Marketing copy outdated
-
-- `src/app/(marketing)/page.tsx`: "12 Starter Decks", "Save decks locally", "official starter decks".
-- Product: DB + Clerk + community `/decks`.
-
-**Fix:** Update copy and stats strip.
-
-### 11. Duplicate / dead code
-
-| Item | Location |
-|------|----------|
-| Unused public deck API | `src/app/api/decks/public/`, `src/app/api/decks/public/[id]/` (pages use server `getPublicDecks()` directly) |
-| Dead component | `src/components/deck-builder/deck-analysis-view.tsx` (never imported) |
-| Unused type | `ZoneCardRefs` in `src/types/deck-io.ts` |
-| Stale `[slug]` routes | Check `src/app/decks/[slug]/` — remove if empty |
-
-
-### 12. `deck-analyses` feature unwired
-
-- DB: `src/db/schema/deck-analyses.ts`
-- Feature: `src/features/deck-analyses/*`
-- No API route persists analyses; UI calls `/api/deck/analyze` and discards result.
-
-**Fix:** Wire service to analyze route, or remove feature until needed.
+- `decks/[id]/content.tsx`: `openSignIn()` before fork; `copyError` state; 401 handling.
 
 ---
-=================================================
 
-## P2 — Architecture / UX gaps
+## P1 — Bugs / refactors
 
-### 13. `allCardsQuery` in hot paths
+### ~~5. Archetypes load full card DB~~ ✓
 
-- `src/hooks/use-browse-cards.ts` — monster filter without API filters loads full DB client-side.
-- `src/components/cards-browser/card-filters-panel.tsx` — monster race datalist from full DB.
-- `src/lib/deck-io/resolve.ts` — `fetchAllCards()` on every import for name resolution.
+- `use-archetypes.ts` → `archetypesQuery` / `archetypes.php` in `ygoprodeck-sdk.ts`.
 
-**Fix:** API filters for races; import resolve via `fetchCardsByIds` when refs have ids; lazy-load full catalog only when needed.
+### ~~6. Global full-card prefetch~~ ✓
 
-### 14. Server validation weaker than builder
+- Removed from `query-provider.tsx`.
 
-- `validateDeckRefs()` in `src/lib/deck-rules.ts`: zone max + copy limits only.
-- Extra monsters in main can be saved via API/import (builder blocks via `canAddCardToZone`).
+### ~~7. Save POST vs PATCH race~~ ✓
 
-**Fix:** Extend server validation or hydrate + run `validateDeck` before persist.
+- `use-saved-decks.ts`: PATCH when URL id, list cache, deck cache, or `{ update: true }`.
 
-### 15. Builder UX gaps
+### ~~8. Save errors not surfaced~~ ✓
 
-- `useDeck().issues` never shown in UI.
-- `addCard` silently no-ops when rules reject.
-- `moveCard` exported but not wired in UI.
+- `deck-builder.tsx`: try/catch + `saveError` in header.
 
-### 16. Deck analysis stale after edits
+### ~~9. Clear desyncs URL~~ ✓
 
-- `src/components/deck-builder/deck-analysis-panel.tsx` refetch deps: `deck.id`, empty state — not card changes.
+- Clear on saved deck → `router.replace("/deck-builder")` before reset.
 
+### ~~10. Marketing copy outdated~~ ✓
 
-### 17. Partial hydration failures hidden
+- Homepage updated (cloud save, public decks, no prebuilt decks).
 
-- `fetchCardsByIds` in `src/lib/ygoprodeck.ts`: `if (!res.ok) continue` — incomplete deck, no error.
+### ~~11. Duplicate / dead code~~ ✓
 
-### 18. `unlisted` visibility unused
+- Removed: `api/decks/public/*`, `[slug]` routes, `ZoneCardRefs`, unused public-deck types.
+- `deck-analysis-view.tsx` — gone.
 
-- In enum/DB; no route or UI.
+### ~~12. `deck-analyses` unwired~~ ✓
 
-=================================================
+- Analyze route calls `createDeckAnalysis()` after success.
 
+---
+
+## P2 — Architecture / UX
+
+### ~~13. `allCardsQuery` in hot paths~~ ✓
+
+- Browse: paginated `fetchCards`; `MONSTER_RACES` static list.
+- Import resolve: `fetchCardsByIds` + `fetchCards({ name })`.
+
+### ~~14. Server validation weaker than builder~~ ✓
+
+- `assertValidDeckInput`: hydrate refs + full `validateDeck` before persist.
+
+### ~~15. Builder UX gaps~~ ✓
+
+- Issues banner, add/move rejection toasts, `moveCard` wired in `drag-drop-provider`.
+
+### ~~16. Deck analysis stale after edits~~ ✓
+
+- `deckContentKey(deck)` as `key` on `DeckAnalysisPanel`.
+
+### ~~17. Partial hydration failures hidden~~ ✓
+
+- `fetchCardsByIds` throws on `!res.ok`.
+
+### ~~18. `unlisted` visibility unused~~ ✓
+
+- Removed from enum/schema/types.
+
+### 19. Public deck author display — open
+
+- `PublicDeckCard` shows name + counts only; no Clerk username on browse cards.
+- `DeckRecord.userId` exists but is not surfaced in UI.
 
 ---
 
@@ -150,56 +101,47 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 ### ~~20. Documentation stale~~ ✓
 
-- Updated `PROJECT.md`, `docs/CODEBASE.md`, `docs/LIBRARIES.md` for Clerk, Postgres, current routes, `ygoprodeck-sdk`, removed prebuilt/localStorage references.
+- `PROJECT.md`, `docs/CODEBASE.md`, `docs/LIBRARIES.md` updated.
 
 ### ~~21. Test coverage~~ (partial)
 
-Added unit tests:
+Added:
 - `src/lib/__tests__/deck-rules.test.ts`
 - `src/features/decks/__tests__/decks.mapper.test.ts`
 - `src/features/decks/__tests__/decks.service.test.ts`
+- `src/features/analytics/__tests__/analytics.service.test.ts`
 - `src/lib/ai/__tests__/sanitize-deck-doctor.test.ts`
 - `src/lib/auth/__tests__/rate-limit.test.ts`
+- `src/lib/deck-io/__tests__/deck-io.test.ts`
 
 Still missing: API route integration tests, `requireUserId`, hooks.
 
 ### ~~22. Analytics stub~~ ✓
 
-- `analytics_events` table + `features/analytics/` service/repository.
-- `POST /api/analytics/events` persists events (Clerk userId when signed in).
-- `track()` in `src/lib/analytics.ts` POSTs directly to `/api/analytics/events`.
+- `analytics_events` table + `features/analytics/`.
+- `track()` POSTs to `/api/analytics/events`.
 
 ### ~~23. SEO inconsistency~~ ✓
 
-- Removed `/my-decks` from `sitemap.ts` (matches `noIndex` + `robots.ts` disallow).
+- `/my-decks` removed from sitemap (matches `noIndex` + robots disallow).
 
 ### ~~24. `src/types/index.ts` misnamed~~ ✓
 
-- Moved `NavItem` to `src/types/nav.ts`; removed unused `BreadcrumbItem` and `index.ts`.
+- `NavItem` → `src/types/nav.ts`; `index.ts` removed.
 
 ---
 
 ## Working as intended
 
-- `src/proxy.ts` runs as middleware (Next 16 — build shows `ƒ Proxy`).
-- Clerk + Postgres deck CRUD for signed-in users (`/api/decks/*`, `use-saved-decks`).
-- Deck builder edit → save → hydrate flow is structurally sound.
-- Card browse + YGOPro filter pipeline works on API filter path.
+- Clerk + Postgres deck CRUD (`/api/decks/*`, `use-saved-decks`).
+- Deck builder edit → save → hydrate flow.
+- Card browse + YGOPro filter pipeline.
+- All new decks private; public `/decks` requires DB `visibility = 'public'`.
 
 ---
 
-## Recommended fix order
+## Remaining work
 
-1. Visibility toggle + mapper
-2. Remove/fix prebuilt redirects
-3. Auth + rate limit AI routes
-4. Archetypes via `archetypes.php`; remove full-DB prefetch
-5. Save/copy error handling + POST/PATCH fix
-6. Delete dead code (analysis-view, unused public API, unused types)
-7. Update homepage + docs
-8. Tests on `deck-rules` + `decks.service`
-
-
-### 19. Public deck author display
-
-- No Clerk username on browse cards after public-deck type removal.
+1. **#19** — Show author on public deck cards (Clerk username lookup or stored display name).
+2. **#21** — API route + hook tests (optional).
+3. **Publish flow** — Only if product wants user-facing public decks again.

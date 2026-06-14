@@ -126,7 +126,7 @@ function MobileNav({ items, className }: { items: NavItem[]; className?: string 
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-(--color-border) bg-(--color-bg-base)/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-(--color-border)/60 bg-(--color-bg-base)/70 backdrop-blur-md">
       <Container>
         <div className="flex h-14 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2.5 font-semibold text-(--color-foreground)">
