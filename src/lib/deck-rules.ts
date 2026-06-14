@@ -220,6 +220,5 @@ export function createEmptyDeck(name = "New Deck"): Deck {
     main: [],
     extra: [],
     side: [],
-    visibility: "private",
   };
 }

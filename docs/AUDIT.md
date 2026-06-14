@@ -132,7 +132,6 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 - `src/components/deck-builder/deck-analysis-panel.tsx` refetch deps: `deck.id`, empty state — not card changes.
 
-=================================================
 
 ### 17. Partial hydration failures hidden
 
@@ -141,6 +140,8 @@ Generated from codebase scan. Build passes; ordered by priority.
 ### 18. `unlisted` visibility unused
 
 - In enum/DB; no route or UI.
+
+=================================================
 
 ### 19. Public deck author display
 

@@ -107,7 +107,9 @@ export async function fetchCardsByIds(ids: number[]): Promise<YugiohCard[]> {
   for (let i = 0; i < unique.length; i += ID_FETCH_CHUNK) {
     const chunk = unique.slice(i, i + ID_FETCH_CHUNK);
     const res = await fetch(`${CARDINFO}?id=${chunk.join(",")}`);
-    if (!res.ok) continue;
+    if (!res.ok) {
+      throw new Error(`Failed to fetch cards by id: HTTP ${res.status}`);
+    }
     const json = (await res.json()) as YugiohApiResponse;
     results.push(...(json.data ?? []));
   }

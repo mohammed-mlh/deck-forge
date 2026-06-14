@@ -126,7 +126,7 @@ function SlotCell({
   return (
     <DeckZoneCard
       card={slot.entry.card}
-      zone={slot.zone}
+      zone={zone}
       onSelect={onSelectCard}
       selected={selectedCardId === slot.entry.card.id}
       onRemove={() => onRemove(slot.entry.card.id)}

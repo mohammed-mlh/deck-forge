@@ -98,7 +98,7 @@ export async function createDeck(userId: string, input: CreateDeckInput): Promis
     userId,
     name: input.name.trim(),
     slug,
-    visibility: input.visibility ?? "private",
+    visibility: "private",
     main: input.main ?? [],
     extra: input.extra ?? [],
     side: input.side ?? [],
@@ -137,7 +137,6 @@ export async function updateDeck(
 
   if (input.name !== undefined) patch.name = input.name.trim();
   if (input.slug !== undefined) patch.slug = slugify(input.slug);
-  if (input.visibility !== undefined) patch.visibility = input.visibility;
   if (input.main !== undefined) patch.main = input.main;
   if (input.extra !== undefined) patch.extra = input.extra;
   if (input.side !== undefined) patch.side = input.side;

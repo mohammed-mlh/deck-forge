@@ -51,6 +51,5 @@ export function deckToCreateInput(deck: Deck): CreateDeckInput {
     main: entriesToRefs(deck.main),
     extra: entriesToRefs(deck.extra),
     side: entriesToRefs(deck.side),
-    visibility: deck.visibility ?? "private",
   };
 }

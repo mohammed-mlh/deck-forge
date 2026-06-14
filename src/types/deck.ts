@@ -7,7 +7,7 @@ export interface DeckCardEntry {
   quantity: number;
 }
 
-export type DeckVisibility = "private" | "unlisted" | "public";
+export type DeckVisibility = "private" | "public";
 
 export interface Deck {
   id: string;
@@ -15,12 +15,12 @@ export interface Deck {
   main: DeckCardEntry[];
   extra: DeckCardEntry[];
   side: DeckCardEntry[];
-  visibility?: DeckVisibility;
   /** Deck label fallback when cards lack API archetype data. */
   archetype?: string;
 }
 
 export interface SavedDeck extends Deck {
+  visibility: DeckVisibility;
   updatedAt: string;
 }
 
