@@ -93,6 +93,7 @@ Generated from codebase scan. Build passes; ordered by priority.
 | Unused type | `ZoneCardRefs` in `src/types/deck-io.ts` |
 | Stale `[slug]` routes | Check `src/app/decks/[slug]/` — remove if empty |
 
+
 ### 12. `deck-analyses` feature unwired
 
 - DB: `src/db/schema/deck-analyses.ts`
@@ -102,6 +103,7 @@ Generated from codebase scan. Build passes; ordered by priority.
 **Fix:** Wire service to analyze route, or remove feature until needed.
 
 ---
+=================================================
 
 ## P2 — Architecture / UX gaps
 

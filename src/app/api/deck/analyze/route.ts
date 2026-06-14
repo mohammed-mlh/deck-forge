@@ -1,7 +1,8 @@
 import { isDeckPayload } from "@/lib/ai/is-deck-payload";
+import { analyzeDeck } from "@/lib/ai/analyze-deck";
+import { createDeckAnalysis } from "@/features/deck-analyses/deck-analyses.service";
 import { assertAiRateLimit } from "@/lib/auth/rate-limit";
 import { requireUserId } from "@/lib/auth/require-user";
-import { analyzeDeck } from "@/lib/ai/analyze-deck";
 
 export async function POST(req: Request) {
   try {
@@ -14,6 +15,8 @@ export async function POST(req: Request) {
     }
 
     const analysis = await analyzeDeck(body);
+    await createDeckAnalysis(userId, { deckId: body.id, analysis });
+
     return Response.json(analysis);
   } catch (err) {
     if (err instanceof Response) return err;

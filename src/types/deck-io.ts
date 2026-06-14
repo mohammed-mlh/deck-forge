@@ -1,5 +1,3 @@
-import type { DeckZone } from "@/types/deck";
-
 export type DeckFormatId =
   | "ygoprodeck-txt"
   | "ydk"
@@ -33,11 +31,6 @@ export interface ParsedDeckList {
   main: ParsedCardRef[];
   extra: ParsedCardRef[];
   side: ParsedCardRef[];
-}
-
-export interface ZoneCardRefs {
-  zone: DeckZone;
-  refs: ParsedCardRef[];
 }
 
 export interface ImportResult {
