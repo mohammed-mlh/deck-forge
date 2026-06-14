@@ -78,6 +78,7 @@ export function DeckZonePanel({
             <SlotCell
               key={slot ? `${slot.entry.card.id}-${slot.copyIndex}` : `empty-${index}`}
               slot={slot}
+              zone={zone}
               slotNumber={index + 1}
               onRemove={onRemove}
               onSelectCard={onSelectCard}
@@ -105,12 +106,14 @@ function DeckEmptySlot({ index }: { index: number }) {
 
 function SlotCell({
   slot,
+  zone,
   slotNumber,
   onRemove,
   onSelectCard,
   selectedCardId,
 }: {
   slot: DeckSlot | null;
+  zone: DeckZone;
   slotNumber: number;
   onRemove: (cardId: number) => void;
   onSelectCard?: (card: YugiohCard) => void;
@@ -123,6 +126,7 @@ function SlotCell({
   return (
     <DeckZoneCard
       card={slot.entry.card}
+      zone={slot.zone}
       onSelect={onSelectCard}
       selected={selectedCardId === slot.entry.card.id}
       onRemove={() => onRemove(slot.entry.card.id)}

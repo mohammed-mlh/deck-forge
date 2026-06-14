@@ -132,6 +132,8 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 - `src/components/deck-builder/deck-analysis-panel.tsx` refetch deps: `deck.id`, empty state — not card changes.
 
+=================================================
+
 ### 17. Partial hydration failures hidden
 
 - `fetchCardsByIds` in `src/lib/ygoprodeck.ts`: `if (!res.ok) continue` — incomplete deck, no error.

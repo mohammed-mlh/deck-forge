@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 import { Minus } from "lucide-react";
 import { getCardImageUrl } from "@/lib/ygoprodeck";
 import { cn } from "@/lib/utils";
+import type { DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
 interface DeckZoneCardProps {
   card: YugiohCard;
+  zone: DeckZone;
   onSelect?: (card: YugiohCard) => void;
   onRemove: () => void;
   selected?: boolean;
@@ -16,13 +20,25 @@ interface DeckZoneCardProps {
 
 export function DeckZoneCard({
   card,
+  zone,
   onSelect,
   onRemove,
   selected,
   className,
 }: DeckZoneCardProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `deck-${zone}-${card.id}`,
+    data: { type: "deck-card", card, zone, cardId: card.id },
+  });
+
   return (
-    <div className={cn("group relative", className)}>
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : 1 }}
+      className={cn("group relative touch-none", className)}
+      {...listeners}
+      {...attributes}
+    >
       <button
         type="button"
         onClick={() => onSelect?.(card)}

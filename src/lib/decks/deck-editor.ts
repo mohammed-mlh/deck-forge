@@ -55,16 +55,21 @@ export function moveCardInDeck(
   cardId: number,
   from: DeckZone,
   to: DeckZone
-): Deck {
+): { deck: Deck; ok: true } | { deck: Deck; ok: false; reason?: string } {
+  if (from === to) return { deck, ok: true };
+
   const entry = deck[from].find((e) => e.card.id === cardId);
-  if (!entry) return deck;
+  if (!entry) return { deck, ok: false, reason: "Card not found in zone" };
 
   const check = canAddCardToZone(deck, entry.card, to);
-  if (!check.ok) return deck;
+  if (!check.ok) return { deck, ok: false, reason: check.reason };
 
   return {
-    ...deck,
-    [from]: removeOneDeckEntry(deck[from], cardId),
-    [to]: upsertDeckEntry(deck[to], entry.card),
+    deck: {
+      ...deck,
+      [from]: removeOneDeckEntry(deck[from], cardId),
+      [to]: upsertDeckEntry(deck[to], entry.card),
+    },
+    ok: true,
   };
 }

@@ -10,6 +10,8 @@ import { countZone, createEmptyDeck, validateDeck } from "@/lib/deck-rules";
 import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
+type DeckActionResult = { ok: true } | { ok: false; reason?: string };
+
 export function useDeck(initial?: Deck) {
   const [deck, setDeck] = useState<Deck>(initial ?? createEmptyDeck());
 
@@ -24,20 +26,38 @@ export function useDeck(initial?: Deck) {
     [deck]
   );
 
-  const addCard = useCallback((card: YugiohCard, zone?: DeckZone) => {
+  const addCard = useCallback((card: YugiohCard, zone?: DeckZone): DeckActionResult => {
+    let result: DeckActionResult = { ok: true };
     setDeck((prev) => {
-      const result = addCardToDeck(prev, card, zone);
-      return result.ok ? result.deck : prev;
+      const next = addCardToDeck(prev, card, zone);
+      if (!next.ok) {
+        result = { ok: false, reason: next.reason };
+        return prev;
+      }
+      return next.deck;
     });
+    return result;
   }, []);
 
   const removeCard = useCallback((cardId: number, zone: DeckZone) => {
     setDeck((prev) => removeCardFromDeck(prev, cardId, zone));
   }, []);
 
-  const moveCard = useCallback((cardId: number, from: DeckZone, to: DeckZone) => {
-    setDeck((prev) => moveCardInDeck(prev, cardId, from, to));
-  }, []);
+  const moveCard = useCallback(
+    (cardId: number, from: DeckZone, to: DeckZone): DeckActionResult => {
+      let result: DeckActionResult = { ok: true };
+      setDeck((prev) => {
+        const next = moveCardInDeck(prev, cardId, from, to);
+        if (!next.ok) {
+          result = { ok: false, reason: next.reason };
+          return prev;
+        }
+        return next.deck;
+      });
+      return result;
+    },
+    []
+  );
 
   const resetDeck = useCallback(() => {
     setDeck(createEmptyDeck());

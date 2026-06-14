@@ -33,6 +33,15 @@ function isDeckEmpty(deck: Deck): boolean {
   return deck.main.length === 0 && deck.extra.length === 0 && deck.side.length === 0;
 }
 
+export function deckContentKey(deck: Deck): string {
+  const zoneKey = (entries: Deck["main"]) =>
+    entries
+      .map((entry) => `${entry.card.id}:${entry.quantity}`)
+      .sort()
+      .join(",");
+  return `${zoneKey(deck.main)}|${zoneKey(deck.extra)}|${zoneKey(deck.side)}`;
+}
+
 function AnalysisSkeleton() {
   return (
     <div className="space-y-4">
@@ -228,7 +237,7 @@ export function DeckAnalysisPanel({
     return () => {
       cancelled = true;
     };
-  }, [deck.id, deckEmpty]);
+  }, [deck, deckEmpty]);
 
   return (
     <div
@@ -239,7 +248,7 @@ export function DeckAnalysisPanel({
       )}
     >
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
-        {status !== "loading" && status !== "empty" && (
+        {!deckEmpty && status !== "loading" && (
           <div className="mb-3 flex justify-end">
             <button
               type="button"
@@ -252,7 +261,7 @@ export function DeckAnalysisPanel({
           </div>
         )}
 
-        {status === "loading" && (
+        {!deckEmpty && status === "loading" && (
           <div>
             <div className="mb-4 flex items-center gap-2 text-(--color-foreground-muted)">
               <Loader2 className="size-4 animate-spin text-(--color-primary)" />
@@ -262,7 +271,7 @@ export function DeckAnalysisPanel({
           </div>
         )}
 
-        {status === "empty" && (
+        {deckEmpty && (
           <EmptyState
             icon={<Layers className="size-5" />}
             title="Deck is empty"
@@ -271,7 +280,7 @@ export function DeckAnalysisPanel({
           />
         )}
 
-        {status === "error" && (
+        {!deckEmpty && status === "error" && (
           <EmptyState
             icon={<AlertTriangle className="size-5" />}
             title="Analysis failed"
@@ -288,7 +297,9 @@ export function DeckAnalysisPanel({
           </EmptyState>
         )}
 
-        {status === "success" && analysis && <AnalysisContent analysis={analysis} />}
+        {!deckEmpty && status === "success" && analysis && (
+          <AnalysisContent analysis={analysis} />
+        )}
       </div>
     </div>
   );

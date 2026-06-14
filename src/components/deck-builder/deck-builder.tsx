@@ -17,7 +17,7 @@ import { useSavedDeckById, useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { Deck, DeckZone } from "@/types/deck";
+import type { Deck, DeckValidationIssue, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
 function DeckNotFound() {
@@ -88,6 +88,27 @@ function ImportResultToast({
   );
 }
 
+function DeckValidationBanner({ issues }: { issues: DeckValidationIssue[] }) {
+  if (issues.length === 0) return null;
+
+  return (
+    <ul className="shrink-0 space-y-1 border-b border-(--color-border) bg-(--color-surface-2) px-4 py-2">
+      {issues.map((issue, index) => (
+        <li
+          key={`${issue.message}-${index}`}
+          className={
+            issue.severity === "error"
+              ? "text-xs text-(--color-danger)"
+              : "text-xs text-(--color-warning)"
+          }
+        >
+          {issue.message}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 interface DeckBuilderContentProps {
   deckId: string | null;
   initialDeck?: Deck;
@@ -96,10 +117,11 @@ interface DeckBuilderContentProps {
 function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const router = useRouter();
   const { save } = useSavedDecks();
-  const { deck, stats, addCard, removeCard, resetDeck, setDeckName, setDeckVisibility, replaceDeck } =
+  const { deck, stats, issues, addCard, removeCard, moveCard, resetDeck, setDeckName, setDeckVisibility, replaceDeck } =
     useDeck(initialDeck);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [ruleMessage, setRuleMessage] = useState<string | null>(null);
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
   const [importNotes, setImportNotes] = useState<{
     errors: string[];
@@ -109,6 +131,12 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
+
+  const showRuleMessage = (reason?: string) => {
+    if (!reason) return;
+    setRuleMessage(reason);
+    window.setTimeout(() => setRuleMessage(null), 3000);
+  };
 
   const handleSave = async () => {
     setSaveError(null);
@@ -144,13 +172,20 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   };
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
-    addCard(card, zone);
-    setSelectedCard(card);
+    const result = addCard(card, zone);
+    if (result.ok) setSelectedCard(card);
+    else showRuleMessage(result.reason);
+  };
+
+  const handleMove = (cardId: number, from: DeckZone, to: DeckZone) => {
+    const result = moveCard(cardId, from, to);
+    if (!result.ok) showRuleMessage(result.reason);
   };
 
   const handleAdd = (card: YugiohCard, zone?: DeckZone) => {
-    addCard(card, zone ?? getDefaultZoneForCard(card));
-    setSelectedCard(card);
+    const result = addCard(card, zone ?? getDefaultZoneForCard(card));
+    if (result.ok) setSelectedCard(card);
+    else showRuleMessage(result.reason);
   };
 
   const handleApplyDoctorSuggestion = (nextDeck: Deck) => {
@@ -166,7 +201,7 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   };
 
   return (
-    <DragDropProvider onDropOnZone={handleDrop}>
+    <DragDropProvider onDropOnZone={handleDrop} onMoveCard={handleMove}>
       <div className="flex h-full min-h-0">
         <CardDetailViewer
           card={selectedCard}
@@ -191,6 +226,14 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
             onImport={() => setIoMode("import")}
             onExport={() => setIoMode("export")}
           />
+
+          <DeckValidationBanner issues={issues} />
+
+          {ruleMessage && (
+            <p className="shrink-0 border-b border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-xs text-(--color-danger)">
+              {ruleMessage}
+            </p>
+          )}
 
           {ioMode && (
             <DeckIoDialog

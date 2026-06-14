@@ -18,9 +18,14 @@ import type { DeckZone } from "@/types/deck";
 interface DragDropProviderProps {
   children: React.ReactNode;
   onDropOnZone: (card: YugiohCard, zone: DeckZone) => void;
+  onMoveCard?: (cardId: number, from: DeckZone, to: DeckZone) => void;
 }
 
-export function DragDropProvider({ children, onDropOnZone }: DragDropProviderProps) {
+export function DragDropProvider({
+  children,
+  onDropOnZone,
+  onMoveCard,
+}: DragDropProviderProps) {
   const [activeCard, setActiveCard] = useState<YugiohCard | null>(null);
 
   const sensors = useSensors(
@@ -34,13 +39,21 @@ export function DragDropProvider({ children, onDropOnZone }: DragDropProviderPro
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveCard(null);
-    const card = event.active.data.current?.card as YugiohCard | undefined;
+    const activeData = event.active.data.current;
     const overData = event.over?.data.current;
-
-    if (!card || overData?.type !== "deck-zone") return;
+    if (!activeData || overData?.type !== "deck-zone") return;
 
     const zone = overData.zone as DeckZone;
-    onDropOnZone(card, zone);
+
+    if (activeData.type === "deck-card") {
+      const from = activeData.zone as DeckZone;
+      const cardId = activeData.cardId as number;
+      if (from !== zone) onMoveCard?.(cardId, from, zone);
+      return;
+    }
+
+    const card = activeData.card as YugiohCard | undefined;
+    if (card) onDropOnZone(card, zone);
   };
 
   const handleDragCancel = () => setActiveCard(null);
