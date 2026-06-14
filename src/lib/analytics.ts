@@ -15,25 +15,13 @@ export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[number];
 
 export type AnalyticsPayload = Record<string, string | number | boolean | null | undefined>;
 
-type AnalyticsProvider = (event: AnalyticsEvent, payload?: AnalyticsPayload) => void;
-
-let provider: AnalyticsProvider | null = null;
-
-export function setAnalyticsProvider(fn: AnalyticsProvider) {
-  provider = fn;
-}
-
 export function track(event: AnalyticsEvent, payload?: AnalyticsPayload) {
   if (typeof window === "undefined") return;
 
-  if (provider) {
-    provider(event, payload);
-    return;
-  }
-
-  console.log("[analytics]", {
-    event,
-    payload,
-    timestamp: new Date().toISOString(),
+  void fetch("/api/analytics/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event, payload }),
+    keepalive: true,
   });
 }

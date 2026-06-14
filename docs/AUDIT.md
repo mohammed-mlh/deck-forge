@@ -167,7 +167,7 @@ Still missing: API route integration tests, `requireUserId`, hooks.
 
 - `analytics_events` table + `features/analytics/` service/repository.
 - `POST /api/analytics/events` persists events (Clerk userId when signed in).
-- `AnalyticsProvider` wires `setAnalyticsProvider` → API.
+- `track()` in `src/lib/analytics.ts` POSTs directly to `/api/analytics/events`.
 
 ### 23. SEO inconsistency
 
