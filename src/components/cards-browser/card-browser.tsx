@@ -23,6 +23,7 @@ type ViewMode = "grid" | "list";
 interface CardBrowserProps {
   showFilters?: boolean;
   className?: string;
+  initialArchetype?: string;
 }
 
 const filterCardClass =
@@ -106,9 +107,16 @@ function ViewModeToggle({
   );
 }
 
-export function CardBrowser({ showFilters = true, className }: CardBrowserProps) {
+export function CardBrowser({
+  showFilters = true,
+  className,
+  initialArchetype,
+}: CardBrowserProps) {
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<CardFilters>(DEFAULT_CARD_FILTERS);
+  const [filters, setFilters] = useState<CardFilters>(() => ({
+    ...DEFAULT_CARD_FILTERS,
+    ...(initialArchetype ? { archetype: initialArchetype } : {}),
+  }));
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");

@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { getFeaturedArchetypeSlugs } from "@/content/seo-archetypes";
+import { getGuideSlugs } from "@/content/seo-guides";
 import { getPublicDecks } from "@/features/decks/decks.service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -11,6 +13,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: deck.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
+  }));
+
+  const guideEntries = getGuideSlugs().map((slug) => ({
+    url: `${base}/guides/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  const archetypeEntries = getFeaturedArchetypeSlugs().map((slug) => ({
+    url: `${base}/archetypes/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
   }));
 
   return [
@@ -32,6 +48,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${base}/guides`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${base}/archetypes`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${base}/import`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    ...guideEntries,
+    ...archetypeEntries,
     ...publicDeckEntries,
   ];
 }

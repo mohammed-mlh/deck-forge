@@ -16,6 +16,7 @@ export function createPageMetadata({
   return {
     title,
     description,
+    ...(path && { alternates: { canonical: path } }),
     ...(noIndex && { robots: { index: false, follow: false } }),
     openGraph: {
       title,

@@ -3,9 +3,14 @@ import { Layers } from "lucide-react";
 import { Container } from "@/components/layout/container";
 
 const footerLinks = {
-  Product: [{ label: "Cards", href: "/cards" }],
+  Product: [
+    { label: "Cards", href: "/cards" },
+    { label: "Archetypes", href: "/archetypes" },
+    { label: "Guides", href: "/guides" },
+  ],
   Tools: [
     { label: "Deck Builder", href: "/deck-builder" },
+    { label: "Import Formats", href: "/import" },
     { label: "Decks", href: "/decks" },
     { label: "My Decks", href: "/my-decks" },
   ],
