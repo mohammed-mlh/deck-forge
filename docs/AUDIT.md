@@ -152,10 +152,16 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 - Updated `PROJECT.md`, `docs/CODEBASE.md`, `docs/LIBRARIES.md` for Clerk, Postgres, current routes, `ygoprodeck-sdk`, removed prebuilt/localStorage references.
 
-### 21. Test coverage
+### ~~21. Test coverage~~ (partial)
 
-- Only `src/lib/deck-io/__tests__/deck-io.test.ts`.
-- Missing: `deck-rules`, mappers, services, API routes, auth, AI sanitization, hooks.
+Added unit tests:
+- `src/lib/__tests__/deck-rules.test.ts`
+- `src/features/decks/__tests__/decks.mapper.test.ts`
+- `src/features/decks/__tests__/decks.service.test.ts`
+- `src/lib/ai/__tests__/sanitize-deck-doctor.test.ts`
+- `src/lib/auth/__tests__/rate-limit.test.ts`
+
+Still missing: API route integration tests, `requireUserId`, hooks.
 
 ### 22. Analytics stub
 
