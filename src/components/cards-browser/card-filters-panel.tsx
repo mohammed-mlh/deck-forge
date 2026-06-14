@@ -65,7 +65,7 @@ export function CardFiltersPanel({
   const archetypeListId = useId();
   const monsterRaceListId = useId();
   const isClient = useIsClient();
-  const archetypes = useArchetypes();
+  const { data: archetypes = [] } = useArchetypes();
   const { data: allCards = [] } = useQuery(allCardsQuery);
   const monsterRaces = extractMonsterRaces(allCards);
 

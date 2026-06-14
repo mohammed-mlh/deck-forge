@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchCards } from "@/lib/ygoprodeck";
+import { fetchCards } from "@/lib/ygoprodeck-sdk";
 import type { CardSearchParams } from "@/types/yugioh";
 
 export function useCards(
