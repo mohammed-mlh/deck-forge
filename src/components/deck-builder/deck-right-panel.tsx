@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Search, Sparkles, Wand2 } from "lucide-react";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
-import { DeckAnalysisPanel, deckContentKey } from "@/components/deck-builder/deck-analysis-panel";
+import { DeckAnalysisPanel } from "@/components/deck-builder/deck-analysis-panel";
 import { DeckDoctorPanel } from "@/components/deck-builder/deck-doctor-panel";
 import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
@@ -101,7 +101,7 @@ export function DeckRightPanel({
       </div>
 
       <div className={cn("min-h-0 flex-1", panel !== "analysis" && "hidden")}>
-        <DeckAnalysisPanel key={deckContentKey(deck)} embedded deck={deck} />
+        <DeckAnalysisPanel embedded deck={deck} />
       </div>
 
       <div className={cn("min-h-0 flex-1", panel !== "doctor" && "hidden")}>

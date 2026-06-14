@@ -13,11 +13,11 @@ import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
 import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
 import { useDeck } from "@/hooks/use-deck";
-import { useSavedDeckById, useSavedDecks } from "@/hooks/use-saved-decks";
+import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { Deck, DeckValidationIssue, DeckZone } from "@/types/deck";
+import type { Deck, DeckZone } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
 
 function DeckNotFound() {
@@ -88,27 +88,6 @@ function ImportResultToast({
   );
 }
 
-function DeckValidationBanner({ issues }: { issues: DeckValidationIssue[] }) {
-  if (issues.length === 0) return null;
-
-  return (
-    <ul className="shrink-0 space-y-1 border-b border-(--color-border) bg-(--color-surface-2) px-4 py-2">
-      {issues.map((issue, index) => (
-        <li
-          key={`${issue.message}-${index}`}
-          className={
-            issue.severity === "error"
-              ? "text-xs text-(--color-danger)"
-              : "text-xs text-(--color-warning)"
-          }
-        >
-          {issue.message}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 interface DeckBuilderContentProps {
   deckId: string | null;
   initialDeck?: Deck;
@@ -117,11 +96,9 @@ interface DeckBuilderContentProps {
 function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const router = useRouter();
   const { save } = useSavedDecks();
-  const { deck, stats, issues, addCard, removeCard, moveCard, resetDeck, setDeckName, replaceDeck } =
+  const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
     useDeck(initialDeck);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [ruleMessage, setRuleMessage] = useState<string | null>(null);
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
   const [importNotes, setImportNotes] = useState<{
     errors: string[];
@@ -132,60 +109,32 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
 
-  const showRuleMessage = (reason?: string) => {
-    if (!reason) return;
-    setRuleMessage(reason);
-    window.setTimeout(() => setRuleMessage(null), 3000);
-  };
-
-  const handleSave = async () => {
-    setSaveError(null);
+  const handleSave = () => {
     const isNew = !deckId;
-    try {
-      await save(deck, { update: Boolean(deckId) });
-      track("deck_saved", {
-        deckId: deck.id,
-        deckName: deck.name,
-        main: stats.main,
-        extra: stats.extra,
-        side: stats.side,
-      });
-      if (isNew) {
-        track("deck_created", { deckId: deck.id, deckName: deck.name });
-      }
-      setSaveStatus("saved");
-      router.replace(`/deck-builder/${deck.id}`);
-      window.setTimeout(() => setSaveStatus("idle"), 2000);
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Failed to save deck");
+    save(deck);
+    track("deck_saved", {
+      deckId: deck.id,
+      deckName: deck.name,
+      main: stats.main,
+      extra: stats.extra,
+      side: stats.side,
+    });
+    if (isNew) {
+      track("deck_created", { deckId: deck.id, deckName: deck.name });
     }
-  };
-
-  const handleClear = () => {
-    setSelectedCard(null);
-    setSaveError(null);
-    if (deckId) {
-      router.replace("/deck-builder");
-      return;
-    }
-    resetDeck();
+    setSaveStatus("saved");
+    router.replace(`/deck-builder/${deck.id}`);
+    window.setTimeout(() => setSaveStatus("idle"), 2000);
   };
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
-    const result = addCard(card, zone);
-    if (result.ok) setSelectedCard(card);
-    else showRuleMessage(result.reason);
-  };
-
-  const handleMove = (cardId: number, from: DeckZone, to: DeckZone) => {
-    const result = moveCard(cardId, from, to);
-    if (!result.ok) showRuleMessage(result.reason);
+    addCard(card, zone);
+    setSelectedCard(card);
   };
 
   const handleAdd = (card: YugiohCard, zone?: DeckZone) => {
-    const result = addCard(card, zone ?? getDefaultZoneForCard(card));
-    if (result.ok) setSelectedCard(card);
-    else showRuleMessage(result.reason);
+    addCard(card, zone ?? getDefaultZoneForCard(card));
+    setSelectedCard(card);
   };
 
   const handleApplyDoctorSuggestion = (nextDeck: Deck) => {
@@ -201,7 +150,7 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   };
 
   return (
-    <DragDropProvider onDropOnZone={handleDrop} onMoveCard={handleMove}>
+    <DragDropProvider onDropOnZone={handleDrop}>
       <div className="flex h-full min-h-0">
         <CardDetailViewer
           card={selectedCard}
@@ -218,20 +167,14 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
             extra={stats.extra}
             side={stats.side}
             saveStatus={saveStatus}
-            saveError={saveError}
-            onSave={() => void handleSave()}
-            onClear={handleClear}
+            onSave={handleSave}
+            onClear={() => {
+              resetDeck();
+              setSelectedCard(null);
+            }}
             onImport={() => setIoMode("import")}
             onExport={() => setIoMode("export")}
           />
-
-          <DeckValidationBanner issues={issues} />
-
-          {ruleMessage && (
-            <p className="shrink-0 border-b border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-xs text-(--color-danger)">
-              {ruleMessage}
-            </p>
-          )}
 
           {ioMode && (
             <DeckIoDialog
@@ -312,16 +255,15 @@ export function DeckBuilder() {
   const params = useParams();
   const deckId = typeof params.id === "string" ? params.id : null;
   const { ready, getById } = useSavedDecks();
-  const deckQuery = useSavedDeckById(deckId);
 
-  const savedDeck = deckId ? (getById(deckId) ?? deckQuery.data) : undefined;
+  const savedDeck = deckId && ready ? getById(deckId) : undefined;
   const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
 
-  if (deckId && (!ready || deckQuery.isLoading)) {
+  if (deckId && !ready) {
     return <DeckBuilderSkeleton />;
   }
 
-  if (deckId && ready && !savedDeck && deckQuery.isError) {
+  if (deckId && ready && !savedDeck) {
     return <DeckNotFound />;
   }
 
