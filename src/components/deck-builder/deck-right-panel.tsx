@@ -90,13 +90,14 @@ export function DeckRightPanel({
         />
       </div>
 
-      <div className={cn("min-h-0 flex-1", panel !== "search" && "hidden")}>
+      <div className={cn("flex min-h-0 flex-1 flex-col", panel !== "search" && "hidden")}>
         <CardSearchPanel
           ref={searchInputRef}
           embedded
           onAddCard={onAddCard}
           onSelectCard={onSelectCard}
           selectedCardId={selectedCardId}
+          className="min-h-0 flex-1"
         />
       </div>
 

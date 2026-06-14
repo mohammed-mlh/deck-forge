@@ -32,7 +32,7 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
 
   const debouncedSearch = useDebounce(search, 350);
 
-  const { cards, isLoading, isFetching, isError, error, refetch } =
+  const { cards, isLoading, isFetching, isError, refetch } =
     useBrowseCards(debouncedSearch, filters);
 
   const handleCardClick = (card: YugiohCard) => {
@@ -46,49 +46,55 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-col",
-        embedded ? "h-full" : "h-full border-l border-(--color-border) bg-(--color-bg-surface)",
+        "flex min-h-0 flex-1 flex-col",
+        embedded ? "" : "border-l border-(--color-border) bg-(--color-bg-surface)",
         className
       )}
     >
-      <div className="flex max-h-[45%] shrink-0 flex-col gap-2 overflow-y-auto border-b border-(--color-border) p-3">
-        <SearchBar
-          ref={searchRef}
-          value={search}
-          onChange={setSearch}
-          placeholder="Search cards..."
-        />
-        <CardFiltersPanel
-          filters={filters}
-          onChange={setFilters}
-          className="border-0 bg-transparent p-0"
-        />
-        <p className="shrink-0 text-[11px] text-(--color-foreground-subtle)">
+      <div className="flex h-52 shrink-0 flex-col border-b border-(--color-border)">
+        <div className="shrink-0 p-3 pb-2">
+          <SearchBar
+            ref={searchRef}
+            value={search}
+            onChange={setSearch}
+            placeholder="Search cards..."
+          />
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+          <CardFiltersPanel
+            filters={filters}
+            onChange={setFilters}
+            className="border-0 bg-transparent p-0"
+          />
+        </div>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col">
+        <p className="shrink-0 border-b border-(--color-border) px-3 py-2 text-[11px] text-(--color-foreground-subtle)">
           {isLoading
             ? "Loading cards…"
             : `${cards.length} results — click to preview, drag or double-click to add`}
           {isFetching && !isLoading && " · updating…"}
         </p>
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
-        <CardGrid
-          cards={cards}
-          isLoading={isLoading}
-          isError={isError}
-          errorMessage="Failed to load cards. Try again."
-          onRetry={() => void refetch()}
-          onCardClick={handleCardClick}
-          onCardDoubleClick={handleCardDoubleClick}
-          selectedCardId={selectedCardId}
-          draggable
-          columns={4}
-          emptyMessage={
-            debouncedSearch
-              ? `No cards found for "${debouncedSearch}".`
-              : "No cards available. Try again shortly."
-          }
-        />
+        <div className="min-h-0 flex-1 overflow-y-auto p-3">
+          <CardGrid
+            cards={cards}
+            isLoading={isLoading}
+            isError={isError}
+            errorMessage="Failed to load cards. Try again."
+            onRetry={() => void refetch()}
+            onCardClick={handleCardClick}
+            onCardDoubleClick={handleCardDoubleClick}
+            selectedCardId={selectedCardId}
+            draggable
+            columns={4}
+            emptyMessage={
+              debouncedSearch
+                ? `No cards found for "${debouncedSearch}".`
+                : "No cards available. Try again shortly."
+            }
+          />
+        </div>
       </div>
     </div>
   );

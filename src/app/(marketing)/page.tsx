@@ -204,12 +204,8 @@ export default function HomePage() {
         <div className="pointer-events-none absolute right-0 top-48 h-px w-24 bg-linear-to-l from-transparent via-(--color-primary)/20 to-transparent animate-[energy-wave_10s_ease-in-out_infinite_2s]" />
 
         <Container>
-          <div className="flex flex-col items-center gap-6 py-24 text-center md:py-40">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-(--color-primary)/30 bg-(--color-primary-muted) px-3 py-1 text-xs font-medium text-(--color-primary)">
-              <Sparkles className="size-3" />
-              AI-powered deck analysis
-            </span>
-
+          <div className="flex flex-col items-center gap-6 py-24 text-center md:py-20">
+            
             <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-(--color-foreground) md:text-[3.25rem] md:leading-[1.15]">
               The professional deck building platform for{" "}
               <span className="text-(--color-primary)">competitive play</span>

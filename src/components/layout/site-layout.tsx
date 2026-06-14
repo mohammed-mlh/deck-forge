@@ -23,12 +23,12 @@ export function SiteLayout({ children }: SiteLayoutProps) {
     >
       {!isBuilder && <CyberBackground />}
 
-      <div className={cn("relative z-10 flex flex-1 flex-col", !isBuilder && "min-h-screen")}>
+      <div className={cn("relative z-10 flex min-h-0 flex-1 flex-col", !isBuilder && "min-h-screen")}>
         <Navbar />
         <main
           className={cn(
-            "flex-1",
-            isBuilder ? "min-h-0 overflow-hidden" : "p-6"
+            "flex flex-1 flex-col",
+            isBuilder ? "min-h-0 overflow-hidden" : "min-h-0 p-6"
           )}
         >
           {children}

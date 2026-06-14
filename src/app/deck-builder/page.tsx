@@ -13,8 +13,8 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function DeckBuilderPage() {
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <Suspense fallback={<DeckBuilderSkeleton />}>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <Suspense fallback={<DeckBuilderSkeleton className="min-h-0 flex-1" />}>
         <DeckBuilder />
       </Suspense>
     </div>

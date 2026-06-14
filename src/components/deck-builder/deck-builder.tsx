@@ -151,15 +151,15 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
 
   return (
     <DragDropProvider onDropOnZone={handleDrop}>
-      <div className="flex h-full min-h-0">
+      <div className="flex min-h-0 flex-1">
         <CardDetailViewer
           card={selectedCard}
-          className="w-[clamp(220px,22vw,280px)]"
+          className="w-[clamp(220px,22vw,280px)] min-h-0"
           onSearchCards={() => searchInputRef.current?.focus()}
           onImportDeck={() => setIoMode("import")}
         />
 
-        <section className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <section className="relative flex min-h-0 min-w-0 flex-1 flex-col">
           <DeckPanelHeader
             deckName={deck.name}
             onDeckNameChange={setDeckName}
@@ -244,7 +244,7 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
           onSelectCard={setSelectedCard}
           selectedCardId={selectedCard?.id ?? null}
           searchInputRef={searchInputRef}
-          className="w-[clamp(280px,28vw,380px)] shrink-0"
+          className="w-[clamp(280px,28vw,380px)] min-h-0 shrink-0"
         />
       </div>
     </DragDropProvider>
@@ -260,7 +260,7 @@ export function DeckBuilder() {
   const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
 
   if (deckId && !ready) {
-    return <DeckBuilderSkeleton />;
+    return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
   }
 
   if (deckId && ready && !savedDeck) {
@@ -268,14 +268,16 @@ export function DeckBuilder() {
   }
 
   if (deckId && savedDeck && isHydrating) {
-    return <DeckBuilderSkeleton />;
+    return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
   }
 
   return (
-    <DeckBuilderContent
-      key={deckId ?? "new"}
-      deckId={deckId}
-      initialDeck={hydratedDeck}
-    />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <DeckBuilderContent
+        key={deckId ?? "new"}
+        deckId={deckId}
+        initialDeck={hydratedDeck}
+      />
+    </div>
   );
 }
