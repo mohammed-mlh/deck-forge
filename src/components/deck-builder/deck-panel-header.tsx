@@ -13,6 +13,7 @@ interface DeckPanelHeaderProps {
   extra: number;
   side: number;
   saveStatus: "idle" | "saved";
+  saveError?: string | null;
   onSave: () => void;
   onClear: () => void;
   onImport: () => void;
@@ -59,6 +60,7 @@ export function DeckPanelHeader({
   extra,
   side,
   saveStatus,
+  saveError,
   onSave,
   onClear,
   onImport,
@@ -95,7 +97,10 @@ export function DeckPanelHeader({
       </div>
 
       <div className="flex items-center gap-2 sm:justify-end">
-        {saveStatus === "saved" && (
+        {saveError && (
+          <span className="text-xs text-(--color-danger)">{saveError}</span>
+        )}
+        {saveStatus === "saved" && !saveError && (
           <span className="text-xs text-(--color-success)">Saved</span>
         )}
         <button

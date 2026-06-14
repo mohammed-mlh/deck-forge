@@ -75,6 +75,8 @@ Generated from codebase scan. Build passes; ordered by priority.
 
 **Fix:** `router.replace('/deck-builder')` on clear, or reset in place without new id until save.
 
+
+=================================================
 ### 10. Marketing copy outdated
 
 - `src/app/(marketing)/page.tsx`: "12 Starter Decks", "Save decks locally", "official starter decks".

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { ArrowLeft, Copy, Share2 } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
@@ -67,10 +68,13 @@ function DeckZoneSection({ zone, entries }: { zone: DeckZone; entries: DeckCardE
 
 export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
+  const { openSignIn } = useClerk();
   const { fork } = useSavedDecks();
   const { deck: hydratedDeck } = useHydratedDeckOrEmpty(initialDeck);
   const deck = hydratedDeck ?? initialDeck;
   const [copying, setCopying] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
   const featured = getMostPowerfulMonster(deck);
   const main = countZone(deck.main);
   const extra = countZone(deck.extra);
@@ -82,6 +86,13 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
   });
 
   const handleCopyDeck = async () => {
+    setCopyError(null);
+
+    if (!isSignedIn) {
+      openSignIn();
+      return;
+    }
+
     setCopying(true);
     track("deck_copied", {
       sourceDeckId: deck.id,
@@ -90,8 +101,17 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
     try {
       const saved = await fork(deckToCreateInput(deck));
       router.push(`/deck-builder/${saved.id}`);
-    } catch {
+    } catch (err) {
       setCopying(false);
+      const status =
+        err && typeof err === "object" && "status" in err
+          ? (err as { status: number }).status
+          : undefined;
+      if (status === 401) {
+        openSignIn();
+        return;
+      }
+      setCopyError(err instanceof Error ? err.message : "Failed to copy deck");
     }
   };
 
@@ -151,6 +171,9 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
                 Share
               </button>
             </div>
+            {copyError && (
+              <p className="mt-2 text-sm text-(--color-danger)">{copyError}</p>
+            )}
           </div>
 
           {featured && (

@@ -34,9 +34,11 @@ export function useSavedDecks() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (deck: Deck) => {
+    mutationFn: async ({ deck, update }: { deck: Deck; update?: boolean }) => {
       const payload = deckToCreateInput(deck);
-      const existing = listQuery.data?.some((d) => d.id === deck.id);
+      const inList = listQuery.data?.some((d) => d.id === deck.id);
+      const inDeckCache = Boolean(queryClient.getQueryData<SavedDeck>(["deck", deck.id]));
+      const existing = update ?? inList ?? inDeckCache;
       const res = await fetch(existing ? `/api/decks/${deck.id}` : "/api/decks", {
         method: existing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +71,12 @@ export function useSavedDecks() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        throw new Error("Failed to copy deck");
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        const error = new Error(data?.error ?? "Failed to copy deck") as Error & {
+          status: number;
+        };
+        error.status = res.status;
+        throw error;
       }
       const data = (await res.json()) as { deck: SavedDeck };
       return data.deck;
@@ -115,9 +122,15 @@ export function useSavedDecks() {
     [queryClient]
   );
 
+  const save = useCallback(
+    (deck: Deck, options?: { update?: boolean }) =>
+      saveMutation.mutateAsync({ deck, update: options?.update }),
+    [saveMutation]
+  );
+
   return {
     decks: listQuery.data ?? [],
-    save: saveMutation.mutateAsync,
+    save,
     fork: forkMutation.mutateAsync,
     remove: removeMutation.mutateAsync,
     getById,

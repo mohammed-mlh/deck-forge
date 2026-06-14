@@ -99,6 +99,7 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, setDeckVisibility, replaceDeck } =
     useDeck(initialDeck);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
   const [importNotes, setImportNotes] = useState<{
     errors: string[];
@@ -110,21 +111,36 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
 
   const handleSave = async () => {
+    setSaveError(null);
     const isNew = !deckId;
-    await save(deck);
-    track("deck_saved", {
-      deckId: deck.id,
-      deckName: deck.name,
-      main: stats.main,
-      extra: stats.extra,
-      side: stats.side,
-    });
-    if (isNew) {
-      track("deck_created", { deckId: deck.id, deckName: deck.name });
+    try {
+      await save(deck, { update: Boolean(deckId) });
+      track("deck_saved", {
+        deckId: deck.id,
+        deckName: deck.name,
+        main: stats.main,
+        extra: stats.extra,
+        side: stats.side,
+      });
+      if (isNew) {
+        track("deck_created", { deckId: deck.id, deckName: deck.name });
+      }
+      setSaveStatus("saved");
+      router.replace(`/deck-builder/${deck.id}`);
+      window.setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save deck");
     }
-    setSaveStatus("saved");
-    router.replace(`/deck-builder/${deck.id}`);
-    window.setTimeout(() => setSaveStatus("idle"), 2000);
+  };
+
+  const handleClear = () => {
+    setSelectedCard(null);
+    setSaveError(null);
+    if (deckId) {
+      router.replace("/deck-builder");
+      return;
+    }
+    resetDeck();
   };
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
@@ -169,11 +185,9 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
             extra={stats.extra}
             side={stats.side}
             saveStatus={saveStatus}
-            onSave={handleSave}
-            onClear={() => {
-              resetDeck();
-              setSelectedCard(null);
-            }}
+            saveError={saveError}
+            onSave={() => void handleSave()}
+            onClear={handleClear}
             onImport={() => setIoMode("import")}
             onExport={() => setIoMode("export")}
           />
