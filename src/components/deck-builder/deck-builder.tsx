@@ -13,7 +13,7 @@ import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
 import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
 import { useDeck } from "@/hooks/use-deck";
-import { useSavedDecks } from "@/hooks/use-saved-decks";
+import { useSavedDeckById, useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
@@ -109,9 +109,9 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const isNew = !deckId;
-    save(deck);
+    await save(deck);
     track("deck_saved", {
       deckId: deck.id,
       deckName: deck.name,
@@ -255,15 +255,16 @@ export function DeckBuilder() {
   const params = useParams();
   const deckId = typeof params.id === "string" ? params.id : null;
   const { ready, getById } = useSavedDecks();
+  const deckQuery = useSavedDeckById(deckId);
 
-  const savedDeck = deckId && ready ? getById(deckId) : undefined;
+  const savedDeck = deckId ? (getById(deckId) ?? deckQuery.data) : undefined;
   const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
 
-  if (deckId && !ready) {
+  if (deckId && (!ready || deckQuery.isLoading)) {
     return <DeckBuilderSkeleton />;
   }
 
-  if (deckId && ready && !savedDeck) {
+  if (deckId && ready && !savedDeck && deckQuery.isError) {
     return <DeckNotFound />;
   }
 

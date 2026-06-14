@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Range } from "react-range";
 import { useArchetypes } from "@/hooks/use-archetypes";
@@ -48,6 +48,14 @@ function FilterGroup({ label, children }: { label: string; children: React.React
   );
 }
 
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
+
 export function CardFiltersPanel({
   filters,
   onChange,
@@ -56,6 +64,7 @@ export function CardFiltersPanel({
 }: CardFiltersPanelProps) {
   const archetypeListId = useId();
   const monsterRaceListId = useId();
+  const isClient = useIsClient();
   const archetypes = useArchetypes();
   const { data: allCards = [] } = useQuery(allCardsQuery);
   const monsterRaces = extractMonsterRaces(allCards);
@@ -115,9 +124,10 @@ export function CardFiltersPanel({
           className={cn(selectClass, "placeholder:text-(--color-foreground-disabled)")}
         />
         <datalist id={archetypeListId}>
-          {archetypes.map((a) => (
-            <option key={a} value={a} />
-          ))}
+          {isClient &&
+            archetypes.map((a) => (
+              <option key={a} value={a} />
+            ))}
         </datalist>
       </div>
 
@@ -158,9 +168,10 @@ export function CardFiltersPanel({
               className={cn(selectClass, "placeholder:text-(--color-foreground-disabled)")}
             />
             <datalist id={monsterRaceListId}>
-              {monsterRaces.map((race) => (
-                <option key={race} value={race} />
-              ))}
+              {isClient &&
+                monsterRaces.map((race) => (
+                  <option key={race} value={race} />
+                ))}
             </datalist>
           </FilterGroup>
 

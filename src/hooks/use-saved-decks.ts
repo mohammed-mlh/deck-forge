@@ -1,45 +1,121 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Deck, SavedDeck } from "@/types/deck";
-import {
-  deleteDeck as removeDeck,
-  getDeckById,
-  loadDecks,
-  saveDeck as persistDeck,
-} from "@/lib/decks/deck-storage";
+import { deckToCreateInput } from "@/lib/decks/deck-db-mapper";
+
+const DECKS_QUERY_KEY = ["user-decks"] as const;
+
+async function fetchDecks(): Promise<SavedDeck[]> {
+  const res = await fetch("/api/decks");
+  if (!res.ok) {
+    throw new Error("Failed to load decks");
+  }
+  const data = (await res.json()) as { decks: SavedDeck[] };
+  return data.decks;
+}
+
+async function fetchDeckById(id: string): Promise<SavedDeck> {
+  const res = await fetch(`/api/decks/${id}`);
+  if (!res.ok) {
+    throw new Error("Deck not found");
+  }
+  const data = (await res.json()) as { deck: SavedDeck };
+  return data.deck;
+}
 
 export function useSavedDecks() {
-  const [decks, setDecks] = useState<SavedDeck[]>([]);
-  const [ready, setReady] = useState(false);
+  const queryClient = useQueryClient();
 
-  const refresh = useCallback(() => {
-    setDecks(loadDecks());
-  }, []);
+  const listQuery = useQuery({
+    queryKey: DECKS_QUERY_KEY,
+    queryFn: fetchDecks,
+  });
 
-  useEffect(() => {
-    refresh();
-    setReady(true);
-  }, [refresh]);
-
-  const save = useCallback(
-    (deck: Deck) => {
-      const saved = persistDeck(deck);
-      refresh();
-      return saved;
+  const saveMutation = useMutation({
+    mutationFn: async (deck: Deck) => {
+      const payload = deckToCreateInput(deck);
+      const existing = listQuery.data?.some((d) => d.id === deck.id);
+      const res = await fetch(existing ? `/api/decks/${deck.id}` : "/api/decks", {
+        method: existing ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(existing ? payload : { ...payload, id: deck.id }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to save deck");
+      }
+      const data = (await res.json()) as { deck: SavedDeck };
+      return data.deck;
     },
-    [refresh]
+    onSuccess: (saved) => {
+      queryClient.setQueryData<SavedDeck[]>(DECKS_QUERY_KEY, (prev = []) => {
+        const index = prev.findIndex((d) => d.id === saved.id);
+        if (index >= 0) {
+          const next = [...prev];
+          next[index] = saved;
+          return next;
+        }
+        return [saved, ...prev];
+      });
+    },
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/decks/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error("Failed to delete deck");
+      }
+    },
+    onSuccess: (_data, id) => {
+      queryClient.setQueryData<SavedDeck[]>(DECKS_QUERY_KEY, (prev = []) =>
+        prev.filter((d) => d.id !== id)
+      );
+    },
+  });
+
+  const getById = useCallback(
+    (id: string) => listQuery.data?.find((d) => d.id === id),
+    [listQuery.data]
   );
 
-  const remove = useCallback(
-    (id: string) => {
-      removeDeck(id);
-      refresh();
+  const fetchDeck = useCallback(
+    async (id: string) => {
+      const cached = queryClient
+        .getQueryData<SavedDeck[]>(DECKS_QUERY_KEY)
+        ?.find((d) => d.id === id);
+      if (cached) return cached;
+
+      const deck = await fetchDeckById(id);
+      queryClient.setQueryData<SavedDeck[]>(DECKS_QUERY_KEY, (prev = []) => {
+        if (prev.some((d) => d.id === deck.id)) return prev;
+        return [deck, ...prev];
+      });
+      return deck;
     },
-    [refresh]
+    [queryClient]
   );
 
-  const getById = useCallback((id: string) => getDeckById(id), []);
+  return {
+    decks: listQuery.data ?? [],
+    save: saveMutation.mutateAsync,
+    remove: removeMutation.mutateAsync,
+    getById,
+    fetchDeck,
+    ready: !listQuery.isLoading,
+    isError: listQuery.isError,
+  };
+}
 
-  return { decks, save, remove, getById, ready };
+export function useSavedDeckById(deckId: string | null) {
+  const { decks, ready, getById, fetchDeck } = useSavedDecks();
+
+  return useQuery({
+    queryKey: ["deck", deckId],
+    queryFn: () => fetchDeck(deckId!),
+    enabled: Boolean(deckId && ready && !getById(deckId!)),
+    initialData: deckId ? getById(deckId) : undefined,
+    staleTime: Infinity,
+  });
 }

@@ -36,6 +36,7 @@ export async function createDeck(userId: string, input: CreateDeckInput): Promis
   const slug = input.slug ? slugify(input.slug) : defaultSlug(input.name);
 
   const values: NewDeckRecord = {
+    ...(input.id ? { id: input.id } : {}),
     userId,
     name: input.name.trim(),
     slug,

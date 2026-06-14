@@ -10,6 +10,7 @@ export const deckZoneRefsSchema = z.array(deckCardRefSchema);
 export const deckVisibilitySchema = z.enum(["private", "unlisted", "public"]);
 
 export const createDeckSchema = z.object({
+  id: z.string().uuid().optional(),
   name: z.string().trim().min(1).max(120),
   slug: z.string().trim().min(1).max(64).optional(),
   visibility: deckVisibilitySchema.optional(),
