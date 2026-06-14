@@ -27,12 +27,12 @@ const features = [
   {
     icon: <Layers className="size-5" />,
     title: "Public Decks",
-    description: "Browse official starter decks and copy them into your own builder.",
+    description: "Browse community decks and copy them into your builder.",
   },
   {
     icon: <FolderOpen className="size-5" />,
     title: "My Decks",
-    description: "Save decks locally and import or export in multiple formats.",
+    description: "Save decks to your account and import or export in multiple formats.",
   },
 ];
 
@@ -70,7 +70,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 divide-x divide-(--color-border) md:grid-cols-4">
             {[
               { value: "12,000+", label: "Cards" },
-              { value: "12", label: "Starter Decks" },
+              { value: "Cloud", label: "Saved Decks" },
               { value: "10+", label: "Import Formats" },
               { value: "Free", label: "To Use" },
             ].map((stat) => (
@@ -122,7 +122,7 @@ export default function HomePage() {
               Ready to build your next deck?
             </h2>
             <p className="max-w-md text-sm text-(--color-foreground-muted)">
-              Start with the card database or copy an official deck into the builder.
+              Start with the card database or copy a community deck into the builder.
             </p>
             <GetStartedButton>Get Started Free</GetStartedButton>
           </div>
