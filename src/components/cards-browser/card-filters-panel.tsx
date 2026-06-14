@@ -12,6 +12,7 @@ import {
   SPELL_RACES,
   TRAP_RACES,
   toggleInList,
+  toggleScaleValue,
   type CardFilters,
   type CardSort,
 } from "@/lib/card-filters";
@@ -42,6 +43,166 @@ function FilterGroup({ label, children }: { label: string; children: React.React
         {label}
       </h4>
       {children}
+    </div>
+  );
+}
+
+const LINK_MARKER_ROTATIONS: Record<string, number> = {
+  top: 0,
+  "top-right": 45,
+  right: 90,
+  "bottom-right": 135,
+  bottom: 180,
+  "bottom-left": 225,
+  left: 270,
+  "top-left": 315,
+};
+
+const LINK_MARKER_POSITIONS: Record<string, string> = {
+  "top-left": "left-[5%] top-[5%]",
+  top: "left-1/2 top-0 -translate-x-1/2",
+  "top-right": "right-[5%] top-[5%]",
+  left: "left-0 top-1/2 -translate-y-1/2",
+  right: "right-0 top-1/2 -translate-y-1/2",
+  "bottom-left": "left-[5%] bottom-[5%]",
+  bottom: "left-1/2 bottom-0 -translate-x-1/2",
+  "bottom-right": "right-[5%] bottom-[5%]",
+};
+
+function LinkMarkerArrow({ active }: { active: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" className="size-3.5" aria-hidden>
+      <polygon
+        points="10,2 4,11 16,11"
+        fill={active ? "#d94520" : "#141414"}
+        stroke={active ? "#ffc8a8" : "none"}
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function LinkMarkersPicker({
+  selected,
+  onChange,
+}: {
+  selected: string[];
+  onChange: (markers: string[]) => void;
+}) {
+  const labelByValue = Object.fromEntries(LINK_MARKERS.map((m) => [m.value, m.label]));
+
+  return (
+    <div
+      className="relative aspect-square w-[88px] rounded-sm bg-[#0a1428] ring-1 ring-[#1e3a5f]"
+      role="group"
+      aria-label="Link markers"
+    >
+      {LINK_MARKERS.map(({ value }) => {
+        const active = selected.includes(value);
+
+        return (
+          <button
+            key={value}
+            type="button"
+            aria-label={labelByValue[value]}
+            aria-pressed={active}
+            title={labelByValue[value]}
+            onClick={() => onChange(toggleInList(selected, value))}
+            className={cn(
+              "absolute cursor-pointer border-0 bg-transparent p-0 outline-none",
+              "transition-opacity hover:opacity-80 focus-visible:opacity-80",
+              LINK_MARKER_POSITIONS[value]
+            )}
+          >
+            <span
+              className="inline-flex"
+              style={{ transform: `rotate(${LINK_MARKER_ROTATIONS[value]}deg)` }}
+            >
+              <LinkMarkerArrow active={active} />
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const PENDULUM_SCALES = Array.from({ length: 14 }, (_, i) => i);
+
+function PendulumScaleGem({ side }: { side: "left" | "right" }) {
+  const id = useId();
+  const isBlue = side === "left";
+
+  return (
+    <svg viewBox="0 0 20 14" className="h-3.5 w-5 shrink-0" aria-hidden>
+      <defs>
+        <linearGradient id={`${id}-gem`} x1="0" y1="0" x2="1" y2="1">
+          {isBlue ? (
+            <>
+              <stop offset="0%" stopColor="#93ddff" />
+              <stop offset="45%" stopColor="#2196f3" />
+              <stop offset="100%" stopColor="#0d47a1" />
+            </>
+          ) : (
+            <>
+              <stop offset="0%" stopColor="#ffb3b3" />
+              <stop offset="45%" stopColor="#e53935" />
+              <stop offset="100%" stopColor="#8b0000" />
+            </>
+          )}
+        </linearGradient>
+      </defs>
+      <polygon
+        points="10,1 19,7 10,13 1,7"
+        fill={`url(#${id}-gem)`}
+        stroke="#2a2a2a"
+        strokeWidth="0.75"
+      />
+      <polygon points="10,1 10,7 19,7" fill="rgba(255,255,255,0.35)" />
+      <polygon points="10,7 1,7 10,13" fill="rgba(0,0,0,0.15)" />
+    </svg>
+  );
+}
+
+function PendulumScalesPicker({
+  selected,
+  onChange,
+}: {
+  selected: number[];
+  onChange: (values: number[]) => void;
+}) {
+  return (
+    <div
+      className="flex items-center gap-1 rounded-sm bg-[#162616]/60 px-1 py-1 ring-1 ring-[#2a4a2a]/70"
+      role="group"
+      aria-label="Pendulum scale"
+    >
+      <PendulumScaleGem side="left" />
+      <div className="grid flex-1 grid-cols-7 gap-px">
+        {PENDULUM_SCALES.map((scale) => {
+          const active = selected.includes(scale);
+
+          return (
+            <button
+              key={scale}
+              type="button"
+              aria-label={`Scale ${scale}`}
+              aria-pressed={active}
+              title={`Scale ${scale}`}
+              onClick={() => onChange(toggleScaleValue(selected, scale))}
+              className={cn(
+                "cursor-pointer border-0 bg-transparent p-0 text-[10px] tabular-nums leading-tight outline-none",
+                "transition-opacity hover:opacity-80 focus-visible:opacity-80",
+                active ? "font-bold text-(--color-foreground)" : "text-[#555]"
+              )}
+            >
+              {scale}
+            </button>
+          );
+        })}
+      </div>
+      <PendulumScaleGem side="right" />
     </div>
   );
 }
@@ -205,39 +366,21 @@ export function CardFiltersPanel({
                 onChange={([linkMin, linkMax]) => patch({ linkMin, linkMax })}
               />
               <FilterGroup label="Link markers">
-                <div className="grid grid-cols-2 gap-1.5">
-                  {LINK_MARKERS.map((marker) => (
-                    <label
-                      key={marker.value}
-                      className="flex cursor-pointer items-center gap-2 text-xs text-(--color-foreground-muted)"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filters.linkMarkers.includes(marker.value)}
-                        onChange={() =>
-                          patch({
-                            linkMarkers: toggleInList(filters.linkMarkers, marker.value),
-                          })
-                        }
-                        className="size-3.5 rounded border-(--color-border)"
-                      />
-                      <span>{marker.label}</span>
-                    </label>
-                  ))}
-                </div>
+                <LinkMarkersPicker
+                  selected={filters.linkMarkers}
+                  onChange={(linkMarkers) => patch({ linkMarkers })}
+                />
               </FilterGroup>
             </>
           )}
 
           {showScale && (
-            <RangeSliderField
-              label="Pendulum scale"
-              values={[filters.scaleMin, filters.scaleMax]}
-              min={FILTER_BOUNDS.scale.min}
-              max={FILTER_BOUNDS.scale.max}
-              step={1}
-              onChange={([scaleMin, scaleMax]) => patch({ scaleMin, scaleMax })}
-            />
+            <FilterGroup label="Pendulum scale">
+              <PendulumScalesPicker
+                selected={filters.scaleValues}
+                onChange={(scaleValues) => patch({ scaleValues })}
+              />
+            </FilterGroup>
           )}
 
           <label className="flex cursor-pointer items-center gap-2 text-xs text-(--color-foreground-muted)">

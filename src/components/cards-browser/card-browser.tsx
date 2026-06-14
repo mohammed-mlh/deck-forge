@@ -9,17 +9,101 @@ import {
   DEFAULT_CARD_FILTERS,
 } from "@/components/cards-browser/card-filters-panel";
 import { CardGrid } from "@/components/cards-browser/card-grid";
+import { CardList } from "@/components/cards-browser/card-list";
 import { CardDetailPanel } from "@/components/cards-browser/card-detail-panel";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useBrowseCards } from "@/hooks/use-browse-cards";
 import type { CardFilters } from "@/lib/card-filters";
 import type { YugiohCard } from "@/types/yugioh";
-import { SlidersHorizontal } from "lucide-react";
+import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ViewMode = "grid" | "list";
 
 interface CardBrowserProps {
   showFilters?: boolean;
   className?: string;
+}
+
+const filterCardClass =
+  "flex flex-col overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 backdrop-blur-sm";
+
+function FiltersCard({
+  search,
+  onSearchChange,
+  onSearchSubmit,
+  filters,
+  onFiltersChange,
+  className,
+}: {
+  search: string;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: (value: string) => void;
+  filters: CardFilters;
+  onFiltersChange: (filters: CardFilters) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn(filterCardClass, className)}>
+      <div className="shrink-0 border-b border-(--color-border) p-4">
+        <SearchBar
+          value={search}
+          onChange={onSearchChange}
+          onSubmit={onSearchSubmit}
+        />
+      </div>
+      <CardFiltersPanel
+        filters={filters}
+        onChange={onFiltersChange}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4"
+      />
+    </div>
+  );
+}
+
+function ViewModeToggle({
+  mode,
+  onChange,
+}: {
+  mode: ViewMode;
+  onChange: (mode: ViewMode) => void;
+}) {
+  return (
+    <div
+      className="flex shrink-0 items-center gap-0.5 rounded-md border border-(--color-border) bg-(--color-surface-2) p-0.5"
+      role="group"
+      aria-label="View mode"
+    >
+      <button
+        type="button"
+        onClick={() => onChange("grid")}
+        aria-pressed={mode === "grid"}
+        aria-label="Grid view"
+        className={cn(
+          "rounded-sm p-1.5 transition-colors",
+          mode === "grid"
+            ? "bg-(--color-surface-1) text-(--color-foreground)"
+            : "text-(--color-foreground-subtle) hover:text-(--color-foreground)"
+        )}
+      >
+        <LayoutGrid className="size-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("list")}
+        aria-pressed={mode === "list"}
+        aria-label="List view"
+        className={cn(
+          "rounded-sm p-1.5 transition-colors",
+          mode === "list"
+            ? "bg-(--color-surface-1) text-(--color-foreground)"
+            : "text-(--color-foreground-subtle) hover:text-(--color-foreground)"
+        )}
+      >
+        <List className="size-4" />
+      </button>
+    </div>
+  );
 }
 
 export function CardBrowser({ showFilters = true, className }: CardBrowserProps) {
@@ -27,13 +111,12 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
   const [filters, setFilters] = useState<CardFilters>(DEFAULT_CARD_FILTERS);
   const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const debouncedSearch = useDebounce(search, 350);
 
-  const { cards, isLoading, isFetching, isError, error, isBrowsing, refetch } =
+  const { cards, isLoading, isFetching, isError, isBrowsing, refetch } =
     useBrowseCards(debouncedSearch, filters);
-
-  const updateFilters = (next: CardFilters) => setFilters(next);
 
   usePageView("page_view_cards");
 
@@ -48,71 +131,77 @@ export function CardBrowser({ showFilters = true, className }: CardBrowserProps)
   }, []);
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-          onSubmit={handleSearchSubmit}
-          className="flex-1"
-        />
-        {showFilters && (
+    <div className={cn("flex min-h-0 flex-col gap-4", className)}>
+      {showFilters && (
+        <div className="flex shrink-0 justify-end lg:hidden">
           <button
             type="button"
             onClick={() => setFiltersOpen((o) => !o)}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-3 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3) lg:hidden"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-3 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
           >
             <SlidersHorizontal className="size-4" />
-            Filters
+            {filtersOpen ? "Hide filters" : "Filters & search"}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div className="flex items-start gap-6">
+      <div className="flex min-h-0 flex-1 items-stretch gap-6">
         {showFilters && (
-          <CardFiltersPanel
+          <FiltersCard
+            search={search}
+            onSearchChange={setSearch}
+            onSearchSubmit={handleSearchSubmit}
             filters={filters}
-            onChange={updateFilters}
-            className={cn(
-              "hidden w-56 shrink-0 self-start rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 p-4 backdrop-blur-sm lg:flex",
-              filtersOpen && "flex w-full lg:w-56"
-            )}
+            onFiltersChange={setFilters}
+            className="hidden w-64 shrink-0 min-h-0 lg:flex"
           />
         )}
 
-        <div className="flex min-w-0 flex-1 items-start gap-4">
-          <div className="min-w-0 flex-1">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs text-(--color-foreground-subtle)">
-                {debouncedSearch
-                  ? `Results for "${debouncedSearch}"`
-                  : isBrowsing
-                    ? "Browse cards"
-                    : `${cards.length.toLocaleString()} filtered cards`}
-              </p>
-              {isFetching && !isLoading && (
-                <p className="text-xs text-(--color-foreground-subtle)">Updating…</p>
+        <div className="flex min-h-0 min-w-0 flex-1 gap-4">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
+              
+              <ViewModeToggle mode={viewMode} onChange={setViewMode} />
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+              {viewMode === "grid" ? (
+                <CardGrid
+                  cards={cards}
+                  isLoading={isLoading}
+                  isError={isError}
+                  errorMessage="Failed to load cards. Try again."
+                  onRetry={() => void refetch()}
+                  onCardClick={handleCardClick}
+                  selectedCardId={selectedCard?.id ?? null}
+                  columns={selectedCard ? 4 : 6}
+                />
+              ) : (
+                <CardList
+                  cards={cards}
+                  isLoading={isLoading}
+                  isError={isError}
+                  errorMessage="Failed to load cards. Try again."
+                  onRetry={() => void refetch()}
+                  onCardClick={handleCardClick}
+                  selectedCardId={selectedCard?.id ?? null}
+                />
               )}
             </div>
-            <CardGrid
-              cards={cards}
-              isLoading={isLoading}
-              isError={isError}
-              errorMessage="Failed to load cards. Try again."
-              onRetry={() => void refetch()}
-              onCardClick={handleCardClick}
-              selectedCardId={selectedCard?.id ?? null}
-              columns={selectedCard ? 4 : 6}
-            />
           </div>
 
           <CardDetailPanel card={selectedCard} onClose={() => setSelectedCard(null)} />
         </div>
       </div>
-      {filtersOpen && (
-        <div className="rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 p-4 backdrop-blur-sm lg:hidden">
-          <CardFiltersPanel filters={filters} onChange={updateFilters} />
-        </div>
+
+      {showFilters && filtersOpen && (
+        <FiltersCard
+          search={search}
+          onSearchChange={setSearch}
+          onSearchSubmit={handleSearchSubmit}
+          filters={filters}
+          onFiltersChange={setFilters}
+          className="max-h-96 lg:hidden"
+        />
       )}
     </div>
   );

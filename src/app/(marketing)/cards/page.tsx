@@ -12,12 +12,13 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function CardsPage() {
   return (
-    <Container className="py-10">
+    <Container className="flex h-[calc(100dvh-6.5rem)] max-h-[calc(100dvh-6.5rem)] flex-col overflow-hidden py-6">
       <PageHeader
+        className="shrink-0 sr-only"
         title="Card Database"
         description="Browse, search, and filter Yu-Gi-Oh cards from the YGOProDeck database."
       />
-      <CardBrowser />
+      <CardBrowser className="min-h-0 flex-1" />
     </Container>
   );
 }

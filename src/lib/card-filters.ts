@@ -20,8 +20,7 @@ export interface CardFilters {
   defMax: number;
   linkMin: number;
   linkMax: number;
-  scaleMin: number;
-  scaleMax: number;
+  scaleValues: number[];
   sort: CardSort;
 }
 
@@ -111,8 +110,7 @@ export const DEFAULT_CARD_FILTERS: CardFilters = {
   defMax: BOUNDS.def.max,
   linkMin: BOUNDS.link.min,
   linkMax: BOUNDS.link.max,
-  scaleMin: BOUNDS.scale.min,
-  scaleMax: BOUNDS.scale.max,
+  scaleValues: [],
   sort: "name",
 };
 
@@ -137,7 +135,7 @@ export function filtersNeedApi(search: string, filters: CardFilters): boolean {
       rangeActive(filters.atkMin, filters.atkMax, BOUNDS.atk) ||
       rangeActive(filters.defMin, filters.defMax, BOUNDS.def) ||
       rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link) ||
-      rangeActive(filters.scaleMin, filters.scaleMax, BOUNDS.scale)
+      filters.scaleValues.length
   );
 }
 
@@ -180,9 +178,9 @@ export function filtersToApiParams(
     if (filters.linkMin > BOUNDS.link.min) params.linkMin = String(filters.linkMin);
     if (filters.linkMax < BOUNDS.link.max) params.linkMax = String(filters.linkMax);
   }
-  if (rangeActive(filters.scaleMin, filters.scaleMax, BOUNDS.scale)) {
-    if (filters.scaleMin > BOUNDS.scale.min) params.scaleMin = String(filters.scaleMin);
-    if (filters.scaleMax < BOUNDS.scale.max) params.scaleMax = String(filters.scaleMax);
+  if (filters.scaleValues.length) {
+    params.scaleMin = String(Math.min(...filters.scaleValues));
+    params.scaleMax = String(Math.max(...filters.scaleValues));
   }
 
   return params;
@@ -214,13 +212,24 @@ function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
 }
 
 export function finalizeCards(cards: YugiohCard[], filters: CardFilters): YugiohCard[] {
-  return sortCards(filterCardsByType(cards, filters.type), filters.sort);
+  let result = filterCardsByType(cards, filters.type);
+  if (filters.scaleValues.length) {
+    const allowed = new Set(filters.scaleValues);
+    result = result.filter((c) => c.scale !== undefined && allowed.has(c.scale));
+  }
+  return sortCards(result, filters.sort);
 }
 
 export function toggleInList(values: string[], value: string): string[] {
   return values.includes(value)
     ? values.filter((v) => v !== value)
     : [...values, value];
+}
+
+export function toggleScaleValue(values: number[], value: number): number[] {
+  return values.includes(value)
+    ? values.filter((v) => v !== value)
+    : [...values, value].sort((a, b) => a - b);
 }
 
 export { BOUNDS as FILTER_BOUNDS };

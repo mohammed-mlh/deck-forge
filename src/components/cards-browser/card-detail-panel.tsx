@@ -116,8 +116,7 @@ export function CardDetailPanel({ card, onClose, className }: CardDetailPanelPro
       {/* Desktop: right column */}
       <aside
         className={cn(
-          "hidden w-80 shrink-0 flex-col overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 backdrop-blur-sm lg:sticky lg:top-6 lg:flex xl:w-96",
-          "max-h-[calc(100dvh-8rem)]",
+          "hidden h-full min-h-0 w-80 shrink-0 flex-col overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 backdrop-blur-sm lg:flex xl:w-96",
           className
         )}
       >
