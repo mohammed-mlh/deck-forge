@@ -10,6 +10,7 @@ import {
 } from "@clerk/nextjs";
 import { ArrowRight, Layers, Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/nav";
 
@@ -151,6 +152,7 @@ export function Navbar() {
           <DesktopNav items={navItems} className="absolute left-1/2 -translate-x-1/2" />
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <AuthNavActions className="hidden items-center gap-2 md:flex" />
             <MobileNav items={navItems} />
           </div>

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Home, Layers, Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/types/nav";
 
@@ -125,6 +126,7 @@ export function AppHeader() {
           <DesktopNav items={navItems} className="absolute left-1/2 -translate-x-1/2" />
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/"
               className={cn(navLinkClass, "hidden items-center gap-1.5 md:inline-flex")}

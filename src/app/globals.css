@@ -9,7 +9,8 @@
   --radius-xl: 1.25rem;
 }
 
-:root {
+:root,
+[data-theme="dark"] {
   --color-bg-base:     #09090B;
   --color-bg-surface:  #111113;
   --color-bg-elevated: #18181B;
@@ -48,6 +49,40 @@
   --radius-xl: 1.25rem;
 }
 
+[data-theme="light"] {
+  --color-bg-base:     #FAFAFA;
+  --color-bg-surface:  #FFFFFF;
+  --color-bg-elevated: #FFFFFF;
+
+  --color-surface-1: #FFFFFF;
+  --color-surface-2: #F4F4F5;
+  --color-surface-3: #E4E4E7;
+
+  --color-primary:            #7C3AED;
+  --color-primary-hover:      #6D28D9;
+  --color-primary-active:     #5B21B6;
+  --color-primary-muted:      rgba(124, 58, 237, 0.1);
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary: #2563EB;
+
+  --color-foreground:          #09090B;
+  --color-foreground-muted:    #71717A;
+  --color-foreground-subtle:   #A1A1AA;
+  --color-foreground-disabled: #D4D4D8;
+
+  --color-border:        #E4E4E7;
+  --color-border-strong: #D4D4D8;
+  --color-border-focus:  #7C3AED;
+
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger:  #DC2626;
+
+  --color-highlight: #7C3AED14;
+  --color-overlay:   #00000066;
+}
+
 *,
 *::before,
 *::after {
@@ -57,6 +92,14 @@
 
 html {
   color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] .cyber-bg {
+  opacity: 0.35;
 }
 
 body {

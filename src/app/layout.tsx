@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { clerkAppearance } from "@/lib/clerk-appearance";
+import { THEME_STORAGE_KEY } from "@/lib/theme";
 import { QueryProvider } from "@/providers/query-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,14 +46,25 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable}`}
+      data-theme="dark"
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var t=localStorage.getItem(k);if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme="dark";}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-screen antialiased">
         <ClerkProvider
           appearance={clerkAppearance}
           signInFallbackRedirectUrl="/app/deck-builder"
           signUpFallbackRedirectUrl="/app/deck-builder"
         >
-          <QueryProvider>{children}</QueryProvider>
+          <ThemeProvider>
+            <QueryProvider>{children}</QueryProvider>
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>
