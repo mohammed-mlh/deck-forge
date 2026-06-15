@@ -45,7 +45,7 @@ export function PublicDeckCard({ deck }: { deck: SavedDeck }) {
 
   return (
     <DeckPreviewCard
-      href={`/decks/${deck.id}`}
+      href={`/app/decks/${deck.id}`}
       featured={featured}
       badge={
         <span className="absolute right-3 top-3 rounded bg-(--color-success)/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-success)">
@@ -73,7 +73,7 @@ export function SavedDeckCard({ deck, onDelete }: { deck: SavedDeck; onDelete: (
 
   return (
     <DeckPreviewCard
-      href={`/deck-builder/${deck.id}`}
+      href={`/app/deck-builder/${deck.id}`}
       featured={featured}
       badge={
         <span

@@ -87,7 +87,18 @@ export interface DeckSuggestion {
   priority: SuggestionPriority;
 }
 
+export interface DeckScores {
+  overall: number;
+  consistency: number;
+  power: number;
+  speed: number;
+  resilience: number;
+  flexibility: number;
+  synergy: number;
+}
+
 export interface DeckAnalysis {
+  scores: DeckScores;
   summary: string;
   strengths: DeckStrength[];
   weaknesses: DeckWeakness[];

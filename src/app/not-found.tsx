@@ -16,7 +16,7 @@ export default function NotFound() {
           Go home
         </Link>
         <Link
-          href="/cards"
+          href="/app/cards"
           className="rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
         >
           Browse cards

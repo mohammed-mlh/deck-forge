@@ -6,7 +6,7 @@ import type { SavedDeck } from "@/types/deck";
 
 export function useHydratedDeck(savedDeck: SavedDeck | undefined) {
   return useQuery({
-    queryKey: ["hydrate-deck", savedDeck?.id, savedDeck?.updatedAt],
+    queryKey: ["hydrate-deck", savedDeck?.id],
     queryFn: () => hydrateDeck(savedDeck!),
     enabled: Boolean(savedDeck),
     staleTime: Infinity,
@@ -23,6 +23,6 @@ export function useHydratedDeckOrEmpty(savedDeck: SavedDeck | undefined) {
 
   return {
     deck: query.data,
-    isLoading: query.isLoading,
+    isLoading: query.isPending,
   };
 }

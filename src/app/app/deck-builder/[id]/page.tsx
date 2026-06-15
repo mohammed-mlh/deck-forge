@@ -7,7 +7,7 @@ import { createPageMetadata } from "@/lib/site-metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Deck Builder",
   description: "Build Yu-Gi-Oh decks with drag-and-drop zones, card search, and import/export.",
-  path: "/deck-builder",
+  path: "/app/deck-builder",
   noIndex: true,
 });
 

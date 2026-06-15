@@ -100,7 +100,7 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
     });
     try {
       const saved = await fork(deckToCreateInput(deck));
-      router.push(`/deck-builder/${saved.id}`);
+      router.push(`/app/deck-builder/${saved.id}`);
     } catch (err) {
       setCopying(false);
       const status =
@@ -136,7 +136,7 @@ export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
     <Container>
       <div className="flex flex-col gap-6">
         <Link
-          href="/decks"
+          href="/app/decks"
           className="inline-flex w-fit items-center gap-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
         >
           <ArrowLeft className="size-4" />

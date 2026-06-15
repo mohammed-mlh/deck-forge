@@ -47,7 +47,7 @@ export function MyDecksContent() {
         description="Open a saved deck to keep building, or start fresh."
       >
         <Link
-          href="/deck-builder"
+          href="/app/deck-builder"
           className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-3 py-1.5 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
         >
           <Plus className="size-4" />
@@ -86,7 +86,7 @@ export function MyDecksContent() {
           className="py-24"
         >
           <Link
-            href="/deck-builder"
+            href="/app/deck-builder"
             className="inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
           >
             <Plus className="size-4" />

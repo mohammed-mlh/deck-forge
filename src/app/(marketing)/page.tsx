@@ -219,7 +219,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <GetStartedButton>Start Building Free</GetStartedButton>
               <Link
-                href="/decks"
+                href="/app/decks"
                 className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-5 py-2.5 text-sm font-medium text-(--color-foreground) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
               >
                 Browse Decks
@@ -319,7 +319,7 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link
-                href="/deck-builder"
+                href="/app/deck-builder"
                 className="inline-flex w-fit items-center gap-2 text-sm font-medium text-(--color-primary) transition-colors hover:text-(--color-primary-hover)"
               >
                 Open the builder
@@ -618,7 +618,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <GetStartedButton>Get Started Free</GetStartedButton>
               <Link
-                href="/cards"
+                href="/app/cards"
                 className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-5 py-2.5 text-sm font-medium text-(--color-foreground) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
               >
                 Browse Cards

@@ -52,7 +52,7 @@ export default function ArchetypesPage() {
         <SeoCta
           title="Search all 12,000+ cards"
           description="Use advanced filters for attribute, frame type, stats, link markers, and pendulum scales."
-          primaryHref="/cards"
+          primaryHref="/app/cards"
           primaryLabel="Open card browser"
           secondaryHref="/guides/yugioh-deck-building-guide"
           secondaryLabel="Deck building guide"
@@ -60,7 +60,7 @@ export default function ArchetypesPage() {
 
         <p className="text-sm text-(--color-foreground-muted)">
           Looking for a specific archetype?{" "}
-          <Link href="/cards" className="text-(--color-primary) hover:underline">
+          <Link href="/app/cards" className="text-(--color-primary) hover:underline">
             Filter by archetype in the card browser
           </Link>{" "}
           or browse{" "}

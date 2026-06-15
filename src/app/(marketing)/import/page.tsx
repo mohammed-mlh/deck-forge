@@ -37,7 +37,7 @@ export default function ImportPage() {
           {IMPORT_FORMATS.map((format) => (
             <SeoContentCard
               key={format.slug}
-              href="/deck-builder"
+              href="/app/deck-builder"
               title={format.name}
               description={format.description}
               meta={format.extension}
@@ -48,7 +48,7 @@ export default function ImportPage() {
         <SeoCta
           title="Import a deck now"
           description="Open the builder and use the Import button to paste or upload your list."
-          primaryHref="/deck-builder"
+          primaryHref="/app/deck-builder"
           primaryLabel="Open deck builder"
           secondaryHref="/guides/how-to-import-yugioh-decks"
           secondaryLabel="Import guide"

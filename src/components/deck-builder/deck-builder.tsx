@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import { X } from "lucide-react";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
 import { CardDetailViewer } from "@/components/deck-builder/card-detail-viewer";
@@ -16,34 +15,9 @@ import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
-import { getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { Deck, DeckZone } from "@/types/deck";
+import { createEmptyDeck, getDefaultZoneForCard } from "@/lib/deck-rules";
+import type { Deck, DeckZone, SavedDeck } from "@/types/deck";
 import type { YugiohCard } from "@/types/yugioh";
-
-function DeckNotFound() {
-  return (
-    <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-center">
-      <h2 className="text-lg font-semibold text-(--color-foreground)">Deck not found</h2>
-      <p className="max-w-sm text-sm text-(--color-foreground-muted)">
-        This deck may have been deleted or the link is invalid.
-      </p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <Link
-          href="/deck-builder"
-          className="rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)"
-        >
-          New deck
-        </Link>
-        <Link
-          href="/my-decks"
-          className="rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
-        >
-          My Decks
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 function ImportResultToast({
   errors,
@@ -94,11 +68,10 @@ interface DeckBuilderContentProps {
 }
 
 function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
-  const router = useRouter();
   const { save } = useSavedDecks();
   const { deck, stats, addCard, removeCard, resetDeck, setDeckName, replaceDeck } =
     useDeck(initialDeck);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [ioMode, setIoMode] = useState<"import" | "export" | null>(null);
   const [importNotes, setImportNotes] = useState<{
     errors: string[];
@@ -109,22 +82,26 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const isNew = !deckId;
-    save(deck);
-    track("deck_saved", {
-      deckId: deck.id,
-      deckName: deck.name,
-      main: stats.main,
-      extra: stats.extra,
-      side: stats.side,
-    });
-    if (isNew) {
-      track("deck_created", { deckId: deck.id, deckName: deck.name });
+    setSaveStatus("saving");
+    try {
+      await save(deck);
+      track("deck_saved", {
+        deckId: deck.id,
+        deckName: deck.name,
+        main: stats.main,
+        extra: stats.extra,
+        side: stats.side,
+      });
+      if (isNew) {
+        track("deck_created", { deckId: deck.id, deckName: deck.name });
+      }
+      setSaveStatus("saved");
+      window.setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch {
+      setSaveStatus("idle");
     }
-    setSaveStatus("saved");
-    router.replace(`/deck-builder/${deck.id}`);
-    window.setTimeout(() => setSaveStatus("idle"), 2000);
   };
 
   const handleDrop = (card: YugiohCard, zone: DeckZone) => {
@@ -163,9 +140,6 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
           <DeckPanelHeader
             deckName={deck.name}
             onDeckNameChange={setDeckName}
-            main={stats.main}
-            extra={stats.extra}
-            side={stats.side}
             saveStatus={saveStatus}
             onSave={handleSave}
             onClear={() => {
@@ -251,33 +225,63 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   );
 }
 
+function DeckBuilderEditor({
+  deckId,
+  initialDeck,
+  onMount,
+}: {
+  deckId: string;
+  initialDeck: Deck;
+  onMount: () => void;
+}) {
+  useEffect(() => {
+    onMount();
+  }, [onMount]);
+
+  return <DeckBuilderContent deckId={deckId} initialDeck={initialDeck} />;
+}
+
+function DeckBuilderSurface({
+  deckId,
+  ready,
+  getById,
+}: {
+  deckId: string;
+  ready: boolean;
+  getById: (id: string) => SavedDeck | undefined;
+}) {
+  const [editorActive, setEditorActive] = useState(false);
+  const savedDeck = ready ? getById(deckId) : undefined;
+  const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
+
+  const waitingForHydration = Boolean(savedDeck && isHydrating && !hydratedDeck);
+  const showSkeleton = !ready || (waitingForHydration && !editorActive);
+
+  if (showSkeleton) {
+    return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
+  }
+
+  const initialDeck = hydratedDeck ?? { ...createEmptyDeck(), id: deckId };
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <DeckBuilderEditor
+        deckId={deckId}
+        initialDeck={initialDeck}
+        onMount={() => setEditorActive(true)}
+      />
+    </div>
+  );
+}
+
 export function DeckBuilder() {
   const params = useParams();
   const deckId = typeof params.id === "string" ? params.id : null;
   const { ready, getById } = useSavedDecks();
 
-  const savedDeck = deckId && ready ? getById(deckId) : undefined;
-  const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
-
-  if (deckId && !ready) {
+  if (!deckId) {
     return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
   }
 
-  if (deckId && ready && !savedDeck) {
-    return <DeckNotFound />;
-  }
-
-  if (deckId && savedDeck && isHydrating) {
-    return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
-  }
-
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <DeckBuilderContent
-        key={deckId ?? "new"}
-        deckId={deckId}
-        initialDeck={hydratedDeck}
-      />
-    </div>
-  );
+  return <DeckBuilderSurface key={deckId} deckId={deckId} ready={ready} getById={getById} />;
 }
