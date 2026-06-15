@@ -91,41 +91,71 @@ export class MockAiProvider implements AiProvider {
       priority: "low",
     });
 
-    return { summary, strengths, weaknesses, suggestions };
+    const consistency = consistencySignals.under40Main ? 40 : context.keyCards.some((c) => c.count >= 3) ? 75 : 60;
+    const power = typeDistribution.monsters >= 15 ? 70 : 55;
+    const speed = context.averageMonsterStats.level !== null && context.averageMonsterStats.level < 5 ? 75 : 55;
+    const resilience = typeDistribution.traps >= 5 ? 65 : 45;
+    const flexibility = stats.sideSize >= 10 ? 70 : 50;
+    const synergy = context.archetype.confidence >= 0.5 ? 80 : context.archetype.confidence >= 0.25 ? 65 : 50;
+    const overall = Math.round((consistency + power + speed + resilience + flexibility + synergy) / 6);
+
+    const scores = { overall, consistency, power, speed, resilience, flexibility, synergy };
+
+    return { scores, summary, strengths, weaknesses, suggestions };
   }
 
-  async improveDeck(context: DeckContext): Promise<DeckDoctorResult> {
+  async improveDeck(context: DeckContext, analysis?: DeckAnalysis): Promise<DeckDoctorResult> {
     const deckNames = new Set(context.rawCards.map((c) => c.name.toLowerCase()));
-    const remove = context.consistencySignals.duplicatesOver3.slice(0, 2).map((name) => ({
-      name,
-      quantity: 1,
-      zone: "main" as const,
-    }));
+    const { stats, consistencySignals, keyCards } = context;
+    const mainDelta = 40 - stats.mainSize;
+    const remove: DeckDoctorResult["remove"] = [];
+    const add: DeckDoctorResult["add"] = [];
 
-    if (remove.length === 0 && context.keyCards.length > 0) {
-      const trim = context.keyCards.find((c) => c.count > 2 && !c.name.includes("Ash Blossom"));
+    if (mainDelta < 0) {
+      const trimCandidates = [
+        ...consistencySignals.duplicatesOver3,
+        ...keyCards.filter((c) => c.count > 2 && !c.name.includes("Ash Blossom")).map((c) => c.name),
+      ];
+      let remaining = Math.abs(mainDelta);
+      for (const name of trimCandidates) {
+        if (remaining <= 0) break;
+        remove.push({ name, quantity: 1, zone: "main" });
+        remaining -= 1;
+      }
+    } else if (mainDelta > 0) {
+      const candidates = [
+        "Ash Blossom & Joyous Spring",
+        "Infinite Impermanence",
+        "Pot of Prosperity",
+      ];
+      let remaining = mainDelta;
+      for (const name of candidates) {
+        if (remaining <= 0) break;
+        if (!deckNames.has(name.toLowerCase())) {
+          add.push({ name, quantity: 1, zone: "main" });
+          remaining -= 1;
+        }
+      }
+    } else {
+      const trim = keyCards.find((c) => c.count > 2 && !c.name.includes("Ash Blossom"));
       if (trim) {
         remove.push({ name: trim.name, quantity: 1, zone: "main" });
       }
-    }
-
-    const add: DeckDoctorResult["add"] = [];
-
-    if (!deckNames.has("ash blossom & joyous spring")) {
-      add.push({ name: "Ash Blossom & Joyous Spring", quantity: 1, zone: "main" });
-    }
-    if (!deckNames.has("infinite impermanence") && add.length < 2) {
-      add.push({ name: "Infinite Impermanence", quantity: 1, zone: "main" });
-    }
-    if (context.consistencySignals.under40Main && add.length < 3) {
-      add.push({ name: "Pot of Prosperity", quantity: 1, zone: "main" });
+      if (!deckNames.has("ash blossom & joyous spring")) {
+        add.push({ name: "Ash Blossom & Joyous Spring", quantity: 1, zone: "main" });
+      } else if (!deckNames.has("infinite impermanence")) {
+        add.push({ name: "Infinite Impermanence", quantity: 1, zone: "main" });
+      }
     }
 
     const archetype = context.archetype.name ?? context.identity.archetype ?? "this strategy";
+    const weakness = analysis?.weaknesses[0]?.title;
     const reason =
-      remove.length > 0
-        ? `Trim ${remove.map((c) => c.name).join(" and ")} to reduce dead draws, then add ${add.map((c) => c.name).join(" and ")} for more disruption and consistency in ${archetype} lines.`
-        : `Add ${add.map((c) => c.name).join(" and ")} to improve interaction and stabilize ${archetype} without changing the core game plan.`;
+      mainDelta > 0
+        ? `Main deck has ${stats.mainSize} cards — adding ${mainDelta} to reach the required 40${weakness ? ` and address ${weakness.toLowerCase()}` : ""}.`
+        : mainDelta < 0
+          ? `Main deck has ${stats.mainSize} cards — trimming ${Math.abs(mainDelta)} to reach exactly 40.`
+          : `Swapping cards 1-for-1 in main to keep exactly 40 while improving ${archetype}.`;
 
     return { remove, add, reason };
   }

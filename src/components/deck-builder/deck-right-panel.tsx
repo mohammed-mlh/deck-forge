@@ -101,9 +101,11 @@ export function DeckRightPanel({
         />
       </div>
 
-      <div className={cn("min-h-0 flex-1", panel !== "analysis" && "hidden")}>
-        <DeckAnalysisPanel embedded deck={deck} />
-      </div>
+      {panel === "analysis" && (
+        <div className="min-h-0 flex-1">
+          <DeckAnalysisPanel key={deck.id} embedded deck={deck} />
+        </div>
+      )}
 
       <div className={cn("min-h-0 flex-1", panel !== "doctor" && "hidden")}>
         <DeckDoctorPanel

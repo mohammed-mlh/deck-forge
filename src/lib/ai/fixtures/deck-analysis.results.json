@@ -357,6 +357,15 @@
         ]
       },
       "analysis": {
+        "scores": {
+          "overall": 65,
+          "consistency": 70,
+          "power": 75,
+          "speed": 55,
+          "resilience": 60,
+          "flexibility": 65,
+          "synergy": 62
+        },
         "summary": "The deck is a Blue-Eyes build with a heavy hand trap lineup and strong draw/search power, but it lacks a cohesive extra deck and has too many hand traps, reducing consistency.",
         "strengths": [
           {
@@ -716,6 +725,15 @@
         ]
       },
       "analysis": {
+        "scores": {
+          "overall": 52,
+          "consistency": 45,
+          "power": 55,
+          "speed": 70,
+          "resilience": 50,
+          "flexibility": 48,
+          "synergy": 58
+        },
         "summary": "This Sky Striker deck focuses on control and disruption with a heavy hand trap lineup, but has a small main deck (32 cards) and an incomplete extra deck (8 cards). It lacks consistency and key Sky Striker spells.",
         "strengths": [
           {
@@ -1041,6 +1059,15 @@
         ]
       },
       "analysis": {
+        "scores": {
+          "overall": 48,
+          "consistency": 40,
+          "power": 60,
+          "speed": 45,
+          "resilience": 55,
+          "flexibility": 42,
+          "synergy": 50
+        },
         "summary": "The deck is a 37-card main deck with an Eldlich core, heavy on hand traps and disruption, but lacks a clear win condition beyond Eldlich the Golden Lord. The extra deck is small and includes generic boss monsters like Red-Eyes Dark Dragoon and Number 38, but consistency is hurt by odd card counts (e.g., 5 Ash Blossom, 12 Eldlich the Conquistador) and missing key Eldlich spells/traps.",
         "strengths": [
           {

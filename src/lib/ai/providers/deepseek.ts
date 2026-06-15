@@ -74,11 +74,11 @@ export class DeepSeekProvider implements AiProvider {
     );
   }
 
-  async improveDeck(context: DeckContext): Promise<DeckDoctorResult> {
+  async improveDeck(context: DeckContext, analysis?: DeckAnalysis): Promise<DeckDoctorResult> {
     return deepSeekJson(
       this.apiKey,
       "You are a Yu-Gi-Oh! deck doctor. Respond with valid JSON only.",
-      buildDeckDoctorPrompt(context),
+      buildDeckDoctorPrompt(context, analysis),
       parseDeckDoctor
     );
   }

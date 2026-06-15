@@ -6,6 +6,18 @@ import {
 } from "@/db/schema/deck-analyses";
 import type { DeckAnalysisRecord } from "@/db/schema/deck-analyses";
 
+export async function findLatestDeckAnalysisByDeckId(
+  deckId: string
+): Promise<DeckAnalysisRecord | undefined> {
+  const rows = await db
+    .select()
+    .from(deckAnalyses)
+    .where(eq(deckAnalyses.deckId, deckId))
+    .orderBy(desc(deckAnalyses.createdAt))
+    .limit(1);
+  return rows[0];
+}
+
 export async function findDeckAnalysesByDeckId(deckId: string): Promise<DeckAnalysisRecord[]> {
   return db
     .select()

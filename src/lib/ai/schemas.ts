@@ -10,7 +10,18 @@ const deckDoctorCardSchema = z.object({
   zone: zoneHintSchema.optional(),
 });
 
+const deckScoresSchema = z.object({
+  overall: z.number().min(0).max(100),
+  consistency: z.number().min(0).max(100),
+  power: z.number().min(0).max(100),
+  speed: z.number().min(0).max(100),
+  resilience: z.number().min(0).max(100),
+  flexibility: z.number().min(0).max(100),
+  synergy: z.number().min(0).max(100),
+});
+
 export const deckAnalysisSchema = z.object({
+  scores: deckScoresSchema,
   summary: z.string().min(1),
   strengths: z.array(
     z.object({

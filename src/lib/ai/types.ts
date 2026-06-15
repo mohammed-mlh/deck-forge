@@ -121,5 +121,5 @@ export interface DeckDoctorResult {
 
 export interface AiProvider {
   analyzeDeck(context: DeckContext): Promise<DeckAnalysis>;
-  improveDeck(context: DeckContext): Promise<DeckDoctorResult>;
+  improveDeck(context: DeckContext, analysis?: DeckAnalysis): Promise<DeckDoctorResult>;
 }
