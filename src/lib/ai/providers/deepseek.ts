@@ -43,7 +43,7 @@ async function deepSeekJson<T>(
       ],
       response_format: { type: "json_object" },
       thinking: { type: "disabled" },
-      temperature: 0.4,
+      temperature: 0,
     }),
   });
 
