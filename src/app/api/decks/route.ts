@@ -1,13 +1,12 @@
 import { createDeckSchema } from "@/features/decks/decks.schema";
-import { createDeck, getUserDecks } from "@/features/decks/decks.service";
-import { deckRecordsToSavedDecks, deckRecordToSavedDeck } from "@/features/decks/decks.mapper";
+import { createDeck, getUserDecks, toSavedDeck, toSavedDecks } from "@/features/decks/decks.service";
 import { requireUserId } from "@/lib/auth/require-user";
 
 export async function GET() {
   try {
     const userId = await requireUserId();
     const records = await getUserDecks(userId);
-    const decks = await deckRecordsToSavedDecks(records);
+    const decks = await toSavedDecks(records);
     return Response.json({ decks });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     const record = await createDeck(userId, parsed.data);
-    const deck = await deckRecordToSavedDeck(record);
+    const deck = await toSavedDeck(record);
     return Response.json({ deck }, { status: 201 });
   } catch (err) {
     if (err instanceof Response) return err;

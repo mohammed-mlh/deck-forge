@@ -1,6 +1,6 @@
 import { updateDeckSchema } from "@/features/decks/decks.schema";
 import { deleteDeck, getDeckById, updateDeck } from "@/features/decks/decks.service";
-import { deckRecordToSavedDeck } from "@/features/decks/decks.mapper";
+import { toSavedDeck } from "@/features/decks/decks.service";
 import { requireUserId } from "@/lib/auth/require-user";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -13,7 +13,7 @@ export async function GET(_req: Request, context: RouteContext) {
     if (!record) {
       return Response.json({ error: "Deck not found" }, { status: 404 });
     }
-    const deck = await deckRecordToSavedDeck(record);
+    const deck = await toSavedDeck(record);
     return Response.json({ deck });
   } catch (err) {
     if (err instanceof Response) return err;
@@ -36,7 +36,7 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (!record) {
       return Response.json({ error: "Deck not found" }, { status: 404 });
     }
-    const deck = await deckRecordToSavedDeck(record);
+    const deck = await toSavedDeck(record);
     return Response.json({ deck });
   } catch (err) {
     if (err instanceof Response) return err;

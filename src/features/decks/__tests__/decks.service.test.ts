@@ -24,6 +24,7 @@ vi.mock("@/features/cards/cards.service", () => ({
 import {
   createDeck,
   getDeckById,
+  toSavedDeck,
   updateDeck,
 } from "@/features/decks/decks.service";
 import { findDeckById, findDeckByUserSlug, insertDeck, updateDeckById } from "@/features/decks/decks.repository";
@@ -118,5 +119,26 @@ describe("updateDeck", () => {
       updateDeck("user-1", "deck-1", { main: [{ id: 1, quantity: 4 }] })
     ).rejects.toThrow(/copies/);
     expect(mockedUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("toSavedDeck", () => {
+  it("loads cards for deck refs", async () => {
+    const record: DeckRecord = {
+      id: "deck-1",
+      userId: "user-1",
+      name: "Test",
+      slug: "test",
+      visibility: "private",
+      main: [{ id: 1, quantity: 1 }],
+      extra: [],
+      side: [],
+      createdAt: new Date("2026-01-01"),
+      updatedAt: new Date("2026-01-02"),
+    };
+
+    const saved = await toSavedDeck(record);
+    expect(saved.main[0]?.card.name).toBe("Pot of Greed");
+    expect(mockedFetchIds).toHaveBeenCalledWith({ ids: [1] });
   });
 });

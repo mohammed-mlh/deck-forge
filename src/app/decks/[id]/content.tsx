@@ -10,7 +10,8 @@ import { Container } from "@/components/layout/container";
 import { usePageView } from "@/hooks/use-page-view";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
-import { deckToCreateInput } from "@/features/decks/decks.mapper";
+import { entriesToRefs } from "@/features/decks/decks.mapper";
+import type { CreateDeckInput } from "@/features/decks/decks.schema";
 import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
 import { getCardImageUrl } from "@/lib/cards";
@@ -96,7 +97,13 @@ export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
       deckName: deck.name,
     });
     try {
-      const saved = await fork(deckToCreateInput(deck));
+      const payload: CreateDeckInput = {
+        name: deck.name,
+        main: entriesToRefs(deck.main),
+        extra: entriesToRefs(deck.extra),
+        side: entriesToRefs(deck.side),
+      };
+      const saved = await fork(payload);
       router.push(`/app/deck-builder/${saved.id}`);
     } catch (err) {
       setCopying(false);

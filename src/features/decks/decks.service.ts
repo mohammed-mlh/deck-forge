@@ -9,7 +9,8 @@ import {
   updateDeckById,
 } from "@/features/decks/decks.repository";
 import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
-import type { CreateDeckInput, DeckZoneRefs, UpdateDeckInput } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
+import type { CreateDeckInput, DeckCardEntry, DeckZoneRefs, SavedDeck, UpdateDeckInput } from "@/features/decks/decks.schema";
 import { deckFromRefs, validateDeck, validateDeckRefs } from "@/lib/deck-rules";
 import { getCardsByIds } from "@/features/cards/cards.service";
 
@@ -27,12 +28,74 @@ function defaultSlug(name: string): string {
   return base || "deck";
 }
 
-function collectRefIds(main: DeckZoneRefs, extra: DeckZoneRefs, side: DeckZoneRefs): number[] {
+function collectRefIds(...zones: DeckZoneRefs[]): number[] {
   const ids = new Set<number>();
-  for (const refs of [main, extra, side]) {
+  for (const refs of zones) {
     for (const ref of refs) ids.add(ref.id);
   }
   return [...ids];
+}
+
+async function cardMapForRecords(records: DeckRecord[]): Promise<Map<number, Card>> {
+  const ids = collectRefIds(...records.flatMap((r) => [r.main, r.extra, r.side]));
+  if (ids.length === 0) return new Map();
+  const cards = await getCardsByIds({ ids });
+  return new Map(cards.map((card) => [card.id, card]));
+}
+
+function missingCard(id: number): Card {
+  return {
+    id,
+    name: "",
+    type: "",
+    humanReadableCardType: null,
+    frameType: "effect",
+    desc: "",
+    race: null,
+    attribute: null,
+    atk: null,
+    def: null,
+    level: null,
+    rank: null,
+    linkval: null,
+    scale: null,
+    archetype: null,
+    typeline: null,
+    linkMarkers: null,
+    ygoprodeckUrl: null,
+    syncedAt: new Date(0).toISOString(),
+    images: [],
+  };
+}
+
+function refsToEntries(refs: DeckZoneRefs, byId: Map<number, Card>): DeckCardEntry[] {
+  return refs.map(({ id, quantity }) => ({
+    card: byId.get(id) ?? missingCard(id),
+    quantity,
+  }));
+}
+
+function buildSavedDeck(record: DeckRecord, byId: Map<number, Card>): SavedDeck {
+  return {
+    id: record.id,
+    name: record.name,
+    main: refsToEntries(record.main, byId),
+    extra: refsToEntries(record.extra, byId),
+    side: refsToEntries(record.side, byId),
+    visibility: record.visibility,
+    updatedAt: record.updatedAt.toISOString(),
+  };
+}
+
+export async function toSavedDecks(records: DeckRecord[]): Promise<SavedDeck[]> {
+  if (records.length === 0) return [];
+  const byId = await cardMapForRecords(records);
+  return records.map((record) => buildSavedDeck(record, byId));
+}
+
+export async function toSavedDeck(record: DeckRecord): Promise<SavedDeck> {
+  const [deck] = await toSavedDecks([record]);
+  return deck;
 }
 
 async function assertValidDeckInput(

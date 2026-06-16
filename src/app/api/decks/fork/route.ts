@@ -1,6 +1,6 @@
 import { createDeckSchema } from "@/features/decks/decks.schema";
 import { forkDeck } from "@/features/decks/decks.service";
-import { deckRecordToSavedDeck } from "@/features/decks/decks.mapper";
+import { toSavedDeck } from "@/features/decks/decks.service";
 import { requireUserId } from "@/lib/auth/require-user";
 
 export async function POST(req: Request) {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     const record = await forkDeck(userId, parsed.data);
-    const deck = await deckRecordToSavedDeck(record);
+    const deck = await toSavedDeck(record);
     return Response.json({ deck }, { status: 201 });
   } catch (err) {
     if (err instanceof Response) return err;

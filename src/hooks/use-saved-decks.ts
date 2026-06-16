@@ -2,8 +2,8 @@
 
 import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deckToCreateInput } from "@/features/decks/decks.mapper";
-import type { Deck, SavedDeck } from "@/features/decks/decks.schema";
+import { entriesToRefs } from "@/features/decks/decks.mapper";
+import type { CreateDeckInput, Deck, SavedDeck } from "@/features/decks/decks.schema";
 
 const DECKS_QUERY_KEY = ["user-decks"] as const;
 
@@ -35,7 +35,12 @@ export function useSavedDecks() {
 
   const saveMutation = useMutation({
     mutationFn: async ({ deck, update }: { deck: Deck; update?: boolean }) => {
-      const payload = deckToCreateInput(deck);
+      const payload: CreateDeckInput = {
+        name: deck.name,
+        main: entriesToRefs(deck.main),
+        extra: entriesToRefs(deck.extra),
+        side: entriesToRefs(deck.side),
+      };
       const inList = listQuery.data?.some((d) => d.id === deck.id);
       const inDeckCache = Boolean(queryClient.getQueryData<SavedDeck>(["deck", deck.id]));
       const existing = update ?? inList ?? inDeckCache;
@@ -64,7 +69,7 @@ export function useSavedDecks() {
   });
 
   const forkMutation = useMutation({
-    mutationFn: async (payload: ReturnType<typeof deckToCreateInput>) => {
+    mutationFn: async (payload: CreateDeckInput) => {
       const res = await fetch("/api/decks/fork", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
