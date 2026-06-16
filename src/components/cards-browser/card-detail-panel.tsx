@@ -11,6 +11,9 @@ interface CardDetailPanelProps {
   className?: string;
 }
 
+const panelCardClass =
+  "flex flex-col overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)/80 backdrop-blur-sm";
+
 export function CardDetailPanel({ card, onClose, className }: CardDetailPanelProps) {
   if (!card) return null;
 
@@ -23,7 +26,8 @@ export function CardDetailPanel({ card, onClose, className }: CardDetailPanelPro
       />
       <aside
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col overflow-hidden border-l border-(--color-border) bg-(--color-bg-surface) shadow-md lg:hidden",
+          panelCardClass,
+          "fixed inset-y-0 right-0 z-50 w-full max-w-md rounded-r-none border-r-0 shadow-md lg:hidden",
           className
         )}
       >
@@ -35,7 +39,8 @@ export function CardDetailPanel({ card, onClose, className }: CardDetailPanelPro
 
       <aside
         className={cn(
-          "hidden h-full min-h-0 w-80 shrink-0 flex-col overflow-hidden border-l border-(--color-border) bg-(--color-bg-surface) lg:flex xl:w-96",
+          panelCardClass,
+          "hidden h-full min-h-0 w-80 shrink-0 lg:flex xl:w-96",
           className
         )}
       >

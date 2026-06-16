@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useCards } from "@/hooks/use-cards";
+import { useCards, useInitialCards } from "@/hooks/use-cards";
 import {
   finalizeCards,
   filtersNeedApi,
@@ -18,25 +18,20 @@ export function useBrowseCards(search: string, filters: CardFilters) {
     return buildCardQueryParams(search, api);
   }, [search, filters]);
 
-  const browseParams = useMemo(
-    () => buildCardQueryParams("", filtersToApiParams("", filters)),
-    [filters]
-  );
-
   const apiQuery = useCards(queryParams, { enabled: useApi });
-  const browseQuery = useCards(browseParams, { enabled: !useApi });
+  const initialQuery = useInitialCards({ enabled: !useApi });
 
-  const rawCards = useApi ? (apiQuery.data ?? []) : (browseQuery.data ?? []);
+  const rawCards = useApi ? (apiQuery.data ?? []) : (initialQuery.data ?? []);
   const cards = useMemo(() => finalizeCards(rawCards, filters), [rawCards, filters]);
 
   return {
     cards,
-    isLoading: useApi ? apiQuery.isLoading : browseQuery.isLoading,
-    isFetching: useApi ? apiQuery.isFetching : browseQuery.isFetching,
-    isError: useApi ? apiQuery.isError : browseQuery.isError,
-    error: useApi ? apiQuery.error : browseQuery.error,
+    isLoading: useApi ? apiQuery.isLoading : initialQuery.isLoading,
+    isFetching: useApi ? apiQuery.isFetching : initialQuery.isFetching,
+    isError: useApi ? apiQuery.isError : initialQuery.isError,
+    error: useApi ? apiQuery.error : initialQuery.error,
     isBrowsing: !useApi,
-    queryParams: useApi ? queryParams : browseParams,
-    refetch: () => (useApi ? apiQuery.refetch() : browseQuery.refetch()),
+    queryParams,
+    refetch: () => (useApi ? apiQuery.refetch() : initialQuery.refetch()),
   };
 }

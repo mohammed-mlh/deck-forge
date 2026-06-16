@@ -182,6 +182,11 @@ export function CardBrowser({
                   onCardClick={handleCardClick}
                   selectedCardId={selectedCard?.id ?? null}
                   columns={selectedCard ? 4 : 6}
+                  emptyMessage={
+                    debouncedSearch
+                      ? `No cards found for "${debouncedSearch}".`
+                      : "No cards match the current filters."
+                  }
                 />
               ) : (
                 <CardList
@@ -192,6 +197,11 @@ export function CardBrowser({
                   onRetry={() => void refetch()}
                   onCardClick={handleCardClick}
                   selectedCardId={selectedCard?.id ?? null}
+                  emptyMessage={
+                    debouncedSearch
+                      ? `No cards found for "${debouncedSearch}".`
+                      : "No cards match the current filters."
+                  }
                 />
               )}
             </div>

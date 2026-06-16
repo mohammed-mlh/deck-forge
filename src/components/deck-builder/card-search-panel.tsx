@@ -91,7 +91,7 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
             emptyMessage={
               debouncedSearch
                 ? `No cards found for "${debouncedSearch}".`
-                : "No cards available. Try again shortly."
+                : "No cards match the current filters."
             }
           />
         </div>

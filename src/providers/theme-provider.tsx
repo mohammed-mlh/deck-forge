@@ -5,15 +5,17 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import {
   applyTheme,
   getStoredTheme,
-  getSystemTheme,
   resolveTheme,
-  THEME_STORAGE_KEY,
+  subscribeToTheme,
+  writeTheme,
+  getServerTheme,
   type Theme,
 } from "@/lib/theme";
 
@@ -26,11 +28,14 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => resolveTheme());
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    resolveTheme,
+    getServerTheme
+  );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyTheme(theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const handleChange = () => {
       if (getStoredTheme()) return;
-      setThemeState(media.matches ? "light" : "dark");
+      writeTheme(media.matches ? "light" : "dark");
     };
 
     media.addEventListener("change", handleChange);
@@ -46,12 +51,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
+    writeTheme(next);
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setThemeState((current) => (current === "dark" ? "light" : "dark"));
-  }, []);
+    writeTheme(theme === "dark" ? "light" : "dark");
+  }, [theme]);
 
   const value = useMemo(
     () => ({ theme, setTheme, toggleTheme }),

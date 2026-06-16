@@ -28,3 +28,29 @@ export function resolveTheme(): Theme {
 export function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
 }
+
+type ThemeListener = () => void;
+
+const themeListeners = new Set<ThemeListener>();
+
+export function subscribeToTheme(listener: ThemeListener) {
+  themeListeners.add(listener);
+  return () => {
+    themeListeners.delete(listener);
+  };
+}
+
+function notifyThemeListeners() {
+  themeListeners.forEach((listener) => listener());
+}
+
+export function writeTheme(theme: Theme) {
+  if (typeof window === "undefined") return;
+  applyTheme(theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  notifyThemeListeners();
+}
+
+export function getServerTheme(): Theme {
+  return "dark";
+}
