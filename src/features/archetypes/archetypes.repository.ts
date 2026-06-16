@@ -19,8 +19,21 @@ export async function findArchetypeByName(name: string): Promise<ArchetypeRecord
   return rows[0] ?? null;
 }
 
+async function uniqueArchetypeSlug(name: string): Promise<string> {
+  const base = slugify(name) || "archetype";
+  let slug = base;
+  let suffix = 2;
+
+  while (true) {
+    const existing = await findArchetypeBySlug(slug);
+    if (!existing || existing.name === name) return slug;
+    slug = `${base.slice(0, 58)}-${suffix}`;
+    suffix++;
+  }
+}
+
 export async function upsertArchetype(name: string): Promise<ArchetypeRecord> {
-  const slug = slugify(name);
+  const slug = await uniqueArchetypeSlug(name);
   const rows = await db
     .insert(archetypes)
     .values({ name, slug })
