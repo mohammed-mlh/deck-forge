@@ -4,7 +4,7 @@ import { CardItem } from "@/components/cards-browser/card-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Search } from "lucide-react";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 
 const GRID_COLS: Record<3 | 4 | 6, string> = {
   3: "grid-cols-3 gap-2",
@@ -13,13 +13,13 @@ const GRID_COLS: Record<3 | 4 | 6, string> = {
 };
 
 interface CardGridProps {
-  cards: YugiohCard[];
+  cards: Card[];
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: string;
   onRetry?: () => void;
-  onCardClick?: (card: YugiohCard) => void;
-  onCardDoubleClick?: (card: YugiohCard) => void;
+  onCardClick?: (card: Card) => void;
+  onCardDoubleClick?: (card: Card) => void;
   selectedCardId?: number | null;
   draggable?: boolean;
   emptyMessage?: string;
@@ -67,7 +67,7 @@ export function CardGrid({
         {Array.from({ length: columns === 6 ? 12 : columns * 3 }).map((_, i) => (
           <Skeleton
             key={i}
-            className="aspect-[59/86] w-full rounded-sm"
+            className="aspect-59/86 w-full rounded-sm"
           />
         ))}
       </div>

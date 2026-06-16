@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Layers } from "lucide-react";
 import { getCardArtUrl } from "@/lib/deck-preview";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 
 interface DeckPreviewCardProps {
   href: string;
-  featured: YugiohCard | null;
+  featured: Card | null;
   badge: React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;

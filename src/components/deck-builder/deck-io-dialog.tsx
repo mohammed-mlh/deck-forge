@@ -10,9 +10,9 @@ import {
   parseDeckContent,
   resolveParsedDeck,
 } from "@/lib/deck-io";
+import type { DeckFormatId } from "@/lib/deck-io";
 import { tryImportJsonFullDeck } from "@/lib/deck-io/resolve";
-import type { Deck } from "@/types/deck";
-import type { DeckFormatId } from "@/types/deck-io";
+import type { Deck } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 
 interface DeckIoDialogProps {

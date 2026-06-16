@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { getCardImageUrl, getCardTypeLabel } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
+import { getCardImageUrl, getCardTypeLabel } from "@/lib/cards";
+import type { Card } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 function formatStatValue(value: number): string {
@@ -61,9 +61,9 @@ function StatCell({
   );
 }
 
-export function MonsterStats({ atk, def }: { atk?: number; def?: number }) {
-  const hasAtk = atk !== undefined;
-  const hasDef = def !== undefined;
+export function MonsterStats({ atk, def }: { atk?: number | null; def?: number | null }) {
+  const hasAtk = atk != null;
+  const hasDef = def != null;
 
   if (!hasAtk && !hasDef) return null;
 
@@ -89,9 +89,9 @@ export function MonsterStats({ atk, def }: { atk?: number; def?: number }) {
   );
 }
 
-export function CardDetailBody({ card, className }: { card: YugiohCard; className?: string }) {
+export function CardDetailBody({ card, className }: { card: Card; className?: string }) {
   const typeLabel = getCardTypeLabel(card);
-  const hasStats = card.atk !== undefined || card.def !== undefined;
+  const hasStats = card.atk != null || card.def != null;
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -99,9 +99,9 @@ export function CardDetailBody({ card, className }: { card: YugiohCard; classNam
         <DetailBadge>{typeLabel}</DetailBadge>
         {card.attribute && <DetailBadge>{card.attribute}</DetailBadge>}
         {card.race && <DetailBadge>{card.race}</DetailBadge>}
-        {(card.level !== undefined || card.rank !== undefined) && (
+        {(card.level != null || card.rank != null) && (
           <DetailBadge>
-            {card.rank !== undefined ? `Rank ${card.rank}` : `Level ${card.level}`}
+            {card.rank != null ? `Rank ${card.rank}` : `Level ${card.level}`}
           </DetailBadge>
         )}
         {card.archetype && <DetailBadge variant="primary">{card.archetype}</DetailBadge>}
@@ -125,7 +125,7 @@ export function CardDetailContent({
   card,
   showName = true,
 }: {
-  card: YugiohCard;
+  card: Card;
   showName?: boolean;
 }) {
   return (

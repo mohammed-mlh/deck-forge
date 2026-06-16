@@ -9,14 +9,14 @@ import {
 import { CardGrid } from "@/components/cards-browser/card-grid";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useBrowseCards } from "@/hooks/use-browse-cards";
-import type { YugiohCard } from "@/types/yugioh";
-import type { DeckZone } from "@/types/deck";
+import type { Card } from "@/features/cards/cards.schema";
+import type { DeckZone } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 
 interface CardSearchPanelProps {
-  onAddCard: (card: YugiohCard, zone?: DeckZone) => void;
-  onSelectCard?: (card: YugiohCard) => void;
+  onAddCard: (card: Card, zone?: DeckZone) => void;
+  onSelectCard?: (card: Card) => void;
   selectedCardId?: number | null;
   className?: string;
   embedded?: boolean;
@@ -35,11 +35,11 @@ export const CardSearchPanel = forwardRef<HTMLInputElement, CardSearchPanelProps
   const { cards, isLoading, isFetching, isError, refetch } =
     useBrowseCards(debouncedSearch, filters);
 
-  const handleCardClick = (card: YugiohCard) => {
+  const handleCardClick = (card: Card) => {
     onSelectCard?.(card);
   };
 
-  const handleCardDoubleClick = (card: YugiohCard) => {
+  const handleCardDoubleClick = (card: Card) => {
     onAddCard(card, getDefaultZoneForCard(card));
   };
 

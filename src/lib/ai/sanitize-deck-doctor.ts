@@ -1,5 +1,5 @@
 import type { DeckDoctorCardChange, DeckDoctorResult } from "@/lib/ai/types";
-import type { Deck, DeckZone } from "@/types/deck";
+import type { Deck, DeckZone } from "@/features/decks/decks.schema";
 
 const ZONES: DeckZone[] = ["main", "extra", "side"];
 

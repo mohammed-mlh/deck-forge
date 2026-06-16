@@ -1,8 +1,8 @@
-import type { Deck, DeckCardEntry, DeckValidationIssue, DeckZone } from "@/types/deck";
-import { DECK_LIMITS } from "@/types/deck";
+import type { Deck, DeckCardEntry, DeckValidationIssue, DeckZone } from "@/features/decks/decks.schema";
+import { DECK_LIMITS } from "@/features/decks/decks.schema";
 import type { DeckZoneRefs } from "@/features/decks/decks.schema";
-import type { YugiohCard } from "@/types/yugioh";
-import { isExtraDeckCard } from "@/lib/ygoprodeck";
+import type { Card } from "@/features/cards/cards.schema";
+import { isExtraDeckCard } from "@/lib/cards";
 
 function countRefs(refs: DeckZoneRefs): number {
   return refs.reduce((sum, ref) => sum + ref.quantity, 0);
@@ -84,13 +84,13 @@ export function countCardInDeck(deck: Deck, cardId: number): number {
   }, 0);
 }
 
-export function getDefaultZoneForCard(card: YugiohCard): DeckZone {
+export function getDefaultZoneForCard(card: Card): DeckZone {
   return isExtraDeckCard(card) ? "extra" : "main";
 }
 
 export function canAddCardToZone(
   deck: Deck,
-  card: YugiohCard,
+  card: Card,
   zone: DeckZone
 ): { ok: boolean; reason?: string } {
   const totalCopies = countCardInDeck(deck, card.id);
@@ -195,7 +195,7 @@ export function deckFromRefs(
   main: DeckZoneRefs,
   extra: DeckZoneRefs,
   side: DeckZoneRefs,
-  byId: Map<number, YugiohCard>
+  byId: Map<number, Card>
 ): Deck {
   const toEntries = (refs: DeckZoneRefs): DeckCardEntry[] =>
     refs.map((ref) => {

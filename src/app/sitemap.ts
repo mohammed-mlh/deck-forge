@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 import { getFeaturedArchetypeSlugs } from "@/content/seo-archetypes";
 import { getGuideSlugs } from "@/content/seo-guides";
+import { getArchetypes } from "@/features/archetypes/archetypes.service";
 import { getPublicDecks } from "@/features/decks/decks.service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const now = new Date();
   const publicDecks = await getPublicDecks();
+  const dbArchetypeSlugs = (await getArchetypes()).map((archetype) => archetype.slug);
+  const archetypeSlugs = [...new Set([...getFeaturedArchetypeSlugs(), ...dbArchetypeSlugs])];
 
   const publicDeckEntries = publicDecks.map((deck) => ({
     url: `${base}/decks/${deck.id}`,
@@ -22,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const archetypeEntries = getFeaturedArchetypeSlugs().map((slug) => ({
+  const archetypeEntries = archetypeSlugs.map((slug) => ({
     url: `${base}/archetypes/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

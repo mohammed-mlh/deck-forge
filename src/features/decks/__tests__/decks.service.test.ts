@@ -1,5 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { DeckRecord } from "@/db/schema/decks";
+import type { Card } from "@/features/cards/cards.schema";
+
+function mockCard(id: number, overrides: Partial<Card> = {}): Card {
+  return { id, name: `Card ${id}`, type: "Normal Monster", frameType: "normal", desc: "test", images: [], ...overrides } as Card;
+}
 
 vi.mock("@/features/decks/decks.repository", () => ({
   findDeckById: vi.fn(),
@@ -12,13 +17,9 @@ vi.mock("@/features/decks/decks.repository", () => ({
   deleteDeckById: vi.fn(),
 }));
 
-vi.mock("@/lib/ygoprodeck", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/ygoprodeck")>();
-  return {
-    ...actual,
-    fetchCardsByIds: vi.fn(),
-  };
-});
+vi.mock("@/features/cards/cards.service", () => ({
+  getCardsByIds: vi.fn(),
+}));
 
 import {
   createDeck,
@@ -26,22 +27,19 @@ import {
   updateDeck,
 } from "@/features/decks/decks.service";
 import { findDeckById, findDeckByUserSlug, insertDeck, updateDeckById } from "@/features/decks/decks.repository";
-import { fetchCardsByIds } from "@/lib/ygoprodeck";
+import { getCardsByIds } from "@/features/cards/cards.service";
 
 const mockedInsert = vi.mocked(insertDeck);
 const mockedFindById = vi.mocked(findDeckById);
 const mockedFindSlug = vi.mocked(findDeckByUserSlug);
 const mockedUpdate = vi.mocked(updateDeckById);
-const mockedFetchIds = vi.mocked(fetchCardsByIds);
+const mockedFetchIds = vi.mocked(getCardsByIds);
 
-const spell = {
-  id: 1,
+const spell = mockCard(1, {
   name: "Pot of Greed",
   type: "Spell Card",
-  desc: "",
   frameType: "spell",
-  card_images: [{ id: 1, image_url: "", image_url_small: "", image_url_cropped: "" }],
-};
+});
 
 function deckRecord(overrides: Partial<DeckRecord> = {}): DeckRecord {
   const now = new Date("2026-01-01T00:00:00Z");
@@ -63,7 +61,9 @@ function deckRecord(overrides: Partial<DeckRecord> = {}): DeckRecord {
 beforeEach(() => {
   vi.clearAllMocks();
   mockedFindSlug.mockResolvedValue(null);
-  mockedFetchIds.mockResolvedValue([spell]);
+  mockedFetchIds.mockImplementation(async ({ ids }) =>
+    ids.map((id) => (id === 1 ? spell : mockCard(id)))
+  );
 });
 
 describe("createDeck", () => {

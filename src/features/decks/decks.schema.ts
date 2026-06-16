@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Card } from "@/features/cards/cards.schema";
 
 export const deckCardRefSchema = z.object({
   id: z.number().int().positive(),
@@ -25,3 +26,39 @@ export type DeckZoneRefs = z.infer<typeof deckZoneRefsSchema>;
 export type DeckVisibility = z.infer<typeof deckVisibilitySchema>;
 export type CreateDeckInput = z.infer<typeof createDeckSchema>;
 export type UpdateDeckInput = z.infer<typeof updateDeckSchema>;
+
+export type DeckZone = "main" | "extra" | "side";
+
+export interface DeckCardEntry {
+  card: Card;
+  quantity: number;
+}
+
+export interface Deck {
+  id: string;
+  name: string;
+  main: DeckCardEntry[];
+  extra: DeckCardEntry[];
+  side: DeckCardEntry[];
+  /** Deck label fallback when cards lack API archetype data. */
+  archetype?: string;
+}
+
+export interface SavedDeck extends Deck {
+  visibility: DeckVisibility;
+  updatedAt: string;
+}
+
+export interface DeckValidationIssue {
+  zone?: DeckZone;
+  cardId?: number;
+  message: string;
+  severity: "error" | "warning";
+}
+
+export const DECK_LIMITS = {
+  main: { min: 40, max: 60 },
+  extra: { min: 0, max: 15 },
+  side: { min: 0, max: 15 },
+  maxCopies: 3,
+} as const;

@@ -5,18 +5,18 @@ import { Search, Sparkles, Wand2 } from "lucide-react";
 import { CardSearchPanel } from "@/components/deck-builder/card-search-panel";
 import { DeckAnalysisPanel } from "@/components/deck-builder/deck-analysis-panel";
 import { DeckDoctorPanel } from "@/components/deck-builder/deck-doctor-panel";
-import type { Deck, DeckZone } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck, DeckZone } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 export type DeckBuilderRightPanel = "search" | "analysis" | "doctor";
 
 interface DeckRightPanelProps {
   deck: Deck;
-  onAddCard: (card: YugiohCard, zone?: DeckZone) => void;
+  onAddCard: (card: Card, zone?: DeckZone) => void;
   onApplyDoctorSuggestion: (deck: Deck) => void;
   onDoctorApplyNotes?: (notes: { errors: string[]; warnings: string[] }) => void;
-  onSelectCard?: (card: YugiohCard) => void;
+  onSelectCard?: (card: Card) => void;
   selectedCardId?: number | null;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
   className?: string;

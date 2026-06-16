@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatsPolygon } from "@/components/stats-polygon";
 import type { DeckAnalysis, DeckScores, DeckSuggestion, SuggestionPriority } from "@/lib/ai/types";
-import type { Deck } from "@/types/deck";
+import type { Deck } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 
 type AnalysisStatus = "empty" | "idle" | "loading" | "error" | "success";

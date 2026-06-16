@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { getCardImageUrl, getCardTypeLabel } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
+import { getCardImageUrl, getCardTypeLabel } from "@/lib/cards";
+import type { Card } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 interface CardListItemProps {
-  card: YugiohCard;
-  onClick?: (card: YugiohCard) => void;
+  card: Card;
+  onClick?: (card: Card) => void;
   selected?: boolean;
 }
 

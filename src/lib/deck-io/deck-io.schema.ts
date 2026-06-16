@@ -1,3 +1,5 @@
+import type { DeckCardEntry } from "@/features/decks/decks.schema";
+
 export type DeckFormatId =
   | "ygoprodeck-txt"
   | "ydk"
@@ -35,9 +37,9 @@ export interface ParsedDeckList {
 
 export interface ImportResult {
   name?: string;
-  main: import("@/types/deck").DeckCardEntry[];
-  extra: import("@/types/deck").DeckCardEntry[];
-  side: import("@/types/deck").DeckCardEntry[];
+  main: DeckCardEntry[];
+  extra: DeckCardEntry[];
+  side: DeckCardEntry[];
   errors: string[];
   warnings: string[];
 }

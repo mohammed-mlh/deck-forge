@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const record = await getPublicDeckById(id);
   if (!record) return { title: "Deck not found" };
-  return buildDeckMetadata(deckRecordToSavedDeck(record));
+  return buildDeckMetadata(await deckRecordToSavedDeck(record));
 }
 
 export default async function PublicDeckPage({ params }: Props) {
@@ -19,7 +19,7 @@ export default async function PublicDeckPage({ params }: Props) {
   const record = await getPublicDeckById(id);
   if (!record) notFound();
 
-  const deck = deckRecordToSavedDeck(record);
+  const deck = await deckRecordToSavedDeck(record);
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">

@@ -110,5 +110,8 @@ export const banlistEntries = pgTable(
 
 export type CardRecord = typeof cards.$inferSelect;
 export type NewCardRecord = typeof cards.$inferInsert;
+export type CardImageRecord = typeof cardImages.$inferSelect;
+export type CardSetRecord = typeof cardSets.$inferSelect;
+export type CardPriceRecord = typeof cardPrices.$inferSelect;
 export type BanlistEntryRecord = typeof banlistEntries.$inferSelect;
 export type NewBanlistEntryRecord = typeof banlistEntries.$inferInsert;

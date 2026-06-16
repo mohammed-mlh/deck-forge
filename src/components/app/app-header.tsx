@@ -8,7 +8,8 @@ import { Home, Layers, Menu, X } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
-import type { NavItem } from "@/types/nav";
+
+type NavItem = { label: string; href: string };
 
 const navItems: NavItem[] = [
   { label: "Cards", href: "/app/cards" },

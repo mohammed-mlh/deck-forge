@@ -36,6 +36,20 @@
       "when": 1781643202846,
       "tag": "0004_large_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781644033627,
+      "tag": "0005_cloudy_silver_samurai",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781645495454,
+      "tag": "0006_steep_outlaw_kid",
+      "breakpoints": true
     }
   ]
 }

@@ -4,10 +4,9 @@ import {
 } from "@/lib/decks/deck-editor";
 import { getDefaultZoneForCard } from "@/lib/deck-rules";
 import { sanitizeDeckDoctorResult } from "@/lib/ai/sanitize-deck-doctor";
-import { fetchCards } from "@/lib/ygoprodeck";
 import type { DeckDoctorResult, DeckZoneHint } from "@/lib/ai/types";
-import type { Deck, DeckCardEntry, DeckZone } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
+import type { Deck, DeckCardEntry, DeckZone } from "@/features/decks/decks.schema";
 
 const ZONES: DeckZone[] = ["main", "extra", "side"];
 
@@ -66,7 +65,7 @@ function removeCopies(
 
 function addCopies(
   deck: Deck,
-  card: YugiohCard,
+  card: Card,
   quantity: number,
   zoneHint?: DeckZoneHint
 ): { deck: Deck; added: number; errors: string[] } {
@@ -90,8 +89,14 @@ function addCopies(
   return { deck: current, added, errors };
 }
 
-async function resolveCardByName(name: string): Promise<YugiohCard | null> {
-  const results = await fetchCards({ name });
+async function resolveCardByName(name: string): Promise<Card | null> {
+  const res = await fetch(`/api/cards?${new URLSearchParams({ name }).toString()}`);
+  if (!res.ok) {
+    if (res.status === 400) return null;
+    throw new Error(`Failed to fetch cards: ${res.status}`);
+  }
+  const json = (await res.json()) as { data: Card[] };
+  const results = json.data ?? [];
   const key = normalizeName(name);
   return results.find((card) => normalizeName(card.name) === key) ?? results[0] ?? null;
 }
@@ -130,7 +135,7 @@ export async function applyDeckDoctor(
   }
 
   const uniqueAddNames = [...new Set(add.map((change) => change.name))];
-  const resolved = new Map<string, YugiohCard | null>();
+  const resolved = new Map<string, Card | null>();
 
   await Promise.all(
     uniqueAddNames.map(async (name) => {

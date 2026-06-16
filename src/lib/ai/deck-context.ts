@@ -1,8 +1,8 @@
 import { countZone } from "@/lib/deck-rules";
-import { getCardTypeLabel } from "@/lib/ygoprodeck";
-import type { Deck, DeckCardEntry, DeckZone } from "@/types/deck";
-import { DECK_LIMITS } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import { getCardTypeLabel } from "@/lib/cards";
+import type { Deck, DeckCardEntry, DeckZone } from "@/features/decks/decks.schema";
+import { DECK_LIMITS } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 import type {
   AverageMonsterStats,
   ConsistencySignals,
@@ -49,11 +49,11 @@ function normalizeCardName(name: string): string {
   return name.trim();
 }
 
-function normalizeCardType(card: YugiohCard): string {
+function normalizeCardType(card: Card): string {
   return getCardTypeLabel(card);
 }
 
-function normalizeRawCard(card: YugiohCard): Omit<RawDeckCard, "quantity"> {
+function normalizeRawCard(card: Card): Omit<RawDeckCard, "quantity"> {
   return {
     id: card.id,
     name: normalizeCardName(card.name),
@@ -121,10 +121,10 @@ function resolveArchetype(entries: DeckCardEntry[], deck: Deck): DeckArchetype {
   return EMPTY_ARCHETYPE();
 }
 
-function getMonsterLevel(card: YugiohCard): number | undefined {
-  if (card.level !== undefined) return card.level;
-  if (card.rank !== undefined) return card.rank;
-  if (card.linkval !== undefined) return card.linkval;
+function getMonsterLevel(card: Card): number | undefined {
+  if (card.level != null) return card.level;
+  if (card.rank != null) return card.rank;
+  if (card.linkval != null) return card.linkval;
   return undefined;
 }
 
@@ -143,11 +143,11 @@ function buildAverageMonsterStats(entries: DeckCardEntry[]): AverageMonsterStats
     const { atk, def } = entry.card;
     const level = getMonsterLevel(entry.card);
 
-    if (atk !== undefined) {
+    if (atk != null) {
       atkSum += atk * quantity;
       atkWeight += quantity;
     }
-    if (def !== undefined) {
+    if (def != null) {
       defSum += def * quantity;
       defWeight += quantity;
     }

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchCards } from "@/lib/ygoprodeck-sdk";
-import { getCardImageUrl } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
+import { getCards } from "@/features/cards/cards.service";
+import { getCardImageUrl } from "@/lib/cards";
+import type { Card } from "@/features/cards/cards.schema";
 
 function cardsHref(archetype: string) {
   return `/cards?archetype=${encodeURIComponent(archetype)}`;
@@ -17,17 +17,17 @@ export async function ArchetypeCardGrid({
   keyCardNames?: string[];
   limit?: number;
 }) {
-  let cards: YugiohCard[] = [];
+  let cards: Card[] = [];
 
   if (keyCardNames.length > 0) {
     const byName = await Promise.all(
-      keyCardNames.map((name) => fetchCards({ name, num: 1 }))
+      keyCardNames.map((name) => getCards({ name, num: 1 }))
     );
     cards = byName.flat();
   }
 
   if (cards.length < limit) {
-    const archetypeCards = await fetchCards({ archetype: archetypeName, num: limit });
+    const archetypeCards = await getCards({ archetype: archetypeName, num: limit });
     const seen = new Set(cards.map((card) => card.id));
     for (const card of archetypeCards) {
       if (!seen.has(card.id)) {

@@ -11,13 +11,13 @@ import {
 } from "@dnd-kit/core";
 import { useState } from "react";
 import Image from "next/image";
-import { getCardImageUrl } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
-import type { DeckZone } from "@/types/deck";
+import { getCardImageUrl } from "@/lib/cards";
+import type { Card } from "@/features/cards/cards.schema";
+import type { DeckZone } from "@/features/decks/decks.schema";
 
 interface DragDropProviderProps {
   children: React.ReactNode;
-  onDropOnZone: (card: YugiohCard, zone: DeckZone) => void;
+  onDropOnZone: (card: Card, zone: DeckZone) => void;
   onMoveCard?: (cardId: number, from: DeckZone, to: DeckZone) => void;
 }
 
@@ -26,14 +26,14 @@ export function DragDropProvider({
   onDropOnZone,
   onMoveCard,
 }: DragDropProviderProps) {
-  const [activeCard, setActiveCard] = useState<YugiohCard | null>(null);
+  const [activeCard, setActiveCard] = useState<Card | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
-    const card = event.active.data.current?.card as YugiohCard | undefined;
+    const card = event.active.data.current?.card as Card | undefined;
     if (card) setActiveCard(card);
   };
 
@@ -52,7 +52,7 @@ export function DragDropProvider({
       return;
     }
 
-    const card = activeData.card as YugiohCard | undefined;
+    const card = activeData.card as Card | undefined;
     if (card) onDropOnZone(card, zone);
   };
 

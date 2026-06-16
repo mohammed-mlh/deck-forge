@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
-import type { SavedDeck } from "@/types/deck";
+import type { SavedDeck } from "@/features/decks/decks.schema";
 
 export function buildDeckMetadata(deck: SavedDeck): Metadata {
   const featured = getFeaturedCard(deck);

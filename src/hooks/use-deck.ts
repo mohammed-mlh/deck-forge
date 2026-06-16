@@ -7,8 +7,8 @@ import {
   removeCardFromDeck,
 } from "@/lib/decks/deck-editor";
 import { countZone, createEmptyDeck, validateDeck } from "@/lib/deck-rules";
-import type { Deck, DeckZone } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck, DeckZone } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
 type DeckActionResult = { ok: true } | { ok: false; reason?: string };
 
@@ -26,7 +26,7 @@ export function useDeck(initial?: Deck) {
     [deck]
   );
 
-  const addCard = useCallback((card: YugiohCard, zone?: DeckZone): DeckActionResult => {
+  const addCard = useCallback((card: Card, zone?: DeckZone): DeckActionResult => {
     let result: DeckActionResult = { ok: true };
     setDeck((prev) => {
       const next = addCardToDeck(prev, card, zone);

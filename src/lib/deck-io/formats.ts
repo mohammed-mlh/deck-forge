@@ -1,4 +1,4 @@
-import type { DeckFormat, DeckFormatId } from "@/types/deck-io";
+import type { DeckFormat, DeckFormatId } from "@/lib/deck-io/deck-io.schema";
 
 export const DECK_FORMATS: DeckFormat[] = [
   {

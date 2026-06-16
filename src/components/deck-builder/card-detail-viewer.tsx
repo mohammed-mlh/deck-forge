@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FolderOpen, Search, Upload } from "lucide-react";
 import { CardDetailContent } from "@/components/cards/card-detail-shared";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 const startPromptBtnClass =
@@ -57,7 +57,7 @@ function DeckBuilderStartPrompt({
 }
 
 interface CardDetailViewerProps {
-  card: YugiohCard | null;
+  card: Card | null;
   className?: string;
   onSearchCards?: () => void;
   onImportDeck?: () => void;

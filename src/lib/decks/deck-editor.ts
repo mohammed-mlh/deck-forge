@@ -1,10 +1,10 @@
 import { canAddCardToZone, getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { Deck, DeckCardEntry, DeckZone } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck, DeckCardEntry, DeckZone } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
 export function upsertDeckEntry(
   entries: DeckCardEntry[],
-  card: YugiohCard
+  card: Card
 ): DeckCardEntry[] {
   const existing = entries.find((e) => e.card.id === card.id);
   if (existing) {
@@ -26,7 +26,7 @@ export function removeOneDeckEntry(
 
 export function addCardToDeck(
   deck: Deck,
-  card: YugiohCard,
+  card: Card,
   zone?: DeckZone
 ): { deck: Deck; ok: true } | { deck: Deck; ok: false; reason?: string } {
   const targetZone = zone ?? getDefaultZoneForCard(card);

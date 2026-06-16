@@ -1,79 +1,76 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { DeckRecord } from "@/db/schema/decks";
 import {
   deckRecordToSavedDeck,
   deckToCreateInput,
   entriesToRefs,
 } from "@/features/decks/decks.mapper";
-import type { Deck } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
-function mockCard(id: number): YugiohCard {
-  return {
-    id,
-    name: `Card ${id}`,
-    type: "Effect Monster",
-    desc: "",
-    frameType: "effect",
-    card_images: [
-      {
-        id,
-        image_url: `https://example.com/${id}.jpg`,
-        image_url_small: `https://example.com/${id}_s.jpg`,
-        image_url_cropped: `https://example.com/${id}_c.jpg`,
-      },
-    ],
-  };
+vi.mock("@/features/cards/cards.service", () => ({
+  getCardsByIds: vi.fn(),
+}));
+
+import { getCardsByIds } from "@/features/cards/cards.service";
+
+const mockedGetCardsByIds = vi.mocked(getCardsByIds);
+
+function mockCard(id: number, overrides: Partial<Card> = {}): Card {
+  return { id, name: `Card ${id}`, type: "Normal Monster", frameType: "normal", desc: "test", images: [], ...overrides } as Card;
 }
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockedGetCardsByIds.mockResolvedValue([mockCard(1)]);
+});
 
 describe("entriesToRefs", () => {
   it("maps card entries to id refs", () => {
-    expect(entriesToRefs([{ card: mockCard(42), quantity: 3 }])).toEqual([
-      { id: 42, quantity: 3 },
-    ]);
-  });
-});
-
-describe("deckToCreateInput", () => {
-  it("strips editor fields and keeps zone refs", () => {
-    const deck: Deck = {
-      id: "uuid",
-      name: "My Deck",
-      main: [{ card: mockCard(1), quantity: 1 }],
-      extra: [],
-      side: [],
-    };
-    expect(deckToCreateInput(deck)).toEqual({
-      name: "My Deck",
-      main: [{ id: 1, quantity: 1 }],
-      extra: [],
-      side: [],
-    });
+    const refs = entriesToRefs([{ card: mockCard(1), quantity: 2 }]);
+    expect(refs).toEqual([{ id: 1, quantity: 2 }]);
   });
 });
 
 describe("deckRecordToSavedDeck", () => {
-  it("maps DB record to saved deck with stub cards", () => {
-    const updatedAt = new Date("2026-01-15T12:00:00Z");
+  it("maps deck record to saved deck with loaded cards", async () => {
     const record: DeckRecord = {
-      id: "deck-id",
+      id: "deck-1",
       userId: "user-1",
-      name: "Saved",
-      slug: "saved",
+      name: "Test",
+      slug: "test",
       visibility: "private",
-      main: [{ id: 100, quantity: 2 }],
+      main: [{ id: 1, quantity: 1 }],
       extra: [],
       side: [],
-      createdAt: updatedAt,
-      updatedAt,
+      createdAt: new Date("2026-01-01"),
+      updatedAt: new Date("2026-01-02"),
     };
-    const saved = deckRecordToSavedDeck(record);
-    expect(saved.id).toBe("deck-id");
-    expect(saved.name).toBe("Saved");
-    expect(saved.visibility).toBe("private");
-    expect(saved.updatedAt).toBe(updatedAt.toISOString());
-    expect(saved.main[0]?.card.id).toBe(100);
-    expect(saved.main[0]?.quantity).toBe(2);
-    expect(saved.main[0]?.card.name).toBe("Loading…");
+
+    const saved = await deckRecordToSavedDeck(record);
+    expect(saved.id).toBe("deck-1");
+    expect(saved.main[0]?.card.id).toBe(1);
+    expect(saved.main[0]?.card.name).toBe("Card 1");
+    expect(saved.main[0]?.quantity).toBe(1);
+    expect(saved.updatedAt).toBe("2026-01-02T00:00:00.000Z");
+  });
+});
+
+describe("deckToCreateInput", () => {
+  it("maps deck zones to create input refs", () => {
+    const deck: Deck = {
+      id: "d1",
+      name: "My Deck",
+      main: [{ card: mockCard(1), quantity: 3 }],
+      extra: [],
+      side: [],
+    };
+
+    expect(deckToCreateInput(deck)).toEqual({
+      name: "My Deck",
+      main: [{ id: 1, quantity: 3 }],
+      extra: [],
+      side: [],
+    });
   });
 });

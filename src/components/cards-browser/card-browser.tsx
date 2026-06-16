@@ -14,7 +14,7 @@ import { CardDetailPanel } from "@/components/cards-browser/card-detail-panel";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useBrowseCards } from "@/hooks/use-browse-cards";
 import type { CardFilters } from "@/lib/card-filters";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -117,13 +117,13 @@ export function CardBrowser({
     ...DEFAULT_CARD_FILTERS,
     ...(initialArchetype ? { archetype: initialArchetype } : {}),
   }));
-  const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const debouncedSearch = useDebounce(search, 350);
 
-  const { cards, isLoading, isFetching, isError, isBrowsing, refetch } =
+  const { cards, isLoading, isError, refetch } =
     useBrowseCards(debouncedSearch, filters);
 
   usePageView("page_view_cards");
@@ -133,7 +133,7 @@ export function CardBrowser({
     track("card_search", { query });
   }, []);
 
-  const handleCardClick = useCallback((card: YugiohCard) => {
+  const handleCardClick = useCallback((card: Card) => {
     track("card_view", { cardId: card.id, cardName: card.name });
     setSelectedCard(card);
   }, []);

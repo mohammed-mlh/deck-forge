@@ -5,15 +5,21 @@ import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { ArchetypeCardGrid } from "@/components/seo/archetype-card-grid";
 import { SeoArticle, SeoCta, SeoRelatedLinks } from "@/components/seo/seo-content";
-import { getFeaturedArchetype, getFeaturedArchetypeSlugs } from "@/content/seo-archetypes";
+import {
+  buildGenericArchetype,
+  getFeaturedArchetype,
+  getFeaturedArchetypeSlugs,
+} from "@/content/seo-archetypes";
+import { getArchetypeBySlug, getArchetypes } from "@/features/archetypes/archetypes.service";
 import { createPageMetadata } from "@/lib/site-metadata";
-import { resolveArchetype } from "@/lib/seo/content";
 import { JsonLd } from "@/lib/seo/json-ld";
 
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  return getFeaturedArchetypeSlugs().map((slug) => ({ slug }));
+  const dbSlugs = (await getArchetypes()).map((archetype) => archetype.slug);
+  const slugs = [...new Set([...getFeaturedArchetypeSlugs(), ...dbSlugs])];
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -22,7 +28,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const archetype = await resolveArchetype(slug);
+  const featured = getFeaturedArchetype(slug);
+  const record = featured ? null : await getArchetypeBySlug(slug);
+  const archetype = featured ?? (record ? buildGenericArchetype(record.name) : null);
   if (!archetype) return { title: "Archetype Not Found" };
 
   return createPageMetadata({
@@ -38,10 +46,11 @@ export default async function ArchetypePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const archetype = await resolveArchetype(slug);
+  const featured = getFeaturedArchetype(slug);
+  const record = featured ? null : await getArchetypeBySlug(slug);
+  const archetype = featured ?? (record ? buildGenericArchetype(record.name) : null);
   if (!archetype) notFound();
 
-  const featured = getFeaturedArchetype(slug);
   const relatedLinks = [
     {
       label: `Browse ${archetype.name} cards`,

@@ -13,7 +13,8 @@ export async function GET(_req: Request, context: RouteContext) {
     if (!record) {
       return Response.json({ error: "Deck not found" }, { status: 404 });
     }
-    return Response.json({ deck: deckRecordToSavedDeck(record) });
+    const deck = await deckRecordToSavedDeck(record);
+    return Response.json({ deck });
   } catch (err) {
     if (err instanceof Response) return err;
     const message = err instanceof Error ? err.message : "Failed to load deck";
@@ -35,7 +36,8 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (!record) {
       return Response.json({ error: "Deck not found" }, { status: 404 });
     }
-    return Response.json({ deck: deckRecordToSavedDeck(record) });
+    const deck = await deckRecordToSavedDeck(record);
+    return Response.json({ deck });
   } catch (err) {
     if (err instanceof Response) return err;
     const message = err instanceof Error ? err.message : "Failed to update deck";

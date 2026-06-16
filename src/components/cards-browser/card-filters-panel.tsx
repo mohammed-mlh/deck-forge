@@ -16,7 +16,7 @@ import {
   type CardFilters,
   type CardSort,
 } from "@/lib/card-filters";
-import { CARD_ATTRIBUTES, type CardTypeFilter } from "@/types/yugioh";
+import { CARD_ATTRIBUTES, type CardTypeFilter } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 const TYPES: { value: CardTypeFilter; label: string }[] = [
@@ -281,8 +281,8 @@ export function CardFiltersPanel({
         />
         <datalist id={archetypeListId}>
           {isClient &&
-            archetypes.map((a) => (
-              <option key={a} value={a} />
+            archetypes.map((archetype) => (
+              <option key={archetype.id} value={archetype.name} />
             ))}
         </datalist>
       </div>

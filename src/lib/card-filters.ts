@@ -1,5 +1,4 @@
-import type { CardSearchParams, CardTypeFilter, YugiohCard } from "@/types/yugioh";
-
+import type { Card, CardSearchInput, CardTypeFilter } from "@/features/cards/cards.schema";
 export type CardSort = "name" | "atk-desc" | "def-desc" | "level-desc";
 
 export interface CardFilters {
@@ -118,33 +117,11 @@ function rangeActive(min: number, max: number, bounds: { min: number; max: numbe
   return min > bounds.min || max < bounds.max;
 }
 
-export function filtersNeedApi(search: string, filters: CardFilters): boolean {
-  return Boolean(
-    search.trim() ||
-      filters.attribute ||
-      filters.archetype?.trim() ||
-      filters.frames.length ||
-      filters.linkMarkers.length ||
-      filters.monsterRace.trim() ||
-      filters.spellRace.trim() ||
-      filters.trapRace.trim() ||
-      filters.hasEffect ||
-      filters.type === "spell" ||
-      filters.type === "trap" ||
-      rangeActive(filters.levelMin, filters.levelMax, BOUNDS.level) ||
-      rangeActive(filters.atkMin, filters.atkMax, BOUNDS.atk) ||
-      rangeActive(filters.defMin, filters.defMax, BOUNDS.def) ||
-      rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link) ||
-      filters.scaleValues.length
-  );
-}
-
 export function filtersToApiParams(
   search: string,
   filters: CardFilters
-): CardSearchParams {
-  const params: CardSearchParams = {};
-
+): CardSearchInput {
+  const params: CardSearchInput = {};
   if (search.trim()) params.name = search.trim();
   if (filters.attribute) params.attribute = filters.attribute;
   if (filters.archetype?.trim()) params.archetype = filters.archetype.trim();
@@ -163,33 +140,67 @@ export function filtersToApiParams(
   }
 
   if (rangeActive(filters.levelMin, filters.levelMax, BOUNDS.level)) {
-    if (filters.levelMin > BOUNDS.level.min) params.levelMin = String(filters.levelMin);
-    if (filters.levelMax < BOUNDS.level.max) params.levelMax = String(filters.levelMax);
+    if (filters.levelMin > BOUNDS.level.min) params.levelMin = filters.levelMin;
+    if (filters.levelMax < BOUNDS.level.max) params.levelMax = filters.levelMax;
   }
   if (rangeActive(filters.atkMin, filters.atkMax, BOUNDS.atk)) {
-    if (filters.atkMin > BOUNDS.atk.min) params.atkMin = String(filters.atkMin);
-    if (filters.atkMax < BOUNDS.atk.max) params.atkMax = String(filters.atkMax);
+    if (filters.atkMin > BOUNDS.atk.min) params.atkMin = filters.atkMin;
+    if (filters.atkMax < BOUNDS.atk.max) params.atkMax = filters.atkMax;
   }
   if (rangeActive(filters.defMin, filters.defMax, BOUNDS.def)) {
-    if (filters.defMin > BOUNDS.def.min) params.defMin = String(filters.defMin);
-    if (filters.defMax < BOUNDS.def.max) params.defMax = String(filters.defMax);
+    if (filters.defMin > BOUNDS.def.min) params.defMin = filters.defMin;
+    if (filters.defMax < BOUNDS.def.max) params.defMax = filters.defMax;
   }
   if (rangeActive(filters.linkMin, filters.linkMax, BOUNDS.link)) {
-    if (filters.linkMin > BOUNDS.link.min) params.linkMin = String(filters.linkMin);
-    if (filters.linkMax < BOUNDS.link.max) params.linkMax = String(filters.linkMax);
+    if (filters.linkMin > BOUNDS.link.min) params.linkMin = filters.linkMin;
+    if (filters.linkMax < BOUNDS.link.max) params.linkMax = filters.linkMax;
   }
   if (filters.scaleValues.length) {
-    params.scaleMin = String(Math.min(...filters.scaleValues));
-    params.scaleMax = String(Math.max(...filters.scaleValues));
+    params.scaleMin = Math.min(...filters.scaleValues);
+    params.scaleMax = Math.max(...filters.scaleValues);
   }
 
   return params;
 }
 
+export function hasServerCardFilters(params: CardSearchInput): boolean {  return Boolean(
+    params.name?.trim() ||
+      params.attribute ||
+      params.archetype?.trim() ||
+      params.frameType?.trim() ||
+      params.linkmarker?.trim() ||
+      params.levelMin !== undefined ||
+      params.levelMax !== undefined ||
+      params.atkMin !== undefined ||
+      params.atkMax !== undefined ||
+      params.defMin !== undefined ||
+      params.defMax !== undefined ||
+      params.linkMin !== undefined ||
+      params.linkMax !== undefined ||
+      params.scaleMin !== undefined ||
+      params.scaleMax !== undefined ||
+      params.race?.trim() ||
+      params.hasEffect ||
+      (params.type && params.type !== "all" && params.type !== "monster")
+  );
+}
+
+export function buildCardSearchQuery(search: string, filters: CardFilters): CardSearchInput {
+  const api = filtersToApiParams(search, filters);
+
+  if (search.trim() || hasServerCardFilters(api)) {
+    return Object.fromEntries(
+      Object.entries(api).filter(([key]) => key !== "num" && key !== "offset")
+    ) as CardSearchInput;
+  }
+
+  return { ...api, num: 100, offset: 0 };
+}
+
 export function filterCardsByType(
-  cards: YugiohCard[],
+  cards: Card[],
   type: CardTypeFilter = "all"
-): YugiohCard[] {
+): Card[] {
   if (type === "all") return cards;
   if (type === "monster") return cards.filter((c) => c.type.includes("Monster"));
   if (type === "spell") return cards.filter((c) => c.type.includes("Spell"));
@@ -197,7 +208,7 @@ export function filterCardsByType(
   return cards;
 }
 
-function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
+function sortCards(cards: Card[], sort: CardSort): Card[] {
   const copy = [...cards];
   if (sort === "atk-desc") {
     copy.sort((a, b) => (b.atk ?? -1) - (a.atk ?? -1));
@@ -211,11 +222,11 @@ function sortCards(cards: YugiohCard[], sort: CardSort): YugiohCard[] {
   return copy;
 }
 
-export function finalizeCards(cards: YugiohCard[], filters: CardFilters): YugiohCard[] {
+export function finalizeCards(cards: Card[], filters: CardFilters): Card[] {
   let result = filterCardsByType(cards, filters.type);
   if (filters.scaleValues.length) {
     const allowed = new Set(filters.scaleValues);
-    result = result.filter((c) => c.scale !== undefined && allowed.has(c.scale));
+    result = result.filter((c) => c.scale !== null && allowed.has(c.scale));
   }
   return sortCards(result, filters.sort);
 }

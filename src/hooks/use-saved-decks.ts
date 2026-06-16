@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deckToCreateInput } from "@/features/decks/decks.mapper";
-import type { Deck, SavedDeck } from "@/types/deck";
+import type { Deck, SavedDeck } from "@/features/decks/decks.schema";
 
 const DECKS_QUERY_KEY = ["user-decks"] as const;
 

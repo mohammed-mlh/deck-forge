@@ -5,7 +5,7 @@ import { DeckPreviewCard } from "@/components/decks/deck-preview-card";
 import { entriesToRefs } from "@/features/decks/decks.mapper";
 import { getFeaturedCard } from "@/lib/deck-preview";
 import { countZone, validateDeckRefs } from "@/lib/deck-rules";
-import { DECK_LIMITS, type Deck, type SavedDeck } from "@/types/deck";
+import { DECK_LIMITS, type Deck, type SavedDeck } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 
 const badgeStyles = {

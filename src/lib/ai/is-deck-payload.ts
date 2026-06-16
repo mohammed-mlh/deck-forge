@@ -1,4 +1,4 @@
-import type { Deck } from "@/types/deck";
+import type { Deck } from "@/features/decks/decks.schema";
 
 export function isDeckPayload(value: unknown): value is Deck {
   if (!value || typeof value !== "object") return false;

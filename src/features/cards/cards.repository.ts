@@ -6,26 +6,24 @@ import {
   gte,
   ilike,
   inArray,
-  isNotNull,
   like,
   lte,
   or,
 } from "drizzle-orm";
 import { db } from "@/db";
 import {
+  CardPriceRecord,
+  CardSetRecord,
   banlistEntries,
   cardImages,
   cardPrices,
   cardSets,
   cards,
   type BanlistEntryRecord,
+  type CardImageRecord,
   type CardRecord,
 } from "@/db/schema/cards";
 import type { CardSearchQuery } from "@/features/cards/cards.schema";
-
-export type CardImageRecord = typeof cardImages.$inferSelect;
-export type CardPriceRecord = typeof cardPrices.$inferSelect;
-export type CardSetRecord = typeof cardSets.$inferSelect;
 
 function buildSearchConditions(params: CardSearchQuery) {
   const conditions = [];
@@ -168,18 +166,6 @@ export async function findPriceByCardId(cardId: number): Promise<CardPriceRecord
 
 export async function findBanlistByCardId(cardId: number): Promise<BanlistEntryRecord[]> {
   return db.select().from(banlistEntries).where(eq(banlistEntries.cardId, cardId));
-}
-
-export async function findDistinctArchetypes(): Promise<string[]> {
-  const rows = await db
-    .selectDistinct({ archetype: cards.archetype })
-    .from(cards)
-    .where(isNotNull(cards.archetype))
-    .orderBy(asc(cards.archetype));
-
-  return rows
-    .map((row) => row.archetype)
-    .filter((value): value is string => Boolean(value));
 }
 
 export function groupImagesByCardId(

@@ -2,7 +2,7 @@ import { buildDeckContext } from "@/lib/ai/deck-context";
 import { getAiProvider, type AiProvider } from "@/lib/ai/provider";
 import { sanitizeDeckDoctorResult } from "@/lib/ai/sanitize-deck-doctor";
 import type { DeckAnalysis, DeckDoctorResult, DeckContext } from "@/lib/ai/types";
-import type { Deck } from "@/types/deck";
+import type { Deck } from "@/features/decks/decks.schema";
 
 export async function improveDeck(
   input: Deck | DeckContext,

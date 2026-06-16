@@ -7,16 +7,15 @@ import { useRouter } from "next/navigation";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { ArrowLeft, Copy, Share2 } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
 import { usePageView } from "@/hooks/use-page-view";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { deckToCreateInput } from "@/features/decks/decks.mapper";
 import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
-import { getCardImageUrl } from "@/lib/ygoprodeck";
-import type { DeckCardEntry, DeckZone, SavedDeck } from "@/types/deck";
-import { DECK_LIMITS } from "@/types/deck";
+import { getCardImageUrl } from "@/lib/cards";
+import type { DeckCardEntry, DeckZone, SavedDeck } from "@/features/decks/decks.schema";
+import { DECK_LIMITS } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 
 const ZONE_LABELS: Record<DeckZone, string> = {
@@ -66,13 +65,11 @@ function DeckZoneSection({ zone, entries }: { zone: DeckZone; entries: DeckCardE
   );
 }
 
-export function PublicDeckDetail({ deck: initialDeck }: { deck: SavedDeck }) {
+export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const { openSignIn } = useClerk();
   const { fork } = useSavedDecks();
-  const { deck: hydratedDeck } = useHydratedDeckOrEmpty(initialDeck);
-  const deck = hydratedDeck ?? initialDeck;
   const [copying, setCopying] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
   const featured = getFeaturedCard(deck);

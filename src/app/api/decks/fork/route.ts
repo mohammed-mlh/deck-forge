@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     }
 
     const record = await forkDeck(userId, parsed.data);
-    return Response.json({ deck: deckRecordToSavedDeck(record) }, { status: 201 });
+    const deck = await deckRecordToSavedDeck(record);
+    return Response.json({ deck }, { status: 201 });
   } catch (err) {
     if (err instanceof Response) return err;
     const message = err instanceof Error ? err.message : "Failed to copy deck";

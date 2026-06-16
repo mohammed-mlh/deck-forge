@@ -4,13 +4,13 @@ import Image from "next/image";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import { getCardImageUrl } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
+import { getCardImageUrl } from "@/lib/cards";
+import type { Card } from "@/features/cards/cards.schema";
 
 interface CardItemProps {
-  card: YugiohCard;
-  onClick?: (card: YugiohCard) => void;
-  onDoubleClick?: (card: YugiohCard) => void;
+  card: Card;
+  onClick?: (card: Card) => void;
+  onDoubleClick?: (card: Card) => void;
   selected?: boolean;
   draggable?: boolean;
   dragId?: string;

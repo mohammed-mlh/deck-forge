@@ -1,6 +1,11 @@
 import { z } from "zod";
-import type { BanlistEntryRecord } from "@/db/schema/cards";
-import type { YugiohCard } from "@/types/yugioh";
+import type {
+  BanlistEntryRecord,
+  CardImageRecord,
+  CardPriceRecord,
+  CardRecord,
+  CardSetRecord,
+} from "@/db/schema/cards";
 
 export const cardTypeFilterSchema = z.enum(["all", "monster", "spell", "trap"]);
 
@@ -34,32 +39,35 @@ export const cardIdsSchema = z.object({
   ids: z.array(z.number().int().positive()).min(1).max(200),
 });
 
+export type CardTypeFilter = z.infer<typeof cardTypeFilterSchema>;
+export type CardSearchInput = z.input<typeof cardSearchSchema>;
 export type CardSearchQuery = z.infer<typeof cardSearchSchema>;
 export type CardIdsInput = z.infer<typeof cardIdsSchema>;
 
-export type CardPriceView = {
-  cardmarketPrice: string | null;
-  tcgplayerPrice: string | null;
-  ebayPrice: string | null;
-  amazonPrice: string | null;
-  coolstuffincPrice: string | null;
-};
+export type CardImage = Pick<
+  CardImageRecord,
+  "imageId" | "imageUrl" | "imageUrlSmall" | "imageUrlCropped"
+>;
 
-export type CardSetView = {
-  setName: string;
-  setCode: string;
-  setRarity: string;
-  setRarityCode: string | null;
-  setPrice: string | null;
-};
-
-export type CardDetail = YugiohCard & {
-  humanReadableCardType: string | null;
-  typeline?: string[];
-  linkMarkers?: string[];
-  ygoprodeckUrl: string | null;
+export type Card = Omit<CardRecord, "syncedAt"> & {
   syncedAt: string;
-  prices: CardPriceView | null;
-  sets: CardSetView[];
+  images: CardImage[];
+};
+
+export type CardDetail = Card & {
+  sets: CardSetRecord[];
+  prices: CardPriceRecord | null;
   banlist: Partial<Record<BanlistEntryRecord["format"], string>>;
 };
+
+export const CARD_ATTRIBUTES = [
+  "DARK",
+  "LIGHT",
+  "EARTH",
+  "WATER",
+  "FIRE",
+  "WIND",
+  "DIVINE",
+] as const;
+
+export const CARD_LEVELS = Array.from({ length: 13 }, (_, i) => String(i));

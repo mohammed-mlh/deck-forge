@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Compass } from "lucide-react";
 import { PublicDeckCard } from "@/components/decks/deck-cards";
 import { EmptyState } from "@/components/ui/empty-state";
-import { deckRecordToSavedDeck } from "@/features/decks/decks.mapper";
+import { deckRecordsToSavedDecks } from "@/features/decks/decks.mapper";
 import { getPublicDecks } from "@/features/decks/decks.service";
 import { createPageMetadata } from "@/lib/site-metadata";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default async function DecksPage() {
   const records = await getPublicDecks();
-  const decks = records.map(deckRecordToSavedDeck);
+  const decks = await deckRecordsToSavedDecks(records);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4">

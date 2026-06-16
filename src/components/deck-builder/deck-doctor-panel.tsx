@@ -15,7 +15,7 @@ import { applyDeckDoctor } from "@/lib/decks/apply-deck-doctor";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { DeckDoctorCardChange, DeckDoctorResult } from "@/lib/ai/types";
-import type { Deck } from "@/types/deck";
+import type { Deck } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
 
 type DoctorStatus = "idle" | "empty" | "loading" | "error" | "success" | "applied";

@@ -10,14 +10,13 @@ import { DeckRightPanel } from "@/components/deck-builder/deck-right-panel";
 import { DeckIoDialog } from "@/components/deck-builder/deck-io-dialog";
 import { DeckPanelHeader } from "@/components/deck-builder/deck-panel-header";
 import { DeckBuilderSkeleton } from "@/components/ui/loading-skeleton";
-import { useHydratedDeckOrEmpty } from "@/hooks/use-hydrated-deck";
 import { useDeck } from "@/hooks/use-deck";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
 import { track } from "@/lib/analytics";
 import { usePageView } from "@/hooks/use-page-view";
 import { createEmptyDeck, getDefaultZoneForCard } from "@/lib/deck-rules";
-import type { Deck, DeckZone, SavedDeck } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck, DeckZone, SavedDeck } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
 function ImportResultToast({
   errors,
@@ -77,7 +76,7 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
     errors: string[];
     warnings: string[];
   } | null>(null);
-  const [selectedCard, setSelectedCard] = useState<YugiohCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   usePageView("page_view_deck_builder", deckId ? { deckId } : undefined);
@@ -104,12 +103,12 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
     }
   };
 
-  const handleDrop = (card: YugiohCard, zone: DeckZone) => {
+  const handleDrop = (card: Card, zone: DeckZone) => {
     addCard(card, zone);
     setSelectedCard(card);
   };
 
-  const handleAdd = (card: YugiohCard, zone?: DeckZone) => {
+  const handleAdd = (card: Card, zone?: DeckZone) => {
     addCard(card, zone ?? getDefaultZoneForCard(card));
     setSelectedCard(card);
   };
@@ -252,16 +251,13 @@ function DeckBuilderSurface({
 }) {
   const [editorActive, setEditorActive] = useState(false);
   const savedDeck = ready ? getById(deckId) : undefined;
-  const { deck: hydratedDeck, isLoading: isHydrating } = useHydratedDeckOrEmpty(savedDeck);
-
-  const waitingForHydration = Boolean(savedDeck && isHydrating && !hydratedDeck);
-  const showSkeleton = !ready || (waitingForHydration && !editorActive);
+  const showSkeleton = !ready || (!savedDeck && !editorActive);
 
   if (showSkeleton) {
     return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
   }
 
-  const initialDeck = hydratedDeck ?? { ...createEmptyDeck(), id: deckId };
+  const initialDeck = savedDeck ?? { ...createEmptyDeck(), id: deckId };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">

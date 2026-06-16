@@ -1,15 +1,14 @@
-import type { Deck, DeckCardEntry } from "@/types/deck";
-import type { DeckZone } from "@/types/deck";
-import type { ImportResult, ParsedCardRef, ParsedDeckList } from "@/types/deck-io";
-import { fetchCards, fetchCardsByIds } from "@/lib/ygoprodeck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Deck, DeckCardEntry } from "@/features/decks/decks.schema";
+import type { DeckZone } from "@/features/decks/decks.schema";
+import type { ImportResult, ParsedCardRef, ParsedDeckList } from "@/lib/deck-io/deck-io.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
 function readZoneEntries(raw: unknown): DeckCardEntry[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .map((entry) => {
       if (!entry || typeof entry !== "object") return null;
-      const card = (entry as { card?: YugiohCard }).card;
+      const card = (entry as { card?: Card }).card;
       const quantity = Number((entry as { quantity?: number }).quantity ?? 0);
       if (!card?.id || !card.name || quantity < 1) return null;
       return { card, quantity };
@@ -41,13 +40,19 @@ export function tryImportJsonFullDeck(content: string): ImportResult | null {
   }
 }
 
-async function resolveCardsByName(names: string[]): Promise<Map<string, YugiohCard>> {
-  const byName = new Map<string, YugiohCard>();
+async function resolveCardsByName(names: string[]): Promise<Map<string, Card>> {
+  const byName = new Map<string, Card>();
   const unique = [...new Set(names.map((name) => name.trim()).filter(Boolean))];
 
   await Promise.all(
     unique.map(async (name) => {
-      const cards = await fetchCards({ name });
+      const res = await fetch(`/api/cards?${new URLSearchParams({ name }).toString()}`);
+      if (!res.ok) {
+        if (res.status === 400) return;
+        throw new Error(`Failed to fetch cards: ${res.status}`);
+      }
+      const json = (await res.json()) as { data: Card[] };
+      const cards = json.data ?? [];
       const match =
         cards.find((card) => card.name.toLowerCase() === name.toLowerCase()) ?? cards[0];
       if (match) byName.set(name.toLowerCase(), match);
@@ -59,15 +64,15 @@ async function resolveCardsByName(names: string[]): Promise<Map<string, YugiohCa
 
 function refsToEntries(
   refs: ParsedCardRef[],
-  byId: Map<number, YugiohCard>,
-  byName: Map<string, YugiohCard>,
+  byId: Map<number, Card>,
+  byName: Map<string, Card>,
   errors: string[],
   zone: DeckZone
 ): DeckCardEntry[] {
   const entries: DeckCardEntry[] = [];
 
   for (const ref of refs) {
-    let card: YugiohCard | undefined;
+    let card: Card | undefined;
 
     if (ref.id) card = byId.get(ref.id);
     else if (ref.name) card = byName.get(ref.name.toLowerCase());
@@ -100,8 +105,17 @@ export async function resolveParsedDeck(parsed: ParsedDeckList): Promise<ImportR
     }
   }
 
-  const byId = new Map<number, YugiohCard>();
-  const fetchedById = await fetchCardsByIds([...idSet]);
+  const byId = new Map<number, Card>();
+  const res = await fetch("/api/cards/by-ids", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids: [...idSet] }),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch cards by id: HTTP ${res.status}`);
+  }
+  const json = (await res.json()) as { data: Card[] };
+  const fetchedById = json.data ?? [];
   for (const card of fetchedById) {
     byId.set(card.id, card);
   }

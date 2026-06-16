@@ -1,5 +1,5 @@
-import type { Deck, DeckCardEntry } from "@/types/deck";
-import type { DeckFormatId } from "@/types/deck-io";
+import type { Deck, DeckCardEntry } from "@/features/decks/decks.schema";
+import type { DeckFormatId } from "@/lib/deck-io/deck-io.schema";
 import { getDeckFormat } from "@/lib/deck-io/formats";
 
 function expandIds(entries: DeckCardEntry[]): number[] {

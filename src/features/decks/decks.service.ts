@@ -11,7 +11,7 @@ import {
 import type { NewDeckRecord, DeckRecord } from "@/db/schema/decks";
 import type { CreateDeckInput, DeckZoneRefs, UpdateDeckInput } from "@/features/decks/decks.schema";
 import { deckFromRefs, validateDeck, validateDeckRefs } from "@/lib/deck-rules";
-import { fetchCardsByIds } from "@/lib/ygoprodeck";
+import { getCardsByIds } from "@/features/cards/cards.service";
 
 function slugify(value: string): string {
   return value
@@ -46,7 +46,7 @@ async function assertValidDeckInput(
 
   const ids = collectRefIds(main, extra, side);
   if (ids.length > 0) {
-    const cards = await fetchCardsByIds(ids);
+    const cards = await getCardsByIds({ ids });
     const byId = new Map(cards.map((card) => [card.id, card]));
     const deck = deckFromRefs(main, extra, side, byId);
     issues.push(...validateDeck(deck));

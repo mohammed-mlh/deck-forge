@@ -1,4 +1,4 @@
-import type { DeckCardEntry } from "@/types/deck";
+import type { DeckCardEntry } from "@/features/decks/decks.schema";
 
 export const DECK_GRID_COLUMNS = 10;
 

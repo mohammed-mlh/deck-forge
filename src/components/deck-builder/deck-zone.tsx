@@ -8,11 +8,11 @@ import {
   entriesToSlots,
   type DeckSlot,
 } from "@/lib/deck-slots";
-import type { DeckCardEntry, DeckZone } from "@/types/deck";
-import { DECK_LIMITS } from "@/types/deck";
+import type { DeckCardEntry, DeckZone } from "@/features/decks/decks.schema";
+import { DECK_LIMITS } from "@/features/decks/decks.schema";
 import { cn } from "@/lib/utils";
-import type { YugiohCard } from "@/types/yugioh";
-import type { Deck } from "@/types/deck";
+import type { Card } from "@/features/cards/cards.schema";
+import type { Deck } from "@/features/decks/decks.schema";
 
 const ZONE_META: Record<DeckZone, { label: string }> = {
   main: { label: "Main" },
@@ -25,8 +25,8 @@ interface DeckZoneProps {
   entries: DeckCardEntry[];
   deck: Deck;
   onRemove: (cardId: number) => void;
-  onAdd: (card: YugiohCard) => void;
-  onSelectCard?: (card: YugiohCard) => void;
+  onAdd: (card: Card) => void;
+  onSelectCard?: (card: Card) => void;
   selectedCardId?: number | null;
   className?: string;
 }
@@ -116,7 +116,7 @@ function SlotCell({
   zone: DeckZone;
   slotNumber: number;
   onRemove: (cardId: number) => void;
-  onSelectCard?: (card: YugiohCard) => void;
+  onSelectCard?: (card: Card) => void;
   selectedCardId?: number | null;
 }) {
   if (!slot) {

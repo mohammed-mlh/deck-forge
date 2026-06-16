@@ -2,11 +2,11 @@
 
 import { X } from "lucide-react";
 import { CardDetailContent } from "@/components/cards/card-detail-shared";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 import { cn } from "@/lib/utils";
 
 interface CardDetailPanelProps {
-  card: YugiohCard | null;
+  card: Card | null;
   onClose: () => void;
   className?: string;
 }
@@ -53,7 +53,7 @@ export function CardDetailPanel({ card, onClose, className }: CardDetailPanelPro
   );
 }
 
-function PanelHeader({ card, onClose }: { card: YugiohCard; onClose: () => void }) {
+function PanelHeader({ card, onClose }: { card: Card; onClose: () => void }) {
   return (
     <div className="flex shrink-0 items-center justify-between border-b border-(--color-border) px-3 py-2.5">
       <h2 className="truncate pr-4 text-sm font-semibold leading-snug text-(--color-foreground)">

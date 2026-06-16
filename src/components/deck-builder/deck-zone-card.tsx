@@ -4,15 +4,15 @@ import Image from "next/image";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Minus } from "lucide-react";
-import { getCardImageUrl } from "@/lib/ygoprodeck";
+import { getCardImageUrl } from "@/lib/cards";
 import { cn } from "@/lib/utils";
-import type { DeckZone } from "@/types/deck";
-import type { YugiohCard } from "@/types/yugioh";
+import type { DeckZone } from "@/features/decks/decks.schema";
+import type { Card } from "@/features/cards/cards.schema";
 
 interface DeckZoneCardProps {
-  card: YugiohCard;
+  card: Card;
   zone: DeckZone;
-  onSelect?: (card: YugiohCard) => void;
+  onSelect?: (card: Card) => void;
   onRemove: () => void;
   selected?: boolean;
   className?: string;

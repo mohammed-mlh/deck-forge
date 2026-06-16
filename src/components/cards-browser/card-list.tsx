@@ -4,15 +4,15 @@ import { CardListItem } from "@/components/cards-browser/card-list-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Search } from "lucide-react";
-import type { YugiohCard } from "@/types/yugioh";
+import type { Card } from "@/features/cards/cards.schema";
 
 interface CardListProps {
-  cards: YugiohCard[];
+  cards: Card[];
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: string;
   onRetry?: () => void;
-  onCardClick?: (card: YugiohCard) => void;
+  onCardClick?: (card: Card) => void;
   selectedCardId?: number | null;
   emptyMessage?: string;
 }

@@ -1,3 +1,10 @@
+export type {
+  DeckFormat,
+  DeckFormatId,
+  ImportResult,
+  ParsedCardRef,
+  ParsedDeckList,
+} from "@/lib/deck-io/deck-io.schema";
 export { DECK_FORMATS, getDeckFormat } from "@/lib/deck-io/formats";
 export { detectDeckFormat, parseDeckContent } from "@/lib/deck-io/parse";
 export {

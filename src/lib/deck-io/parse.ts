@@ -1,5 +1,5 @@
-import type { DeckFormatId, ParsedCardRef, ParsedDeckList } from "@/types/deck-io";
-import type { DeckZone } from "@/types/deck";
+import type { DeckFormatId, ParsedCardRef, ParsedDeckList } from "@/lib/deck-io/deck-io.schema";
+import type { DeckZone } from "@/features/decks/decks.schema";
 
 function emptyParsed(): ParsedDeckList {
   return { main: [], extra: [], side: [] };
@@ -102,8 +102,6 @@ export function parseYdke(content: string): ParsedDeckList {
     side: mergeRefs(decodeYdkeSection(sideB64)),
   };
 }
-
-type PortableZone = { id: number; quantity: number }[];
 
 function parsePortableZone(raw: unknown): ParsedCardRef[] {
   if (!Array.isArray(raw)) return [];
@@ -312,11 +310,7 @@ export function detectDeckFormat(content: string, filename?: string): DeckFormat
   return "plain-names";
 }
 
-export function parseDeckContent(
-  content: string,
-  format: DeckFormatId,
-  filename?: string
-): ParsedDeckList {
+export function parseDeckContent(content: string, format: DeckFormatId): ParsedDeckList {
   switch (format) {
     case "ygoprodeck-txt":
       return parseYgoprodeckTxt(content);
