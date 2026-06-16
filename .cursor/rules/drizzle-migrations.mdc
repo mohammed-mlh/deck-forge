@@ -1,0 +1,23 @@
+---
+description: Name Drizzle migrations when generating schema changes
+globs: src/db/schema/**,drizzle/**
+alwaysApply: true
+---
+
+# Drizzle migrations
+
+When generating a migration after changing `src/db/schema`, **always pass `--name`** with a short, descriptive kebab-case slug.
+
+```bash
+pnpm db:generate -- --name add-archetype-slug
+pnpm db:generate -- --name drop-deck-visibility
+```
+
+Do **not** run bare `pnpm db:generate` — Drizzle will auto-name files (e.g. `0007_damp_reavers.sql`), which is hard to review in git.
+
+**Naming:**
+- Describe the change, not the ticket: `add-cards-synced-at`, not `fix-db`
+- One logical change per migration when possible
+- Use kebab-case, no spaces
+
+After generating, apply with `pnpm db:migrate`.
