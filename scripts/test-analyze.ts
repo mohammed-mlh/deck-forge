@@ -11,7 +11,7 @@ const OUT_PATH = resolve(__dirname, "../src/lib/ai/fixtures/deck-analysis.result
 async function main() {
   const records = await getPublicDecks();
   if (records.length === 0) {
-    throw new Error("No public decks in DB. Set visibility=public on at least one deck.");
+    throw new Error("No decks in DB.");
   }
 
   const startedAt = Date.now();

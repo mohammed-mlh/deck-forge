@@ -1,7 +1,5 @@
-import { jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import type { DeckZoneRefs } from "@/features/decks/decks.schema";
-
-export const deckVisibilityEnum = pgEnum("deck_visibility", ["private", "public"]);
 
 export const decks = pgTable(
   "decks",
@@ -10,7 +8,6 @@ export const decks = pgTable(
     userId: text("user_id").notNull(),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
-    visibility: deckVisibilityEnum("visibility").notNull().default("private"),
     main: jsonb("main").notNull().$type<DeckZoneRefs>(),
     extra: jsonb("extra").notNull().$type<DeckZoneRefs>(),
     side: jsonb("side").notNull().$type<DeckZoneRefs>(),

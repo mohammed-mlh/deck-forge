@@ -49,7 +49,6 @@ function deckRecord(overrides: Partial<DeckRecord> = {}): DeckRecord {
     userId: "user-1",
     name: "Test Deck",
     slug: "test-deck",
-    visibility: "private",
     main: [],
     extra: [],
     side: [],
@@ -78,7 +77,7 @@ describe("createDeck", () => {
     expect(mockedInsert).not.toHaveBeenCalled();
   });
 
-  it("inserts with private visibility", async () => {
+  it("inserts a valid deck", async () => {
     const record = deckRecord({ id: "new-id" });
     mockedInsert.mockResolvedValue(record);
 
@@ -92,7 +91,6 @@ describe("createDeck", () => {
       expect.objectContaining({
         userId: "user-1",
         name: "Good Deck",
-        visibility: "private",
         main: [{ id: 1, quantity: 1 }],
       })
     );
@@ -129,7 +127,6 @@ describe("toSavedDeck", () => {
       userId: "user-1",
       name: "Test",
       slug: "test",
-      visibility: "private",
       main: [{ id: 1, quantity: 1 }],
       extra: [],
       side: [],

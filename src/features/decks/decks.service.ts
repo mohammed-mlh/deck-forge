@@ -82,7 +82,6 @@ function buildSavedDeck(record: DeckRecord, byId: Map<number, Card>): SavedDeck 
     main: refsToEntries(record.main, byId),
     extra: refsToEntries(record.extra, byId),
     side: refsToEntries(record.side, byId),
-    visibility: record.visibility,
     updatedAt: record.updatedAt.toISOString(),
   };
 }
@@ -161,7 +160,6 @@ export async function createDeck(userId: string, input: CreateDeckInput): Promis
     userId,
     name: input.name.trim(),
     slug,
-    visibility: "private",
     main: input.main ?? [],
     extra: input.extra ?? [],
     side: input.side ?? [],

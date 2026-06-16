@@ -8,8 +8,6 @@ export const deckCardRefSchema = z.object({
 
 export const deckZoneRefsSchema = z.array(deckCardRefSchema);
 
-export const deckVisibilitySchema = z.enum(["private", "public"]);
-
 export const createDeckSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().trim().min(1).max(120),
@@ -23,7 +21,6 @@ export const updateDeckSchema = createDeckSchema.partial();
 
 export type DeckCardRef = z.infer<typeof deckCardRefSchema>;
 export type DeckZoneRefs = z.infer<typeof deckZoneRefsSchema>;
-export type DeckVisibility = z.infer<typeof deckVisibilitySchema>;
 export type CreateDeckInput = z.infer<typeof createDeckSchema>;
 export type UpdateDeckInput = z.infer<typeof updateDeckSchema>;
 
@@ -45,7 +42,6 @@ export interface Deck {
 }
 
 export interface SavedDeck extends Deck {
-  visibility: DeckVisibility;
   updatedAt: string;
 }
 

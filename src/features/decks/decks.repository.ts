@@ -9,20 +9,11 @@ export async function findDeckById(deckId: string): Promise<DeckRecord | null> {
 }
 
 export async function findPublicDeckById(deckId: string): Promise<DeckRecord | null> {
-  const rows = await db
-    .select()
-    .from(decks)
-    .where(and(eq(decks.id, deckId), eq(decks.visibility, "public")))
-    .limit(1);
-  return rows[0] ?? null;
+  return findDeckById(deckId);
 }
 
 export async function findPublicDecks(): Promise<DeckRecord[]> {
-  return db
-    .select()
-    .from(decks)
-    .where(eq(decks.visibility, "public"))
-    .orderBy(desc(decks.updatedAt));
+  return db.select().from(decks).orderBy(desc(decks.updatedAt));
 }
 
 export async function findDeckByUserSlug(
