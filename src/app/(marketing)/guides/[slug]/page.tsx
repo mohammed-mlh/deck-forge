@@ -37,7 +37,7 @@ export default async function GuidePage({
   if (!guide) notFound();
 
   return (
-    <Container size="sm">
+    <Container>
       <JsonLd
         data={{
           "@context": "https://schema.org",

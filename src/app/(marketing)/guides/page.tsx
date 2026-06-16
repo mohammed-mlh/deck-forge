@@ -15,7 +15,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function GuidesPage() {
   return (
-    <Container size="md">
+    <Container>
       <JsonLd
         data={{
           "@context": "https://schema.org",

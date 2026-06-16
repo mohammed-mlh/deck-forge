@@ -28,7 +28,7 @@ export function SiteLayout({ children }: SiteLayoutProps) {
         <main
           className={cn(
             "flex flex-1 flex-col",
-            isBuilder ? "min-h-0 overflow-hidden" : "min-h-0 p-6"
+            isBuilder ? "min-h-0 overflow-hidden" : "min-h-0 py-6"
           )}
         >
           {children}

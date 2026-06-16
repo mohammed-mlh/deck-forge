@@ -8,6 +8,8 @@ import {
   SeoCta,
 } from "@/components/seo/seo-content";
 import { FEATURED_ARCHETYPES } from "@/content/seo-archetypes";
+import { getCards } from "@/features/cards/cards.service";
+import { getCardImageUrl } from "@/lib/cards";
 import { createPageMetadata } from "@/lib/site-metadata";
 import { JsonLd } from "@/lib/seo/json-ld";
 
@@ -18,9 +20,26 @@ export const metadata: Metadata = createPageMetadata({
   path: "/archetypes",
 });
 
-export default function ArchetypesPage() {
+async function resolveFeaturedCardImages() {
+  const results = await Promise.all(
+    FEATURED_ARCHETYPES.map(async (archetype) => {
+      const cards = await getCards({ name: archetype.featuredCardName, num: 1 });
+      const card = cards[0];
+      return {
+        slug: archetype.slug,
+        imageUrl: card ? getCardImageUrl(card, "small") : undefined,
+        imageAlt: card?.name ?? archetype.featuredCardName,
+      };
+    })
+  );
+  return new Map(results.map((result) => [result.slug, result]));
+}
+
+export default async function ArchetypesPage() {
+  const cardImages = await resolveFeaturedCardImages();
+
   return (
-    <Container size="md">
+    <Container>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -39,14 +58,21 @@ export default function ArchetypesPage() {
         />
 
         <SeoContentGrid>
-          {FEATURED_ARCHETYPES.map((archetype) => (
-            <SeoContentCard
-              key={archetype.slug}
-              href={`/archetypes/${archetype.slug}`}
-              title={archetype.name}
-              description={archetype.description}
-            />
-          ))}
+          {FEATURED_ARCHETYPES.map((archetype) => {
+            const image = cardImages.get(archetype.slug);
+            return (
+              <SeoContentCard
+                key={archetype.slug}
+                href={`/archetypes/${archetype.slug}`}
+                title={archetype.name}
+                description={archetype.description}
+                tags={archetype.tags}
+                imageUrl={image?.imageUrl}
+                imageAlt={image?.imageAlt}
+                meta={`Featured: ${archetype.featuredCardName}`}
+              />
+            );
+          })}
         </SeoContentGrid>
 
         <SeoCta

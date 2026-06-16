@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -105,24 +106,56 @@ export function SeoContentCard({
   title,
   description,
   meta,
+  imageUrl,
+  imageAlt,
+  tags,
 }: {
   href: string;
   title: string;
   description: string;
   meta?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  tags?: string[];
 }) {
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-2 rounded-lg border border-(--color-border) bg-(--color-surface-1)/60 p-5 transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)"
+      className="group flex flex-col gap-3 rounded-lg border border-(--color-border) bg-(--color-surface-1)/60 p-5 transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-2)"
     >
-      <h2 className="text-base font-semibold text-(--color-foreground) group-hover:text-(--color-primary)">
-        {title}
-      </h2>
-      <p className="text-sm leading-relaxed text-(--color-foreground-muted)">{description}</p>
-      {meta && (
-        <span className="mt-auto pt-2 text-xs text-(--color-foreground-subtle)">{meta}</span>
+      {imageUrl && (
+        <div className="mx-auto w-28 overflow-hidden rounded-sm border border-(--color-border) shadow-sm transition-transform group-hover:scale-[1.03]">
+          <Image
+            src={imageUrl}
+            alt={imageAlt ?? title}
+            width={112}
+            height={163}
+            className="h-auto w-full"
+            unoptimized
+          />
+        </div>
       )}
+      <div className="flex flex-col gap-2">
+        <h2 className="text-base font-semibold text-(--color-foreground) group-hover:text-(--color-primary)">
+          {title}
+        </h2>
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-(--color-surface-2) px-2 py-0.5 text-xs text-(--color-foreground-muted)"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="text-sm leading-relaxed text-(--color-foreground-muted)">{description}</p>
+        {meta && (
+          <span className="mt-auto pt-1 text-xs text-(--color-foreground-subtle)">{meta}</span>
+        )}
+      </div>
     </Link>
   );
 }

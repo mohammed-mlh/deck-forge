@@ -16,7 +16,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function ImportPage() {
   return (
-    <Container size="md">
+    <Container>
       <JsonLd
         data={{
           "@context": "https://schema.org",
