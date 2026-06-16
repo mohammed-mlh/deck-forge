@@ -2,9 +2,8 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { analyzeDeck } from "../src/lib/ai/analyze-deck";
 import { buildDeckContext } from "../src/lib/ai/deck-context";
-import { deckRecordToSavedDeck } from "../src/features/decks/decks.mapper";
-import { getPublicDecks } from "../src/features/decks/decks.service";
-import type { Deck } from "../src/types/deck";
+import { getPublicDecks, toSavedDeck } from "../src/features/decks/decks.service";
+import type { Deck } from "../src/features/decks/decks.schema";
 
 const MODEL = "deepseek-v4-flash";
 const OUT_PATH = resolve(__dirname, "../src/lib/ai/fixtures/deck-analysis.results.json");
@@ -19,7 +18,7 @@ async function main() {
   const results = [];
 
   for (const record of records.slice(0, 3)) {
-    const browse = deckRecordToSavedDeck(record);
+    const browse = await toSavedDeck(record);
     const deck: Deck = {
       id: browse.id,
       name: browse.name,

@@ -1,5 +1,6 @@
 import type { BanlistEntryRecord, CardImageRecord, CardRecord } from "@/db/schema/cards";
-import type { CardIdsInput, CardSearchQuery } from "@/features/cards/cards.schema";
+import type { CardIdsInput, CardSearchInput } from "@/features/cards/cards.schema";
+import { cardSearchSchema } from "@/features/cards/cards.schema";
 import {
   findBanlistByCardId,
   findCardById,
@@ -54,8 +55,9 @@ async function loadCardsByIds(ids: number[]): Promise<Card[]> {
     .filter((card): card is Card => Boolean(card));
 }
 
-export async function getCards(input: CardSearchQuery): Promise<Card[]> {
-  const records = await searchCards(input);
+export async function getCards(input: CardSearchInput = {}): Promise<Card[]> {
+  const query = cardSearchSchema.parse(input);
+  const records = await searchCards(query);
   const images = await findImagesByCardIds(records.map((record) => record.id));
   return toCards(records, images);
 }
