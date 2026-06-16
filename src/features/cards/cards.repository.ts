@@ -24,12 +24,14 @@ import {
   type CardRecord,
 } from "@/db/schema/cards";
 import type { CardSearchQuery } from "@/features/cards/cards.schema";
+import { buildCardNameSearchCondition, buildFlexibleTextSearchCondition } from "@/features/cards/card-search";
 
 function buildSearchConditions(params: CardSearchQuery) {
   const conditions = [];
 
   if (params.name) {
-    conditions.push(ilike(cards.name, `%${params.name}%`));
+    const nameCondition = buildCardNameSearchCondition(params.name);
+    if (nameCondition) conditions.push(nameCondition);
   }
 
   if (params.type === "spell") {
@@ -45,7 +47,8 @@ function buildSearchConditions(params: CardSearchQuery) {
   }
 
   if (params.archetype) {
-    conditions.push(eq(cards.archetype, params.archetype));
+    const archetypeCondition = buildFlexibleTextSearchCondition(cards.archetype, params.archetype);
+    if (archetypeCondition) conditions.push(archetypeCondition);
   }
 
   if (params.race) {
