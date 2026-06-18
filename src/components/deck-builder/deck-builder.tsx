@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { X } from "lucide-react";
 import { DragDropProvider } from "@/components/deck-builder/drag-drop-provider";
@@ -224,22 +224,6 @@ function DeckBuilderContent({ deckId, initialDeck }: DeckBuilderContentProps) {
   );
 }
 
-function DeckBuilderEditor({
-  deckId,
-  initialDeck,
-  onMount,
-}: {
-  deckId: string;
-  initialDeck: Deck;
-  onMount: () => void;
-}) {
-  useEffect(() => {
-    onMount();
-  }, [onMount]);
-
-  return <DeckBuilderContent deckId={deckId} initialDeck={initialDeck} />;
-}
-
 function DeckBuilderSurface({
   deckId,
   ready,
@@ -249,23 +233,16 @@ function DeckBuilderSurface({
   ready: boolean;
   getById: (id: string) => SavedDeck | undefined;
 }) {
-  const [editorActive, setEditorActive] = useState(false);
-  const savedDeck = ready ? getById(deckId) : undefined;
-  const showSkeleton = !ready || (!savedDeck && !editorActive);
-
-  if (showSkeleton) {
+  if (!ready) {
     return <DeckBuilderSkeleton className="min-h-0 flex-1" />;
   }
 
+  const savedDeck = getById(deckId);
   const initialDeck = savedDeck ?? { ...createEmptyDeck(), id: deckId };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <DeckBuilderEditor
-        deckId={deckId}
-        initialDeck={initialDeck}
-        onMount={() => setEditorActive(true)}
-      />
+      <DeckBuilderContent deckId={deckId} initialDeck={initialDeck} />
     </div>
   );
 }

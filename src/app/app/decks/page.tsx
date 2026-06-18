@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Compass } from "lucide-react";
 import { PublicDeckCard } from "@/components/decks/deck-cards";
+import { Container } from "@/components/layout/container";
 import { EmptyState } from "@/components/ui/empty-state";
 import { toSavedDecks } from "@/features/decks/decks.service";
 import { getPublicDecks } from "@/features/public-decks/public-decks.service";
 import { createPageMetadata } from "@/lib/site-metadata";
-  
+
 export const metadata: Metadata = createPageMetadata({
   title: "Decks",
   description: "Discover public Yu-Gi-Oh decks shared by the community.",
@@ -17,8 +18,8 @@ export default async function DecksPage() {
   const decks = await toSavedDecks(records);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4">
-      <div className="flex flex-col gap-6">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-4">
+      <Container className="flex flex-col gap-6">
         <div>
           <h2 className="text-lg font-semibold text-(--color-foreground)">Deck Library</h2>
           <p className="text-sm text-(--color-foreground-muted)">
@@ -46,7 +47,7 @@ export default async function DecksPage() {
             </p>
           </>
         )}
-      </div>
+      </Container>
     </div>
   );
 }
