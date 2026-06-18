@@ -3,7 +3,7 @@ import { getFeaturedCard, getCardArtUrl } from "@/lib/deck-preview";
 import { countZone } from "@/lib/deck-rules";
 import type { SavedDeck } from "@/features/decks/decks.schema";
 
-export function buildDeckMetadata(deck: SavedDeck): Metadata {
+export function buildDeckMetadata(deck: SavedDeck, slug: string = deck.id): Metadata {
   const featured = getFeaturedCard(deck);
   const imageUrl = featured ? getCardArtUrl(featured) : undefined;
   const main = countZone(deck.main);
@@ -18,7 +18,7 @@ export function buildDeckMetadata(deck: SavedDeck): Metadata {
       title: deck.name,
       description,
       type: "website",
-      url: `/decks/${deck.id}`,
+      url: `/app/decks/${slug}`,
       siteName: "DeckForge",
       ...(imageUrl && {
         images: [

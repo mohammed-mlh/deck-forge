@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, useClerk } from "@clerk/nextjs";
-import { ArrowLeft, Copy, Share2 } from "lucide-react";
+import { ArrowLeft, Coins, Copy, ExternalLink, Eye, PlayCircle, Share2, Trophy, User } from "lucide-react";
+import type { PublicDeckMetadata } from "@/db/schema/public-decks";
 import { Container } from "@/components/layout/container";
 import { usePageView } from "@/hooks/use-page-view";
 import { useSavedDecks } from "@/hooks/use-saved-decks";
@@ -48,7 +49,7 @@ function DeckZoneSection({ zone, entries }: { zone: DeckZone; entries: DeckCardE
               className="relative w-[52px] shrink-0 overflow-hidden rounded-[2px] sm:w-[60px]"
               title={entry.card.name}
             >
-              <div className="relative aspect-[59/86] w-full">
+              <div className="relative aspect-59/86 w-full">
                 <Image
                   src={getCardImageUrl(entry.card, "small")}
                   alt={entry.card.name}
@@ -66,7 +67,15 @@ function DeckZoneSection({ zone, entries }: { zone: DeckZone; entries: DeckCardE
   );
 }
 
-export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
+export function PublicDeckDetail({
+  deck,
+  metadata,
+  backHref = "/app/decks",
+}: {
+  deck: SavedDeck;
+  metadata?: PublicDeckMetadata | null;
+  backHref?: string;
+}) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const { openSignIn } = useClerk();
@@ -140,7 +149,7 @@ export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
     <Container>
       <div className="flex flex-col gap-6">
         <Link
-          href="/app/decks"
+          href={backHref}
           className="inline-flex w-fit items-center gap-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
         >
           <ArrowLeft className="size-4" />
@@ -149,10 +158,49 @@ export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
 
         <div className="relative flex overflow-hidden rounded-lg border border-(--color-border) bg-(--color-surface-1)">
           <div className="relative z-10 min-w-0 flex-1 p-5">
-            <h1 className="text-2xl font-semibold text-(--color-foreground)">{deck.name}</h1>
+            {metadata && (
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded bg-(--color-primary)/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-primary)">
+                  {metadata.category}
+                </span>
+                <span className="rounded bg-(--color-surface-3) px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-(--color-foreground-subtle)">
+                  {metadata.format}
+                </span>
+              </div>
+            )}
+
+            <h1 className="mt-3 text-2xl font-semibold text-(--color-foreground)">{deck.name}</h1>
+
+            {metadata?.tournament && (
+              <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-(--color-warning)">
+                <Trophy className="size-4" />
+                {metadata.tournament.name}
+                {metadata.tournament.player ? ` — ${metadata.tournament.player}` : ""}
+              </p>
+            )}
+
             <p className="mt-3 text-sm tabular-nums text-(--color-foreground-subtle)">
               Main: {main} · Extra: {extra} · Side: {side}
             </p>
+
+            {metadata && (
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-(--color-foreground-subtle)">
+                <span className="inline-flex items-center gap-1">
+                  <User className="size-3.5" />
+                  {metadata.author}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Eye className="size-3.5" />
+                  {metadata.views.toLocaleString()} views
+                </span>
+                {metadata.price > 0 && (
+                  <span className="inline-flex items-center gap-1">
+                    <Coins className="size-3.5" />${metadata.price.toLocaleString()}
+                  </span>
+                )}
+              </div>
+            )}
+
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -174,6 +222,28 @@ export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
                 <Share2 className="size-4" />
                 Share
               </button>
+              {metadata?.source && (
+                <a
+                  href={metadata.source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
+                >
+                  <ExternalLink className="size-4" />
+                  Source
+                </a>
+              )}
+              {metadata?.youtube && (
+                <a
+                  href={metadata.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-4 py-2 text-sm text-(--color-foreground-muted) transition-colors hover:bg-(--color-surface-3)"
+                >
+                  <PlayCircle className="size-4" />
+                  Video
+                </a>
+              )}
             </div>
             {copyError && (
               <p className="mt-2 text-sm text-(--color-danger)">{copyError}</p>
@@ -190,7 +260,7 @@ export function PublicDeckDetail({ deck }: { deck: SavedDeck }) {
                 className="object-cover object-[center_20%]"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-(--color-surface-1) via-(--color-surface-1)/70 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-r from-(--color-surface-1) via-(--color-surface-1)/70 to-transparent" />
             </div>
           )}
         </div>

@@ -40,27 +40,6 @@ function ZoneCounts({ deck }: { deck: Pick<Deck, "main" | "extra" | "side"> }) {
   );
 }
 
-export function PublicDeckCard({ deck }: { deck: SavedDeck }) {
-  const featured = getFeaturedCard(deck);
-
-  return (
-    <DeckPreviewCard
-      href={`/app/decks/${deck.id}`}
-      featured={featured}
-      badge={
-        <span className="absolute right-3 top-3 rounded bg-(--color-success)/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-success)">
-          Public
-        </span>
-      }
-    >
-      <div className="min-w-0">
-        <h3 className="truncate text-lg font-semibold text-(--color-foreground)">{deck.name}</h3>
-        <ZoneCounts deck={deck} />
-      </div>
-    </DeckPreviewCard>
-  );
-}
-
 export function SavedDeckCard({ deck, onDelete }: { deck: SavedDeck; onDelete: () => void }) {
   const featured = getFeaturedCard(deck);
   const status = getDeckStatus(deck);

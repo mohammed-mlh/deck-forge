@@ -64,6 +64,13 @@
       "when": 1781741901574,
       "tag": "0008_add-public-decks",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1781745656285,
+      "tag": "0009_add-public-deck-metadata",
+      "breakpoints": true
     }
   ]
 }
