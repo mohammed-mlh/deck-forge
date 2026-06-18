@@ -25,7 +25,7 @@ import { getCardArtUrl } from "@/lib/deck-preview";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "DeckForge — Modern Yu-Gi-Oh Deck Building",
+  title: "DeckForge · Modern Yu-Gi-Oh Deck Building",
   description:
     "Build, browse, and share Yu-Gi-Oh decks with a full card database and drag-and-drop deck builder.",
   path: "/",

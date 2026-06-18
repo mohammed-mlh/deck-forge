@@ -2,19 +2,26 @@
  * Seed the public_decks table by scraping YGOPRODeck's deck listing API
  * (https://ygoprodeck.com/api/decks/getDecks.php).
  *
- * Pulls full 40+ card decks across several categories (tournament meta, budget,
- * non-meta, anime, ...) with rich metadata (author, price, views, tournament,
- * format) and upserts them into public_decks (keyed by slug).
+ * Pulls the most-viewed decks (sort=Views) across several categories (tournament
+ * meta, budget, non-meta, anime, ...) with rich metadata (price, tournament,
+ * format).
+ *
+ * When DEEPSEEK_API_KEY is set, each category's pool is sent to DeepSeek in
+ * parallel batches of 25 decks. The model selects the best/most representative
+ * decks (published) and rewrites their title, slug, and description; the rest
+ * are kept as drafts. The table is fully refreshed on each run.
  *
  * Usage:
  *   pnpm curate-decks            # 100 decks per category
  *   pnpm curate-decks --per=300  # custom cap per category
  *   pnpm curate-decks --all      # every available deck (large)
+ *   pnpm curate-decks --no-ai    # skip DeepSeek, publish all
  */
 import "./bootstrap-env";
 import { sql } from "drizzle-orm";
 import { closeDb, db } from "@/db";
 import { publicDecks } from "@/db/schema/public-decks";
+import { slugify } from "@/lib/slug";
 
 const API = "https://ygoprodeck.com/api/decks/getDecks.php";
 
@@ -38,8 +45,14 @@ function maxPerCategory(): number {
 
 const PER_CATEGORY = maxPerCategory();
 
-/** Only the first N decks per category are published; the rest are drafts. */
-const PUBLISHED_PER_CATEGORY = 10;
+/** Decks per DeepSeek request. */
+const BATCH_SIZE = 25;
+
+const AI_ENABLED =
+  !process.argv.slice(2).includes("--no-ai") && Boolean(process.env.DEEPSEEK_API_KEY?.trim());
+
+const DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions";
+const DEEPSEEK_MODEL = "deepseek-v4-flash";
 
 interface CategorySource {
   /** Friendly label used for grouping on the page. */
@@ -74,8 +87,6 @@ interface ApiDeck {
   deck_price: string;
   pretty_url: string;
   format: string;
-  rating?: number | string | null;
-  ratingq?: number | string | null;
   tournamentPlayerName?: string | null;
   tournamentName?: string | null;
 }
@@ -123,46 +134,6 @@ function toRefs(raw: string): DeckRef[] {
   return [...counts.entries()].map(([id, quantity]) => ({ id, quantity }));
 }
 
-function countCards(raw: string): number {
-  try {
-    const ids = JSON.parse(raw) as string[];
-    return Array.isArray(ids) ? ids.length : 0;
-  } catch {
-    return 0;
-  }
-}
-
-/**
- * Quality score using real YGOPRODeck signals: deck legality/completeness,
- * popularity (views), community rating, and tournament pedigree. Higher = better.
- */
-function qualityScore(deck: ApiDeck): number {
-  const main = countCards(deck.main_deck);
-  const extra = countCards(deck.extra_deck);
-  const side = countCards(deck.side_deck);
-
-  let score = 0;
-
-  // Legality / completeness — a real 40–60 card deck is far more useful.
-  if (main >= 40 && main <= 60) score += 50;
-  else score -= Math.abs(main - 40) * 2;
-  if (extra <= 15) score += 8;
-  if (side <= 15) score += 4;
-
-  // Popularity (log-scaled so a few viral decks don't dominate).
-  score += Math.log10((deck.deck_views ?? 0) + 1) * 18;
-
-  // Community rating weighted by number of votes (capped).
-  const rating = Number(deck.rating) || 0;
-  const votes = Number(deck.ratingq) || 0;
-  if (rating > 0) score += rating * Math.min(votes, 10);
-
-  // Tournament pedigree.
-  if (deck.tournamentName) score += 35;
-
-  return score;
-}
-
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, " ")
@@ -184,6 +155,7 @@ async function fetchPage(source: CategorySource, offset: number): Promise<ApiDec
   const tournament =
     source.format?.toLowerCase().startsWith("tournament meta decks") ?? false;
 
+  params.set("sort", "Views");
   const url = `${API}?&${params.toString()}${tournament ? "&tournament" : ""}`;
   const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${source.label}`);
@@ -216,11 +188,7 @@ function toCurated(deck: ApiDeck, category: string, status: DeckStatus): Curated
   };
 }
 
-async function fetchCategory(
-  source: CategorySource,
-  curated: CuratedDeck[],
-  seen: Set<string>
-): Promise<number> {
+async function collectPool(source: CategorySource, seen: Set<string>): Promise<ApiDeck[]> {
   const pool: ApiDeck[] = [];
   let offset = 0;
 
@@ -242,14 +210,155 @@ async function fetchCategory(
     await new Promise((r) => setTimeout(r, 150));
   }
 
-  // Publish the highest-quality decks; the rest stay as drafts.
-  const ranked = [...pool].sort((a, b) => qualityScore(b) - qualityScore(a));
-  ranked.forEach((deck, index) => {
-    const status: DeckStatus = index < PUBLISHED_PER_CATEGORY ? "published" : "draft";
-    curated.push(toCurated(deck, source.label, status));
-  });
+  return pool;
+}
 
-  return pool.length;
+interface AiVerdict {
+  index: number;
+  keep: boolean;
+  name?: string;
+  slug?: string;
+  description?: string;
+}
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
+
+function countRefs(raw: string): number {
+  return toRefs(raw).reduce((total, ref) => total + ref.quantity, 0);
+}
+
+async function deepSeekChat(system: string, user: string): Promise<unknown> {
+  const res = await fetch(DEEPSEEK_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY?.trim()}`,
+    },
+    body: JSON.stringify({
+      model: DEEPSEEK_MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+      response_format: { type: "json_object" },
+      thinking: { type: "disabled" },
+      temperature: 0,
+    }),
+  });
+  if (!res.ok) throw new Error(`DeepSeek ${res.status}: ${await res.text()}`);
+  const json = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) throw new Error("DeepSeek returned an empty response");
+  return JSON.parse(content.replace(/^```(?:json)?|```$/g, "").trim());
+}
+
+function parseVerdicts(data: unknown): AiVerdict[] {
+  const decks = (data as { decks?: unknown })?.decks;
+  if (!Array.isArray(decks)) return [];
+  return decks.flatMap((entry) => {
+    const d = entry as Record<string, unknown>;
+    if (typeof d.index !== "number") return [];
+    return [
+      {
+        index: d.index,
+        keep: Boolean(d.keep),
+        name: typeof d.name === "string" ? d.name : undefined,
+        slug: typeof d.slug === "string" ? d.slug : undefined,
+        description: typeof d.description === "string" ? d.description : undefined,
+      },
+    ];
+  });
+}
+
+async function curateBatch(
+  category: string,
+  items: Array<{ deck: ApiDeck; index: number }>
+): Promise<AiVerdict[]> {
+  const payload = items.map(({ deck, index }) => ({
+    index,
+    name: deck.deck_name,
+    description: stripHtml(deck.deck_excerpt || deck.deck_description || "").slice(0, 300),
+    format: deck.format,
+    main: countRefs(deck.main_deck),
+    extra: countRefs(deck.extra_deck),
+    side: countRefs(deck.side_deck),
+    views: deck.deck_views,
+    tournament: deck.tournamentName ?? null,
+  }));
+
+  const system =
+    "You are a Yu-Gi-Oh! deck curator and copywriter. Respond with valid JSON only.";
+  const user = [
+    `Category: ${category}`,
+    "",
+    "From the decks below, select only the genuinely best, complete, and",
+    "representative decks for this category. Be selective — prefer legal,",
+    "well-built decks over jokes, duplicates, or low-effort lists.",
+    "",
+    "For every deck index provided, return an entry. For kept decks set keep=true",
+    "and provide: a clean human title in Title Case (no hyphens or em dashes), a",
+    "url slug (lowercase words separated by single hyphens), and a concise 1-2",
+    "sentence description of the deck's strategy. For rejected decks set keep=false.",
+    "",
+    'Return JSON: {"decks":[{"index":number,"keep":boolean,"name":string,"slug":string,"description":string}]}',
+    "",
+    `Decks:\n${JSON.stringify(payload)}`,
+  ].join("\n");
+
+  try {
+    return parseVerdicts(await deepSeekChat(system, user));
+  } catch (err) {
+    console.warn(`  AI batch failed (${(err as Error).message}); keeping originals`);
+    return items.map(({ index }) => ({ index, keep: true }));
+  }
+}
+
+async function aiCurate(category: string, pool: ApiDeck[]): Promise<Map<number, AiVerdict>> {
+  const indexed = pool.map((deck, index) => ({ deck, index }));
+  const batches = chunk(indexed, BATCH_SIZE);
+  const results = await Promise.all(batches.map((batch) => curateBatch(category, batch)));
+  const map = new Map<number, AiVerdict>();
+  for (const verdicts of results) {
+    for (const verdict of verdicts) map.set(verdict.index, verdict);
+  }
+  return map;
+}
+
+function uniqueSlug(raw: string, used: Set<string>): string {
+  const base = slugify(raw) || "deck";
+  let slug = base;
+  let n = 2;
+  while (used.has(slug)) slug = `${base}-${n++}`;
+  used.add(slug);
+  return slug;
+}
+
+function buildCurated(
+  source: CategorySource,
+  pool: ApiDeck[],
+  verdicts: Map<number, AiVerdict>,
+  usedSlugs: Set<string>
+): CuratedDeck[] {
+  return pool.map((deck, index) => {
+    const verdict = verdicts.get(index);
+    // No AI verdict (AI disabled) → publish as-is.
+    const keep = verdict ? verdict.keep : true;
+    const curated = toCurated(deck, source.label, keep ? "published" : "draft");
+
+    if (keep && verdict?.name?.trim()) curated.name = verdict.name.trim();
+    if (keep && verdict?.description?.trim()) {
+      curated.description = verdict.description.trim().slice(0, 400);
+    }
+    const slugSeed = keep && verdict?.slug?.trim() ? verdict.slug : deck.pretty_url;
+    curated.slug = uniqueSlug(slugSeed, usedSlugs);
+    return curated;
+  });
 }
 
 async function saveToDb(curated: CuratedDeck[]) {
@@ -300,17 +409,24 @@ async function saveToDb(curated: CuratedDeck[]) {
 async function main() {
   const curated: CuratedDeck[] = [];
   const seen = new Set<string>();
+  const usedSlugs = new Set<string>();
 
   console.log(
-    `Target per category: ${PER_CATEGORY === Infinity ? "ALL" : PER_CATEGORY}\n`
+    `Target per category: ${PER_CATEGORY === Infinity ? "ALL" : PER_CATEGORY}` +
+      ` | AI curation: ${AI_ENABLED ? "on" : "off"}\n`
   );
 
   for (const source of CATEGORIES) {
-    const kept = await fetchCategory(source, curated, seen);
-    console.log(`${source.label}: kept ${kept} decks`);
+    const pool = await collectPool(source, seen);
+    const verdicts = AI_ENABLED ? await aiCurate(source.label, pool) : new Map<number, AiVerdict>();
+    const decks = buildCurated(source, pool, verdicts, usedSlugs);
+    curated.push(...decks);
+    const published = decks.filter((deck) => deck.status === "published").length;
+    console.log(`${source.label}: pool ${pool.length}, published ${published}`);
   }
 
   console.log(`\nScraped ${curated.length} decks`);
+  await db.delete(publicDecks);
   await saveToDb(curated);
 }
 

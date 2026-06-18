@@ -60,7 +60,7 @@ export async function generateMetadata({
   if (!archetype) return { title: "Archetype Not Found" };
 
   return createPageMetadata({
-    title: `${archetype.name} Archetype — Yu-Gi-Oh Deck Guide`,
+    title: `${archetype.name} Archetype · Yu-Gi-Oh Deck Guide`,
     description: archetype.description,
     path: `/archetypes/${slug}`,
   });

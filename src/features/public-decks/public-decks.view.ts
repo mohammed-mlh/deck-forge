@@ -5,6 +5,21 @@ import { slugify } from "@/lib/slug";
 
 export const UNCATEGORIZED = "Community";
 
+export type PublicDeckSort = "popular" | "name" | "priceLow" | "priceHigh";
+
+export const PUBLIC_DECK_SORTS: { value: PublicDeckSort; label: string }[] = [
+  { value: "popular", label: "Most viewed" },
+  { value: "name", label: "Name (A–Z)" },
+  { value: "priceLow", label: "Price (low → high)" },
+  { value: "priceHigh", label: "Price (high → low)" },
+];
+
+export function parseSort(value: string | undefined | null): PublicDeckSort {
+  return PUBLIC_DECK_SORTS.some((option) => option.value === value)
+    ? (value as PublicDeckSort)
+    : "popular";
+}
+
 function countRefs(refs: DeckZoneRefs): number {
   return refs.reduce((sum, ref) => sum + ref.quantity, 0);
 }

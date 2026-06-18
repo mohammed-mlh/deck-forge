@@ -26,7 +26,7 @@ export function buildDeckMetadata(deck: SavedDeck, slug: string = deck.id): Meta
             url: imageUrl,
             width: 421,
             height: 614,
-            alt: `${deck.name} — ${featured!.name}`,
+            alt: `${deck.name} · ${featured!.name}`,
           },
         ],
       }),

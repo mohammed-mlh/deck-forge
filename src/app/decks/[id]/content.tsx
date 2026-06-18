@@ -175,7 +175,7 @@ export function PublicDeckDetail({
               <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-(--color-warning)">
                 <Trophy className="size-4" />
                 {metadata.tournament.name}
-                {metadata.tournament.player ? ` — ${metadata.tournament.player}` : ""}
+                {metadata.tournament.player ? ` · ${metadata.tournament.player}` : ""}
               </p>
             )}
 

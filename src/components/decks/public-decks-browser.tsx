@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Coins, Eye, Search, Trophy, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight, Coins, Eye, Search, Trophy, User } from "lucide-react";
+import { PUBLIC_DECK_SORTS, type PublicDeckSort } from "@/features/public-decks/public-decks.view";
 import { cn } from "@/lib/utils";
 
 export interface PublicDeckListItem {
@@ -23,14 +25,10 @@ export interface PublicDeckListItem {
   tournamentPlayer: string | null;
 }
 
-type SortKey = "popular" | "name" | "priceLow" | "priceHigh";
-
-const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: "popular", label: "Most viewed" },
-  { value: "name", label: "Name (A–Z)" },
-  { value: "priceLow", label: "Price (low → high)" },
-  { value: "priceHigh", label: "Price (high → low)" },
-];
+export interface PublicDeckCategoryOption {
+  name: string;
+  count: number;
+}
 
 const ALL = "All";
 
@@ -97,45 +95,59 @@ function DeckCard({ deck, showCategory }: { deck: PublicDeckListItem; showCatego
 
 export function PublicDecksBrowser({
   decks,
+  total,
+  page,
+  pageCount,
+  query,
+  sort,
+  category,
+  categories = [],
+  basePath,
   showCategories = true,
 }: {
   decks: PublicDeckListItem[];
+  total: number;
+  page: number;
+  pageCount: number;
+  query: string;
+  sort: PublicDeckSort;
+  category: string;
+  categories?: PublicDeckCategoryOption[];
+  basePath: string;
   showCategories?: boolean;
 }) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string>(ALL);
-  const [sort, setSort] = useState<SortKey>("popular");
+  const router = useRouter();
+  const [text, setText] = useState(query);
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const categories = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const deck of decks) counts.set(deck.category, (counts.get(deck.category) ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [decks]);
+  const navigate = (next: {
+    q?: string;
+    sort?: PublicDeckSort;
+    category?: string;
+    page?: number;
+  }) => {
+    const q = (next.q ?? query).trim();
+    const s = next.sort ?? sort;
+    const c = next.category ?? category;
+    const p = next.page ?? 1;
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const filtered = decks.filter((deck) => {
-      if (category !== ALL && deck.category !== category) return false;
-      if (q && !deck.name.toLowerCase().includes(q)) return false;
-      return true;
-    });
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (s !== "popular") params.set("sort", s);
+    if (c && c !== ALL) params.set("category", c);
+    if (p > 1) params.set("page", String(p));
 
-    const sorted = [...filtered];
-    switch (sort) {
-      case "name":
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "priceLow":
-        sorted.sort((a, b) => a.price - b.price);
-        break;
-      case "priceHigh":
-        sorted.sort((a, b) => b.price - a.price);
-        break;
-      default:
-        sorted.sort((a, b) => b.views - a.views);
-    }
-    return sorted;
-  }, [decks, query, category, sort]);
+    const qs = params.toString();
+    router.push(qs ? `${basePath}?${qs}` : basePath, { scroll: false });
+  };
+
+  const onSearch = (value: string) => {
+    setText(value);
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => navigate({ q: value }), 350);
+  };
+
+  const allCount = categories.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <div className="flex flex-col gap-5">
@@ -144,18 +156,18 @@ export function PublicDecksBrowser({
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-(--color-foreground-subtle)" />
           <input
             type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={text}
+            onChange={(e) => onSearch(e.target.value)}
             placeholder="Search decks by name…"
             className="w-full rounded-lg border border-(--color-border) bg-(--color-surface-1) py-2 pl-9 pr-3 text-sm text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-subtle) focus:border-(--color-border-strong)"
           />
         </div>
         <select
           value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
+          onChange={(e) => navigate({ sort: e.target.value as PublicDeckSort })}
           className="rounded-lg border border-(--color-border) bg-(--color-surface-1) px-3 py-2 text-sm text-(--color-foreground) outline-none transition-colors focus:border-(--color-border-strong)"
         >
-          {SORT_OPTIONS.map((option) => (
+          {PUBLIC_DECK_SORTS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -163,40 +175,59 @@ export function PublicDecksBrowser({
         </select>
       </div>
 
-      {showCategories && (
+      {showCategories && categories.length > 0 && (
         <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <CategoryPill
             label={ALL}
-            count={decks.length}
+            count={allCount}
             active={category === ALL}
-            onClick={() => setCategory(ALL)}
+            onClick={() => navigate({ category: ALL })}
           />
-          {categories.map(([name, count]) => (
+          {categories.map((item) => (
             <CategoryPill
-              key={name}
-              label={name}
-              count={count}
-              active={category === name}
-              onClick={() => setCategory(name)}
+              key={item.name}
+              label={item.name}
+              count={item.count}
+              active={category === item.name}
+              onClick={() => navigate({ category: item.name })}
             />
           ))}
         </div>
       )}
 
       <p className="text-xs text-(--color-foreground-subtle)">
-        {visible.length} {visible.length === 1 ? "deck" : "decks"}
+        {total} {total === 1 ? "deck" : "decks"}
       </p>
 
-      {visible.length === 0 ? (
+      {decks.length === 0 ? (
         <p className="py-16 text-center text-sm text-(--color-foreground-muted)">
           No decks match your filters.
         </p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((deck) => (
-            <DeckCard key={deck.id} deck={deck} showCategory={showCategories} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {decks.map((deck) => (
+              <DeckCard key={deck.id} deck={deck} showCategory={showCategories} />
+            ))}
+          </div>
+
+          {pageCount > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <PagerButton disabled={page <= 1} onClick={() => navigate({ page: page - 1 })}>
+                <ChevronLeft className="size-4" />
+              </PagerButton>
+              <span className="px-2 text-sm tabular-nums text-(--color-foreground-muted)">
+                Page {page} of {pageCount}
+              </span>
+              <PagerButton
+                disabled={page >= pageCount}
+                onClick={() => navigate({ page: page + 1 })}
+              >
+                <ChevronRight className="size-4" />
+              </PagerButton>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -225,9 +256,35 @@ function CategoryPill({
       )}
     >
       {label}
-      <span className={cn("tabular-nums", active ? "text-(--color-primary)/70" : "text-(--color-foreground-subtle)")}>
+      <span
+        className={cn(
+          "tabular-nums",
+          active ? "text-(--color-primary)/70" : "text-(--color-foreground-subtle)"
+        )}
+      >
         {count}
       </span>
+    </button>
+  );
+}
+
+function PagerButton({
+  children,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex items-center justify-center rounded-lg border border-(--color-border) bg-(--color-surface-1) p-2 text-(--color-foreground-muted) transition-colors hover:border-(--color-border-strong) disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      {children}
     </button>
   );
 }
