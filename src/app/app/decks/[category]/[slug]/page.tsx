@@ -24,7 +24,7 @@ export default async function PublicDeckPage({ params }: Props) {
   const backHref = `/app/decks/${categorySlug(record.metadata?.category ?? "")}`;
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="min-h-0 flex-1 overflow-y-auto py-6">
       <PublicDeckDetail deck={deck} metadata={record.metadata} backHref={backHref} />
     </div>
   );

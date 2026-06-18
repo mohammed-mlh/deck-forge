@@ -38,6 +38,9 @@ function maxPerCategory(): number {
 
 const PER_CATEGORY = maxPerCategory();
 
+/** Only the first N decks per category are published; the rest are drafts. */
+const PUBLISHED_PER_CATEGORY = 10;
+
 interface CategorySource {
   /** Friendly label used for grouping on the page. */
   label: string;
@@ -71,6 +74,8 @@ interface ApiDeck {
   deck_price: string;
   pretty_url: string;
   format: string;
+  rating?: number | string | null;
+  ratingq?: number | string | null;
   tournamentPlayerName?: string | null;
   tournamentName?: string | null;
 }
@@ -80,10 +85,13 @@ interface DeckRef {
   quantity: number;
 }
 
+type DeckStatus = "published" | "draft";
+
 interface CuratedDeck {
   id: string;
   name: string;
   slug: string;
+  status: DeckStatus;
   category: string;
   format: string;
   author: string;
@@ -115,6 +123,46 @@ function toRefs(raw: string): DeckRef[] {
   return [...counts.entries()].map(([id, quantity]) => ({ id, quantity }));
 }
 
+function countCards(raw: string): number {
+  try {
+    const ids = JSON.parse(raw) as string[];
+    return Array.isArray(ids) ? ids.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Quality score using real YGOPRODeck signals: deck legality/completeness,
+ * popularity (views), community rating, and tournament pedigree. Higher = better.
+ */
+function qualityScore(deck: ApiDeck): number {
+  const main = countCards(deck.main_deck);
+  const extra = countCards(deck.extra_deck);
+  const side = countCards(deck.side_deck);
+
+  let score = 0;
+
+  // Legality / completeness — a real 40–60 card deck is far more useful.
+  if (main >= 40 && main <= 60) score += 50;
+  else score -= Math.abs(main - 40) * 2;
+  if (extra <= 15) score += 8;
+  if (side <= 15) score += 4;
+
+  // Popularity (log-scaled so a few viral decks don't dominate).
+  score += Math.log10((deck.deck_views ?? 0) + 1) * 18;
+
+  // Community rating weighted by number of votes (capped).
+  const rating = Number(deck.rating) || 0;
+  const votes = Number(deck.ratingq) || 0;
+  if (rating > 0) score += rating * Math.min(votes, 10);
+
+  // Tournament pedigree.
+  if (deck.tournamentName) score += 35;
+
+  return score;
+}
+
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, " ")
@@ -144,15 +192,16 @@ async function fetchPage(source: CategorySource, offset: number): Promise<ApiDec
   return json;
 }
 
-function toCurated(deck: ApiDeck, category: string): CuratedDeck {
+function toCurated(deck: ApiDeck, category: string, status: DeckStatus): CuratedDeck {
   return {
     id: deck.pretty_url,
     name: deck.deck_name,
     slug: deck.pretty_url,
+    status,
     category,
     format: deck.format,
-    author: deck.username,
-    views: deck.deck_views,
+    author: "DeckForge",
+    views: 10,
     price: Number(deck.deck_price) || 0,
     coverCard: Number(deck.cover_card) || 0,
     tournament: deck.tournamentName
@@ -172,21 +221,20 @@ async function fetchCategory(
   curated: CuratedDeck[],
   seen: Set<string>
 ): Promise<number> {
-  let kept = 0;
+  const pool: ApiDeck[] = [];
   let offset = 0;
 
-  while (kept < PER_CATEGORY) {
+  while (pool.length < PER_CATEGORY) {
     const page = await fetchPage(source, offset);
     if (page.length === 0) break;
 
     for (const deck of page) {
-      if (kept >= PER_CATEGORY) break;
+      if (pool.length >= PER_CATEGORY) break;
       if (seen.has(deck.pretty_url)) continue;
       if (toRefs(deck.main_deck).length === 0) continue;
 
       seen.add(deck.pretty_url);
-      curated.push(toCurated(deck, source.label));
-      kept += 1;
+      pool.push(deck);
     }
 
     offset += PAGE_SIZE;
@@ -194,7 +242,14 @@ async function fetchCategory(
     await new Promise((r) => setTimeout(r, 150));
   }
 
-  return kept;
+  // Publish the highest-quality decks; the rest stay as drafts.
+  const ranked = [...pool].sort((a, b) => qualityScore(b) - qualityScore(a));
+  ranked.forEach((deck, index) => {
+    const status: DeckStatus = index < PUBLISHED_PER_CATEGORY ? "published" : "draft";
+    curated.push(toCurated(deck, source.label, status));
+  });
+
+  return pool.length;
 }
 
 async function saveToDb(curated: CuratedDeck[]) {
@@ -203,6 +258,7 @@ async function saveToDb(curated: CuratedDeck[]) {
   const rows = curated.map((deck) => ({
     name: deck.name,
     slug: deck.slug,
+    status: deck.status,
     description: deck.description || null,
     main: deck.main,
     extra: deck.extra,
@@ -228,6 +284,7 @@ async function saveToDb(curated: CuratedDeck[]) {
       target: publicDecks.slug,
       set: {
         name: sql`excluded.name`,
+        status: sql`excluded.status`,
         description: sql`excluded.description`,
         main: sql`excluded.main`,
         extra: sql`excluded.extra`,

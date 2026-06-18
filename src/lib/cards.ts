@@ -2,8 +2,12 @@ import type { Card } from "@/features/cards/cards.schema";
 
 export function getCardImageUrl(card: Card, size: "small" | "full" = "small"): string {
   const image = card.images[0];
-  if (!image) return "";
-  return size === "small" ? image.imageUrlSmall : image.imageUrl;
+  if (image) return size === "small" ? image.imageUrlSmall : image.imageUrl;
+  if (card.id > 0) {
+    const folder = size === "small" ? "cards_small" : "cards";
+    return `https://images.ygoprodeck.com/images/${folder}/${card.id}.jpg`;
+  }
+  return "";
 }
 
 export function getCardTypeLabel(card: Card): string {
