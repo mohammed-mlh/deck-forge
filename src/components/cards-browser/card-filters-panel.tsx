@@ -74,7 +74,7 @@ function LinkMarkerArrow({ active }: { active: boolean }) {
     <svg viewBox="0 0 20 20" className="size-3.5" aria-hidden>
       <polygon
         points="10,2 4,11 16,11"
-        fill={active ? "#d94520" : "#141414"}
+        fill={active ? "#d94520" : "#3a5578"}
         stroke={active ? "#ffc8a8" : "none"}
         strokeWidth="1"
         strokeLinejoin="round"

@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   Braces,
   Brain,
-  Check,
-  ChevronRight,
-  Clock,
   Database,
-  FileDown,
-  FileUp,
   FolderOpen,
   Hammer,
   Layers,
@@ -23,6 +19,9 @@ import {
 } from "lucide-react";
 import { GetStartedButton } from "@/components/auth/get-started-button";
 import { Container } from "@/components/layout/container";
+import { FEATURED_ARCHETYPES } from "@/content/seo-archetypes";
+import { getCards } from "@/features/cards/cards.service";
+import { getCardArtUrl } from "@/lib/deck-preview";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -71,30 +70,6 @@ const features = [
   },
 ];
 
-const steps = [
-  {
-    step: "01",
-    icon: Search,
-    title: "Search the card pool",
-    description:
-      "Use the full-featured card browser with attribute, archetype, and stat filters to find exactly the cards you need.",
-  },
-  {
-    step: "02",
-    icon: Swords,
-    title: "Build your deck",
-    description:
-      "Drag cards into Main, Extra, and Side zones. Real-time copy limits, zone rules, and validation keep your deck legal.",
-  },
-  {
-    step: "03",
-    icon: Upload,
-    title: "Save and share",
-    description:
-      "Save to your account, export in any format, or make your deck public for the community to copy.",
-  },
-];
-
 const stats = [
   { value: "12,000+", label: "Cards" },
   { value: "10+", label: "Import formats" },
@@ -109,100 +84,51 @@ const highlights = [
   { icon: FolderOpen, label: "Cloud saved" },
 ];
 
-const importFormats = [
-  { label: "YDK", desc: "Edopro / YGOPro" },
-  { label: "YDKE URL", desc: "DuelingBook" },
-  { label: "YGOProDeck TXT", desc: "ygoprodeck.com" },
-  { label: "JSON Portable", desc: "Ref format" },
-  { label: "JSON Full", desc: "Complete export" },
-  { label: "CSV", desc: "Spreadsheet" },
-  { label: "TSV", desc: "Tab-separated" },
-  { label: "XML", desc: "Structured" },
-  { label: "Plain IDs", desc: "Comma or newline" },
-  { label: "Plain Names", desc: "One per line" },
-];
-
-const aiCapabilities = [
-  "Type distribution (monster / spell / trap)",
-  "Extra Deck breakdown by summoning method",
-  "Key cards and their role in the strategy",
-  "Archetype classification with confidence score",
-  "Consistency signals — duplicates, zone fill",
-  "Deck Doctor: add & remove suggestions",
-];
-
-const builderCapabilities = [
-  "Main, Extra, and Side zone management",
-  "3-copy limit enforced across all zones",
-  "Extra Deck monsters auto-routed correctly",
-  "Real-time zone count indicators",
-  "Inline validation issues banner",
-  "Drag between zones to reposition cards",
-];
-
-const faqItems = [
+const steps = [
   {
-    q: "Is DeckForge free?",
-    a: "Yes, completely free. Create an account with Clerk — no credit card required.",
+    step: "01",
+    icon: Search,
+    title: "Search the card pool",
+    description:
+      "Filter all 12,000+ cards by attribute, archetype, and stats to find exactly what you need.",
   },
   {
-    q: "Can I import a deck I already built on YGOProDeck or Edopro?",
-    a: "Yes. Paste or upload your YDK, YDKE URL, or YGOProDeck TXT and it imports in seconds.",
+    step: "02",
+    icon: Swords,
+    title: "Build your deck",
+    description:
+      "Drag cards into Main, Extra, and Side zones with real-time copy limits and rule validation.",
   },
   {
-    q: "How does the AI analysis work?",
-    a: "It reads your deck's card data and produces a structured analysis covering type distribution, key cards, archetype, and consistency. Deck Doctor then suggests specific swaps to improve it.",
-  },
-  {
-    q: "Is my data private?",
-    a: "All decks default to private. Only decks you explicitly make public appear on the community browse page.",
-  },
-  {
-    q: "Does DeckForge enforce the ban list?",
-    a: "Not currently. Zone rules and copy limits are enforced; ban list filtering is on the roadmap.",
+    step: "03",
+    icon: Upload,
+    title: "Save and share",
+    description:
+      "Save to your account, export in any format, or publish your deck for the community.",
   },
 ];
 
-export default function HomePage() {
+const popularArchetypes = FEATURED_ARCHETYPES.slice(0, 8);
+
+async function resolveArchetypeArt() {
+  const results = await Promise.all(
+    popularArchetypes.map(async (archetype) => {
+      const byName = await getCards({ name: archetype.featuredCardName, num: 1 });
+      const card =
+        byName[0] ?? (await getCards({ archetype: archetype.name, num: 1 }))[0];
+      return [archetype.slug, card ? getCardArtUrl(card) : undefined] as const;
+    })
+  );
+  return new Map(results);
+}
+
+export default async function HomePage() {
+  const archetypeArt = await resolveArchetypeArt();
+
   return (
     <>
       {/* ── Hero ───────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-(--color-border)">
-        {/* Primary glow */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 50% -10%, rgba(124,58,237,0.18) 0%, transparent 70%)",
-          }}
-        />
-
-        {/* Decorative millennium-style eye symbol */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 opacity-[0.08]">
-          <svg width="800" height="800" viewBox="0 0 200 200" className="animate-[hex-rotate_120s_linear_infinite]">
-            <polygon
-              points="100,10 190,55 190,145 100,190 10,145 10,55"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.5"
-            />
-            <polygon
-              points="100,30 170,65 170,135 100,170 30,135 30,65"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.5"
-            />
-            <circle cx="100" cy="100" r="40" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            <circle cx="100" cy="100" r="20" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            <circle cx="100" cy="100" r="5" fill="currentColor" opacity="0.5" />
-          </svg>
-        </div>
-
-        {/* Animated accent lines */}
-        <div className="pointer-events-none absolute left-0 top-32 h-px w-32 bg-linear-to-r from-transparent via-(--color-primary)/20 to-transparent animate-[energy-wave_12s_ease-in-out_infinite]" />
-        <div className="pointer-events-none absolute right-0 top-48 h-px w-24 bg-linear-to-l from-transparent via-(--color-primary)/20 to-transparent animate-[energy-wave_10s_ease-in-out_infinite_2s]" />
-
         <Container>
           <div className="flex flex-col items-center gap-6 py-24 text-center md:py-20">
             
@@ -293,240 +219,8 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── Builder deep-dive ────────────────────────────────────────── */}
-      <section className="border-y border-(--color-border)/60 bg-(--color-bg-surface)/50 py-24 backdrop-blur-sm">
-        <Container>
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            {/* Text */}
-            <div className="flex flex-col gap-6">
-              <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-(--color-primary)/30 bg-(--color-primary-muted) px-3 py-1 text-xs font-medium text-(--color-primary)">
-                <Hammer className="size-3" />
-                Deck Builder
-              </div>
-              <h2 className="text-3xl font-semibold tracking-tight text-(--color-foreground)">
-                Built like a pro tool,<br />not an afterthought
-              </h2>
-              <p className="text-base leading-relaxed text-(--color-foreground-muted)">
-                The builder enforces game rules in real time. Every add, move, and zone change is
-                validated — so you ship a legal deck, every time.
-              </p>
-              <ul className="flex flex-col gap-3">
-                {builderCapabilities.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-(--color-foreground-muted)">
-                    <Check className="mt-0.5 size-4 shrink-0 text-(--color-success)" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/app/deck-builder"
-                className="inline-flex w-fit items-center gap-2 text-sm font-medium text-(--color-primary) transition-colors hover:text-(--color-primary-hover)"
-              >
-                Open the builder
-                <ChevronRight className="size-4" />
-              </Link>
-            </div>
-
-            {/* Visual */}
-            <div className="rounded-2xl border border-(--color-border) bg-(--color-surface-1) p-1 shadow-xl">
-              <div className="rounded-xl border border-(--color-border) bg-(--color-bg-elevated) p-5">
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="size-2.5 rounded-full bg-(--color-danger)/60" />
-                  <div className="size-2.5 rounded-full bg-(--color-warning)/60" />
-                  <div className="size-2.5 rounded-full bg-(--color-success)/60" />
-                  <span className="ml-2 text-xs text-(--color-foreground-subtle)">deck-builder</span>
-                </div>
-                {["Main Deck", "Extra Deck", "Side Deck"].map((zone, i) => {
-                  const counts = [42, 10, 5];
-                  const maxes = [60, 15, 15];
-                  const fills = [42 / 60, 10 / 15, 5 / 15];
-                  return (
-                    <div key={zone} className="mb-3 last:mb-0">
-                      <div className="mb-1.5 flex justify-between text-xs">
-                        <span className="text-(--color-foreground-muted)">{zone}</span>
-                        <span className="tabular-nums text-(--color-foreground-subtle)">
-                          {counts[i]}/{maxes[i]}
-                        </span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-(--color-surface-3)">
-                        <div
-                          className="h-full rounded-full bg-(--color-primary)"
-                          style={{ width: `${fills[i]! * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-                <div className="mt-5 grid grid-cols-5 gap-1.5">
-                  {Array.from({ length: 15 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="aspect-59/86 rounded-[2px]"
-                      style={{
-                        background:
-                          i < 12
-                            ? `hsl(${260 + (i % 4) * 15}, 60%, ${30 + (i % 3) * 5}%)`
-                            : "var(--color-surface-2)",
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── AI section ──────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden py-24">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 60% at 80% 50%, rgba(124,58,237,0.10) 0%, transparent 70%)",
-          }}
-        />
-        <Container>
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            {/* Visual */}
-            <div className="order-2 lg:order-1 rounded-2xl border border-(--color-border) bg-(--color-surface-1) p-5">
-              <div className="mb-3 flex items-center gap-2 border-b border-(--color-border) pb-3">
-                <Brain className="size-4 text-(--color-primary)" />
-                <span className="text-sm font-medium text-(--color-foreground)">Deck Analysis</span>
-                <span className="ml-auto rounded-full bg-(--color-success)/15 px-2 py-0.5 text-xs text-(--color-success)">
-                  Ready
-                </span>
-              </div>
-              <div className="flex flex-col gap-3">
-                {[
-                  { label: "Archetype", value: "Salamangreat", pct: null },
-                  { label: "Monsters", value: "24", pct: 57 },
-                  { label: "Spells", value: "12", pct: 29 },
-                  { label: "Traps", value: "6", pct: 14 },
-                  { label: "Extra Deck", value: "15 / 15", pct: 100 },
-                ].map(({ label, value, pct }) => (
-                  <div key={label}>
-                    <div className="mb-1 flex justify-between text-xs">
-                      <span className="text-(--color-foreground-muted)">{label}</span>
-                      <span className="tabular-nums text-(--color-foreground)">{value}</span>
-                    </div>
-                    {pct !== null && (
-                      <div className="h-1 overflow-hidden rounded-full bg-(--color-surface-3)">
-                        <div
-                          className="h-full rounded-full bg-(--color-primary)"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <div className="mt-2 rounded-lg bg-(--color-surface-2) p-3 text-xs leading-relaxed text-(--color-foreground-muted)">
-                  <span className="font-semibold text-(--color-primary)">Deck Doctor: </span>
-                  Consider replacing 1× Effect Veiler with 1× Infinite Impermanence for hand trap
-                  flexibility against established boards.
-                </div>
-              </div>
-            </div>
-
-            {/* Text */}
-            <div className="order-1 lg:order-2 flex flex-col gap-6">
-              <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-(--color-primary)/30 bg-(--color-primary-muted) px-3 py-1 text-xs font-medium text-(--color-primary)">
-                <Brain className="size-3" />
-                AI Tools
-              </div>
-              <h2 className="text-3xl font-semibold tracking-tight text-(--color-foreground)">
-                Your deck, analyzed<br />in seconds
-              </h2>
-              <p className="text-base leading-relaxed text-(--color-foreground-muted)">
-                One click runs a full analysis — archetype, type distribution, key cards, and
-                consistency signals. Deck Doctor then proposes targeted swaps.
-              </p>
-              <ul className="flex flex-col gap-3">
-                {aiCapabilities.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-(--color-foreground-muted)">
-                    <Check className="mt-0.5 size-4 shrink-0 text-(--color-success)" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Import / Export ──────────────────────────────────────────── */}
-      <section className="border-y border-(--color-border)/60 bg-(--color-bg-surface)/50 py-24 backdrop-blur-sm">
-        <Container>
-          <div className="flex flex-col gap-14">
-            <div className="mx-auto max-w-xl text-center">
-              <h2 className="text-3xl font-semibold tracking-tight text-(--color-foreground)">
-                Import from anywhere,<br />export to everywhere
-              </h2>
-              <p className="mt-3 text-base text-(--color-foreground-muted)">
-                10 formats supported. Paste a URL, upload a file, or copy raw text — DeckForge
-                detects the format automatically.
-              </p>
-            </div>
-
-            <div className="grid gap-10 lg:grid-cols-2">
-              {/* Import */}
-              <div className="flex flex-col gap-4 rounded-xl border border-(--color-border) bg-(--color-surface-1) p-6">
-                <div className="flex items-center gap-3 border-b border-(--color-border) pb-4">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-(--color-primary-muted)">
-                    <FileDown className="size-4 text-(--color-primary)" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-(--color-foreground)">Import</p>
-                    <p className="text-xs text-(--color-foreground-subtle)">Auto-detects format</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {importFormats.map(({ label, desc }) => (
-                    <div
-                      key={label}
-                      className="flex flex-col gap-0.5 rounded-lg bg-(--color-surface-2) px-3 py-2"
-                    >
-                      <span className="text-xs font-medium text-(--color-foreground)">{label}</span>
-                      <span className="text-[10px] text-(--color-foreground-subtle)">{desc}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Export */}
-              <div className="flex flex-col gap-4 rounded-xl border border-(--color-border) bg-(--color-surface-1) p-6">
-                <div className="flex items-center gap-3 border-b border-(--color-border) pb-4">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-(--color-primary-muted)">
-                    <FileUp className="size-4 text-(--color-primary)" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-(--color-foreground)">Export</p>
-                    <p className="text-xs text-(--color-foreground-subtle)">Live preview before download</p>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-3 text-sm text-(--color-foreground-muted)">
-                  {[
-                    "Copy to clipboard or download file",
-                    "Live format preview as you switch",
-                    "YDKE URL for instant sharing",
-                    "JSON full export includes all card data",
-                    "Compatible with Edopro, DuelingBook, YGOPro",
-                  ].map((item) => (
-                    <div key={item} className="flex items-start gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-(--color-success)" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
       {/* ── How it works ────────────────────────────────────────────── */}
-      <section className="py-24">
+      <section className="border-b border-(--color-border)/60 bg-(--color-bg-surface)/50 py-24 backdrop-blur-sm">
         <Container>
           <div className="flex flex-col gap-14">
             <div className="mx-auto max-w-xl text-center">
@@ -565,45 +259,61 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* ── FAQ ─────────────────────────────────────────────────────── */}
-      <section className="border-y border-(--color-border)/60 bg-(--color-bg-surface)/50 py-24 backdrop-blur-sm">
+      {/* ── Popular archetypes ──────────────────────────────────────── */}
+      <section className="py-24">
         <Container>
-          <div className="mx-auto flex max-w-3xl flex-col gap-12">
-            <div className="text-center">
+          <div className="flex flex-col gap-14">
+            <div className="flex flex-col items-center gap-3 text-center">
               <h2 className="text-3xl font-semibold tracking-tight text-(--color-foreground)">
-                Frequently asked questions
+                Explore popular archetypes
               </h2>
-              <p className="mt-3 text-base text-(--color-foreground-muted)">
-                Everything you need to know before you start.
+              <p className="max-w-xl text-base text-(--color-foreground-muted)">
+                Strategy guides, key cards, and deck-building tips for the game&apos;s most-played
+                decks.
               </p>
             </div>
 
-            <div className="flex flex-col divide-y divide-(--color-border) rounded-xl border border-(--color-border) bg-(--color-surface-1) overflow-hidden">
-              {faqItems.map(({ q, a }) => (
-                <div key={q} className="flex flex-col gap-2 px-6 py-5">
-                  <div className="flex items-start gap-3">
-                    <Clock className="mt-0.5 size-4 shrink-0 text-(--color-primary)" />
-                    <p className="font-medium text-(--color-foreground)">{q}</p>
-                  </div>
-                  <p className="pl-7 text-sm leading-relaxed text-(--color-foreground-muted)">{a}</p>
-                </div>
-              ))}
+            <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4">
+              {popularArchetypes.map((archetype) => {
+                const artUrl = archetypeArt.get(archetype.slug);
+                return (
+                  <Link
+                    key={archetype.slug}
+                    href={`/archetypes/${archetype.slug}`}
+                    className="group relative h-80 w-64 shrink-0 snap-start overflow-hidden rounded-xl border border-(--color-border) bg-(--color-surface-1) transition-colors hover:border-(--color-border-strong)"
+                  >
+                    {artUrl && (
+                      <Image
+                        src={artUrl}
+                        alt={archetype.name}
+                        fill
+                        sizes="256px"
+                        className="object-cover object-[center_25%] transition-transform duration-300 group-hover:scale-105"
+                        unoptimized
+                      />
+                    )}
+                    <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-linear-to-b from-black/70 to-transparent p-4">
+                      <span className="font-semibold text-white">{archetype.name}</span>
+                      <ArrowRight className="size-4 shrink-0 text-white/80 transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
+
+            <Link
+              href="/archetypes"
+              className="mx-auto inline-flex items-center gap-2 text-sm font-medium text-(--color-primary) transition-colors hover:text-(--color-primary-hover)"
+            >
+              View all archetypes
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </Container>
       </section>
 
       {/* ── CTA ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden py-28">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(ellipse 50% 70% at 50% 100%, rgba(124,58,237,0.14) 0%, transparent 70%)",
-          }}
-        />
-
         <Container>
           <div className="mx-auto flex max-w-xl flex-col items-center gap-6 text-center">
             <div className="flex size-14 items-center justify-center rounded-2xl bg-(--color-primary-muted)">
