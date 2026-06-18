@@ -57,6 +57,13 @@
       "when": 1781647128730,
       "tag": "0007_damp_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781741901574,
+      "tag": "0008_add-public-decks",
+      "breakpoints": true
     }
   ]
 }

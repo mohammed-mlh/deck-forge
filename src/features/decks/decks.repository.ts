@@ -8,14 +8,6 @@ export async function findDeckById(deckId: string): Promise<DeckRecord | null> {
   return rows[0] ?? null;
 }
 
-export async function findPublicDeckById(deckId: string): Promise<DeckRecord | null> {
-  return findDeckById(deckId);
-}
-
-export async function findPublicDecks(): Promise<DeckRecord[]> {
-  return db.select().from(decks).orderBy(desc(decks.updatedAt));
-}
-
 export async function findDeckByUserSlug(
   userId: string,
   slug: string

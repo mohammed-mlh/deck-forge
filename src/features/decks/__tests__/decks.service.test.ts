@@ -10,8 +10,6 @@ vi.mock("@/features/decks/decks.repository", () => ({
   findDeckById: vi.fn(),
   findDeckByUserSlug: vi.fn(),
   findDecksByUserId: vi.fn(),
-  findPublicDeckById: vi.fn(),
-  findPublicDecks: vi.fn(),
   insertDeck: vi.fn(),
   updateDeckById: vi.fn(),
   deleteDeckById: vi.fn(),

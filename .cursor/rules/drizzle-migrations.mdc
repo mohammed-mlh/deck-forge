@@ -9,8 +9,8 @@ alwaysApply: true
 When generating a migration after changing `src/db/schema`, **always pass `--name`** with a short, descriptive kebab-case slug.
 
 ```bash
-pnpm db:generate -- --name add-archetype-slug
-pnpm db:generate -- --name drop-deck-visibility
+pnpm db:generate --name add-archetype-slug
+pnpm db:generate --name drop-deck-visibility
 ```
 
 Do **not** run bare `pnpm db:generate` — Drizzle will auto-name files (e.g. `0007_damp_reavers.sql`), which is hard to review in git.

@@ -3,3 +3,4 @@ export * from "@/db/schema/archetypes";
 export * from "@/db/schema/cards";
 export * from "@/db/schema/deck-analyses";
 export * from "@/db/schema/decks";
+export * from "@/db/schema/public-decks";

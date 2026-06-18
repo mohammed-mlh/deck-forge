@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getFeaturedArchetypeSlugs } from "@/content/seo-archetypes";
 import { getGuideSlugs } from "@/content/seo-guides";
 import { getArchetypes } from "@/features/archetypes/archetypes.service";
-import { getPublicDecks } from "@/features/decks/decks.service";
+import { getPublicDecks } from "@/features/public-decks/public-decks.service";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

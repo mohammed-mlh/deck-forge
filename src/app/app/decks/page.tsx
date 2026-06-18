@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Compass } from "lucide-react";
 import { PublicDeckCard } from "@/components/decks/deck-cards";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getPublicDecks, toSavedDecks } from "@/features/decks/decks.service";
+import { toSavedDecks } from "@/features/decks/decks.service";
+import { getPublicDecks } from "@/features/public-decks/public-decks.service";
 import { createPageMetadata } from "@/lib/site-metadata";
-
+  
 export const metadata: Metadata = createPageMetadata({
   title: "Decks",
   description: "Discover public Yu-Gi-Oh decks shared by the community.",

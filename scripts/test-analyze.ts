@@ -2,7 +2,8 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { analyzeDeck } from "../src/lib/ai/analyze-deck";
 import { buildDeckContext } from "../src/lib/ai/deck-context";
-import { getPublicDecks, toSavedDeck } from "../src/features/decks/decks.service";
+import { toSavedDeck } from "../src/features/decks/decks.service";
+import { getPublicDecks } from "../src/features/public-decks/public-decks.service";
 import type { Deck } from "../src/features/decks/decks.schema";
 
 const MODEL = "deepseek-v4-flash";

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicDeckDetail } from "@/app/decks/[id]/content";
-import { getPublicDeckById, toSavedDeck } from "@/features/decks/decks.service";
+import { toSavedDeck } from "@/features/decks/decks.service";
+import { getPublicDeckById } from "@/features/public-decks/public-decks.service";
 import { buildDeckMetadata } from "@/lib/decks/deck-metadata";
 
 type Props = { params: Promise<{ id: string }> };

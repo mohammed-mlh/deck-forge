@@ -3,8 +3,6 @@ import {
   findDeckById,
   findDeckByUserSlug,
   findDecksByUserId,
-  findPublicDeckById,
-  findPublicDecks,
   insertDeck,
   updateDeckById,
 } from "@/features/decks/decks.repository";
@@ -36,7 +34,12 @@ function collectRefIds(...zones: DeckZoneRefs[]): number[] {
   return [...ids];
 }
 
-async function cardMapForRecords(records: DeckRecord[]): Promise<Map<number, Card>> {
+type HydratableDeck = Pick<
+  DeckRecord,
+  "id" | "name" | "main" | "extra" | "side" | "updatedAt"
+>;
+
+async function cardMapForRecords(records: HydratableDeck[]): Promise<Map<number, Card>> {
   const ids = collectRefIds(...records.flatMap((r) => [r.main, r.extra, r.side]));
   if (ids.length === 0) return new Map();
   const cards = await getCardsByIds({ ids });
@@ -75,7 +78,7 @@ function refsToEntries(refs: DeckZoneRefs, byId: Map<number, Card>): DeckCardEnt
   }));
 }
 
-function buildSavedDeck(record: DeckRecord, byId: Map<number, Card>): SavedDeck {
+function buildSavedDeck(record: HydratableDeck, byId: Map<number, Card>): SavedDeck {
   return {
     id: record.id,
     name: record.name,
@@ -86,13 +89,13 @@ function buildSavedDeck(record: DeckRecord, byId: Map<number, Card>): SavedDeck 
   };
 }
 
-export async function toSavedDecks(records: DeckRecord[]): Promise<SavedDeck[]> {
+export async function toSavedDecks(records: HydratableDeck[]): Promise<SavedDeck[]> {
   if (records.length === 0) return [];
   const byId = await cardMapForRecords(records);
   return records.map((record) => buildSavedDeck(record, byId));
 }
 
-export async function toSavedDeck(record: DeckRecord): Promise<SavedDeck> {
+export async function toSavedDeck(record: HydratableDeck): Promise<SavedDeck> {
   const [deck] = await toSavedDecks([record]);
   return deck;
 }
@@ -140,14 +143,6 @@ export async function getDeckById(userId: string, deckId: string): Promise<DeckR
 
 export async function getUserDecks(userId: string): Promise<DeckRecord[]> {
   return findDecksByUserId(userId);
-}
-
-export async function getPublicDecks(): Promise<DeckRecord[]> {
-  return findPublicDecks();
-}
-
-export async function getPublicDeckById(deckId: string): Promise<DeckRecord | null> {
-  return findPublicDeckById(deckId);
 }
 
 export async function createDeck(userId: string, input: CreateDeckInput): Promise<DeckRecord> {
