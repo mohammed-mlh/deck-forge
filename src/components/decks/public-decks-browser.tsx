@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Coins, Eye, Search, Trophy, User } from "lucide-react";
 import { PUBLIC_DECK_SORTS, type PublicDeckSort } from "@/features/public-decks/public-decks.view";
 import { cn } from "@/lib/utils";
+
+const PAGE_SIZE = 12;
 
 export interface PublicDeckListItem {
   id: string;
@@ -23,11 +24,6 @@ export interface PublicDeckListItem {
   views: number;
   price: number;
   tournamentPlayer: string | null;
-}
-
-export interface PublicDeckCategoryOption {
-  name: string;
-  count: number;
 }
 
 const ALL = "All";
@@ -54,17 +50,19 @@ function DeckCard({ deck, showCategory }: { deck: PublicDeckListItem; showCatego
       )}
       <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
 
-      {showCategory && (
-        <span className="absolute left-3 top-3 rounded bg-black/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/90 backdrop-blur-sm">
-          {deck.category}
-        </span>
-      )}
-      {deck.tournamentPlayer && (
-        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded bg-(--color-warning)/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-(--color-warning) backdrop-blur-sm">
-          <Trophy className="size-3" />
-          {deck.tournamentPlayer}
-        </span>
-      )}
+      <div className="absolute letf-3 top-3 px-4">
+        {showCategory && (
+          <span className="rounded bg-black/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/90 backdrop-blur-sm">
+            {deck.category}
+          </span>
+        )}
+        {deck.tournamentPlayer && (
+          <span className="inline-flex items-center gap-1 rounded bg-orange-400 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+            <Trophy className="size-3" />
+            {deck.tournamentPlayer}
+          </span>
+        )}
+      </div>
 
       <div className="relative flex flex-col gap-2 p-4">
         <h3 className="font-semibold text-white drop-shadow">{deck.name}</h3>
@@ -95,59 +93,50 @@ function DeckCard({ deck, showCategory }: { deck: PublicDeckListItem; showCatego
 
 export function PublicDecksBrowser({
   decks,
-  total,
-  page,
-  pageCount,
-  query,
-  sort,
-  category,
-  categories = [],
-  basePath,
   showCategories = true,
 }: {
   decks: PublicDeckListItem[];
-  total: number;
-  page: number;
-  pageCount: number;
-  query: string;
-  sort: PublicDeckSort;
-  category: string;
-  categories?: PublicDeckCategoryOption[];
-  basePath: string;
   showCategories?: boolean;
 }) {
-  const router = useRouter();
-  const [text, setText] = useState(query);
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string>(ALL);
+  const [sort, setSort] = useState<PublicDeckSort>("popular");
+  const [page, setPage] = useState(1);
 
-  const navigate = (next: {
-    q?: string;
-    sort?: PublicDeckSort;
-    category?: string;
-    page?: number;
-  }) => {
-    const q = (next.q ?? query).trim();
-    const s = next.sort ?? sort;
-    const c = next.category ?? category;
-    const p = next.page ?? 1;
+  const categories = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const deck of decks) counts.set(deck.category, (counts.get(deck.category) ?? 0) + 1);
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [decks]);
 
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (s !== "popular") params.set("sort", s);
-    if (c && c !== ALL) params.set("category", c);
-    if (p > 1) params.set("page", String(p));
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = decks.filter((deck) => {
+      if (category !== ALL && deck.category !== category) return false;
+      if (q && !deck.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
 
-    const qs = params.toString();
-    router.push(qs ? `${basePath}?${qs}` : basePath, { scroll: false });
-  };
+    const sorted = [...filtered];
+    switch (sort) {
+      case "name":
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "priceLow":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case "priceHigh":
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      default:
+        sorted.sort((a, b) => b.views - a.views);
+    }
+    return sorted;
+  }, [decks, query, category, sort]);
 
-  const onSearch = (value: string) => {
-    setText(value);
-    if (debounce.current) clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => navigate({ q: value }), 350);
-  };
-
-  const allCount = categories.reduce((sum, item) => sum + item.count, 0);
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const paged = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-5">
@@ -156,15 +145,21 @@ export function PublicDecksBrowser({
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-(--color-foreground-subtle)" />
           <input
             type="search"
-            value={text}
-            onChange={(e) => onSearch(e.target.value)}
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search decks by name…"
             className="w-full rounded-lg border border-(--color-border) bg-(--color-surface-1) py-2 pl-9 pr-3 text-sm text-(--color-foreground) outline-none transition-colors placeholder:text-(--color-foreground-subtle) focus:border-(--color-border-strong)"
           />
         </div>
         <select
           value={sort}
-          onChange={(e) => navigate({ sort: e.target.value as PublicDeckSort })}
+          onChange={(e) => {
+            setSort(e.target.value as PublicDeckSort);
+            setPage(1);
+          }}
           className="rounded-lg border border-(--color-border) bg-(--color-surface-1) px-3 py-2 text-sm text-(--color-foreground) outline-none transition-colors focus:border-(--color-border-strong)"
         >
           {PUBLIC_DECK_SORTS.map((option) => (
@@ -179,49 +174,58 @@ export function PublicDecksBrowser({
         <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <CategoryPill
             label={ALL}
-            count={allCount}
+            count={decks.length}
             active={category === ALL}
-            onClick={() => navigate({ category: ALL })}
+            onClick={() => {
+              setCategory(ALL);
+              setPage(1);
+            }}
           />
-          {categories.map((item) => (
+          {categories.map(([name, count]) => (
             <CategoryPill
-              key={item.name}
-              label={item.name}
-              count={item.count}
-              active={category === item.name}
-              onClick={() => navigate({ category: item.name })}
+              key={name}
+              label={name}
+              count={count}
+              active={category === name}
+              onClick={() => {
+                setCategory(name);
+                setPage(1);
+              }}
             />
           ))}
         </div>
       )}
 
       <p className="text-xs text-(--color-foreground-subtle)">
-        {total} {total === 1 ? "deck" : "decks"}
+        {visible.length} {visible.length === 1 ? "deck" : "decks"}
       </p>
 
-      {decks.length === 0 ? (
+      {visible.length === 0 ? (
         <p className="py-16 text-center text-sm text-(--color-foreground-muted)">
           No decks match your filters.
         </p>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {decks.map((deck) => (
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {paged.map((deck) => (
               <DeckCard key={deck.id} deck={deck} showCategory={showCategories} />
             ))}
           </div>
 
           {pageCount > 1 && (
             <div className="flex items-center justify-center gap-2 pt-2">
-              <PagerButton disabled={page <= 1} onClick={() => navigate({ page: page - 1 })}>
+              <PagerButton
+                disabled={currentPage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
                 <ChevronLeft className="size-4" />
               </PagerButton>
               <span className="px-2 text-sm tabular-nums text-(--color-foreground-muted)">
-                Page {page} of {pageCount}
+                Page {currentPage} of {pageCount}
               </span>
               <PagerButton
-                disabled={page >= pageCount}
-                onClick={() => navigate({ page: page + 1 })}
+                disabled={currentPage >= pageCount}
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
               >
                 <ChevronRight className="size-4" />
               </PagerButton>

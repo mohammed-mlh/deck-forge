@@ -4,49 +4,35 @@ import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { PublicDecksBrowser } from "@/components/decks/public-decks-browser";
-import {
-  getPublicDeckCategories,
-  getPublicDecksPage,
-} from "@/features/public-decks/public-decks.service";
-import { categorySlug, parseSort, toListItem } from "@/features/public-decks/public-decks.view";
+import { getPublicDecks } from "@/features/public-decks/public-decks.service";
+import { categorySlug, toListItem } from "@/features/public-decks/public-decks.view";
 import { createPageMetadata } from "@/lib/site-metadata";
 
-type Props = {
-  params: Promise<{ category: string }>;
-  searchParams: Promise<{ q?: string; sort?: string; page?: string }>;
-};
+type Props = { params: Promise<{ category: string }> };
 
-async function resolveCategory(slug: string): Promise<string | null> {
-  const categories = await getPublicDeckCategories();
-  return categories.find((cat) => categorySlug(cat.category) === slug)?.category ?? null;
+async function loadCategory(slug: string) {
+  const decks = await getPublicDecks();
+  const items = decks.map(toListItem);
+  const inCategory = items.filter((item) => categorySlug(item.category) === slug);
+  if (inCategory.length === 0) return null;
+  return { name: inCategory[0].category, items: inCategory };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: slug } = await params;
-  const label = await resolveCategory(slug);
-  if (!label) return { title: "Category not found" };
+  const category = await loadCategory(slug);
+  if (!category) return { title: "Category not found" };
   return createPageMetadata({
-    title: `${label} Decks`,
-    description: `Browse ${label} Yu-Gi-Oh decks.`,
+    title: `${category.name} Decks`,
+    description: `Browse ${category.name} Yu-Gi-Oh decks.`,
     path: `/app/decks/${slug}`,
   });
 }
 
-export default async function DeckCategoryPage({ params, searchParams }: Props) {
+export default async function DeckCategoryPage({ params }: Props) {
   const { category: slug } = await params;
-  const { q, sort, page } = await searchParams;
-
-  const label = await resolveCategory(slug);
-  if (!label) notFound();
-
-  const result = await getPublicDecksPage({
-    query: q,
-    sort: parseSort(sort),
-    category: label,
-    page: Number(page) || 1,
-  });
-
-  const items = result.items.map(toListItem);
+  const category = await loadCategory(slug);
+  if (!category) notFound();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-6">
@@ -60,24 +46,14 @@ export default async function DeckCategoryPage({ params, searchParams }: Props) 
             All categories
           </Link>
           <div>
-            <h2 className="text-xl font-semibold text-(--color-foreground)">{label}</h2>
+            <h2 className="text-xl font-semibold text-(--color-foreground)">{category.name}</h2>
             <p className="text-sm text-(--color-foreground-muted)">
-              {result.total} {result.total === 1 ? "deck" : "decks"}
+              {category.items.length} {category.items.length === 1 ? "deck" : "decks"}
             </p>
           </div>
         </div>
 
-        <PublicDecksBrowser
-          decks={items}
-          total={result.total}
-          page={result.page}
-          pageCount={result.pageCount}
-          query={q ?? ""}
-          sort={parseSort(sort)}
-          category={label}
-          basePath={`/app/decks/${slug}`}
-          showCategories={false}
-        />
+        <PublicDecksBrowser decks={category.items} showCategories={false} />
       </Container>
     </div>
   );

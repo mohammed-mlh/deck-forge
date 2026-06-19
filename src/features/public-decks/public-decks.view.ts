@@ -14,12 +14,6 @@ export const PUBLIC_DECK_SORTS: { value: PublicDeckSort; label: string }[] = [
   { value: "priceHigh", label: "Price (high → low)" },
 ];
 
-export function parseSort(value: string | undefined | null): PublicDeckSort {
-  return PUBLIC_DECK_SORTS.some((option) => option.value === value)
-    ? (value as PublicDeckSort)
-    : "popular";
-}
-
 function countRefs(refs: DeckZoneRefs): number {
   return refs.reduce((sum, ref) => sum + ref.quantity, 0);
 }
