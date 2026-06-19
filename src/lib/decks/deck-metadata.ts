@@ -18,7 +18,7 @@ export function buildDeckMetadata(deck: SavedDeck, slug: string = deck.id): Meta
       title: deck.name,
       description,
       type: "website",
-      url: `/app/decks/${slug}`,
+      url: `/decks/${slug}`,
       siteName: "DeckForge",
       ...(imageUrl && {
         images: [

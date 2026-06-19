@@ -18,7 +18,7 @@ type NavItem = { label: string; href: string };
 const navItems: NavItem[] = [
   { label: "Cards", href: "/app/cards" },
   { label: "Deck Builder", href: "/app/deck-builder" },
-  { label: "Decks", href: "/app/decks" },
+  { label: "Decks", href: "/decks" },
 ];
 
 const navLinkClass =

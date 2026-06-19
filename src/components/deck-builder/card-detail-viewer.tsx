@@ -35,7 +35,7 @@ function DeckBuilderStartPrompt({
           </Link>
         )}
 
-        <Link href="/app/decks" className={startPromptBtnClass}>
+        <Link href="/decks" className={startPromptBtnClass}>
           <FolderOpen className="size-3.5" />
           Browse Decks
         </Link>

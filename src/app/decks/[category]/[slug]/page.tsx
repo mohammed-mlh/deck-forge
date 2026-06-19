@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PublicDeckDetail } from "@/app/decks/[id]/content";
+import { PublicDeckDetail } from "@/app/decks/detail/content";
 import { toSavedDeck } from "@/features/decks/decks.service";
 import { getPublicDeckBySlug } from "@/features/public-decks/public-decks.service";
 import { categorySlug } from "@/features/public-decks/public-decks.view";
@@ -21,11 +21,9 @@ export default async function PublicDeckPage({ params }: Props) {
   if (!record) notFound();
 
   const deck = await toSavedDeck(record);
-  const backHref = `/app/decks/${categorySlug(record.metadata?.category ?? "")}`;
+  const backHref = `/decks/${categorySlug(record.metadata?.category ?? "")}`;
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto py-6">
-      <PublicDeckDetail deck={deck} metadata={record.metadata} backHref={backHref} />
-    </div>
+    <PublicDeckDetail deck={deck} metadata={record.metadata} backHref={backHref} />
   );
 }

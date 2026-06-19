@@ -35,7 +35,7 @@ function cardArtUrl(id: number): string {
 function DeckCard({ deck, showCategory }: { deck: PublicDeckListItem; showCategory: boolean }) {
   return (
     <Link
-      href={`/app/decks/${deck.categorySlug}/${deck.slug}`}
+      href={`/decks/${deck.categorySlug}/${deck.slug}`}
       className="group relative flex h-80 flex-col justify-end overflow-hidden rounded-xl border border-(--color-border) bg-(--color-surface-1) transition-colors hover:border-(--color-border-strong)"
     >
       {deck.coverCard > 0 && (

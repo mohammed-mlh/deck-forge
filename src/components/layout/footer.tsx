@@ -6,7 +6,7 @@ const footerLinks = {
   Product: [
     { label: "Cards", href: "/app/cards" },
     { label: "Archetypes", href: "/archetypes" },
-    { label: "Decks", href: "/app/decks" },
+    { label: "Decks", href: "/decks" },
   ],
   Tools: [
     { label: "Deck Builder", href: "/app/deck-builder" },

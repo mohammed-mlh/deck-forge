@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth, useClerk } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { ArrowLeft, Coins, Copy, ExternalLink, Eye, PlayCircle, Share2, Trophy, User } from "lucide-react";
 import type { PublicDeckMetadata } from "@/db/schema/public-decks";
 import { Container } from "@/components/layout/container";
@@ -70,7 +70,7 @@ function DeckZoneSection({ zone, entries }: { zone: DeckZone; entries: DeckCardE
 export function PublicDeckDetail({
   deck,
   metadata,
-  backHref = "/app/decks",
+  backHref = "/decks",
 }: {
   deck: SavedDeck;
   metadata?: PublicDeckMetadata | null;
@@ -78,7 +78,6 @@ export function PublicDeckDetail({
 }) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
-  const { openSignIn } = useClerk();
   const { fork } = useSavedDecks();
   const [copying, setCopying] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
@@ -94,12 +93,6 @@ export function PublicDeckDetail({
 
   const handleCopyDeck = async () => {
     setCopyError(null);
-
-    if (!isSignedIn) {
-      openSignIn();
-      return;
-    }
-
     setCopying(true);
     track("deck_copied", {
       sourceDeckId: deck.id,
@@ -116,14 +109,6 @@ export function PublicDeckDetail({
       router.push(`/app/deck-builder/${saved.id}`);
     } catch (err) {
       setCopying(false);
-      const status =
-        err && typeof err === "object" && "status" in err
-          ? (err as { status: number }).status
-          : undefined;
-      if (status === 401) {
-        openSignIn();
-        return;
-      }
       setCopyError(err instanceof Error ? err.message : "Failed to copy deck");
     }
   };
@@ -202,18 +187,20 @@ export function PublicDeckDetail({
             )}
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => void handleCopyDeck()}
-                disabled={copying}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)",
-                  copying && "opacity-70"
-                )}
-              >
-                <Copy className="size-4" />
-                {copying ? "Opening…" : "Copy Deck"}
-              </button>
+              {isSignedIn && (
+                <button
+                  type="button"
+                  onClick={() => void handleCopyDeck()}
+                  disabled={copying}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-md bg-(--color-primary) px-4 py-2 text-sm font-medium text-(--color-primary-foreground) transition-colors hover:bg-(--color-primary-hover)",
+                    copying && "opacity-70"
+                  )}
+                >
+                  <Copy className="size-4" />
+                  {copying ? "Opening…" : "Copy Deck"}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => void handleShare()}

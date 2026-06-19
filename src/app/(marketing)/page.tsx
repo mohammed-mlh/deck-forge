@@ -145,7 +145,7 @@ export default async function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <GetStartedButton>Start Building Free</GetStartedButton>
               <Link
-                href="/app/decks"
+                href="/decks"
                 className="inline-flex items-center gap-2 rounded-md border border-(--color-border) bg-(--color-surface-2) px-5 py-2.5 text-sm font-medium text-(--color-foreground) transition-colors hover:border-(--color-border-strong) hover:bg-(--color-surface-3)"
               >
                 Browse Decks

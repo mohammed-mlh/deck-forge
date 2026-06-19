@@ -96,7 +96,7 @@ After deploy, verify:
 
 - `/` — homepage loads
 - `/app/cards` — card browser returns results (requires `db:sync`)
-- `/app/decks` — public deck library (requires `curate-decks`)
+- `/decks` — public deck library (requires `curate-decks`)
 - `/archetypes` — archetype grid (requires `db:sync`)
 - Sign in → `/app/my-decks` — saved decks work
 - `/sitemap.xml` and `/robots.txt` — correct canonical URLs under `/app/*`

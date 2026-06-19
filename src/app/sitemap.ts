@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const archetypeSlugs = getFeaturedArchetypeSlugs();
 
   const publicDeckEntries = publicDecks.map((deck) => ({
-    url: `${base}/app/decks/${categorySlug(deck.metadata?.category ?? "community")}/${deck.slug}`,
+    url: `${base}/decks/${categorySlug(deck.metadata?.category ?? "community")}/${deck.slug}`,
     lastModified: deck.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.7,
@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${base}/app/decks`,
+      url: `${base}/decks`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return createPageMetadata({
     title: `${category.name} Decks`,
     description: `Browse ${category.name} Yu-Gi-Oh decks.`,
-    path: `/app/decks/${slug}`,
+    path: `/decks/${slug}`,
   });
 }
 
@@ -35,26 +35,24 @@ export default async function DeckCategoryPage({ params }: Props) {
   if (!category) notFound();
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-6">
-      <Container className="flex flex-col gap-6">
-        <div className="flex flex-col gap-3">
-          <Link
-            href="/app/decks"
-            className="inline-flex w-fit items-center gap-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
-          >
-            <ArrowLeft className="size-4" />
-            All categories
-          </Link>
-          <div>
-            <h2 className="text-xl font-semibold text-(--color-foreground)">{category.name}</h2>
-            <p className="text-sm text-(--color-foreground-muted)">
-              {category.items.length} {category.items.length === 1 ? "deck" : "decks"}
-            </p>
-          </div>
+    <Container className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3">
+        <Link
+          href="/decks"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-(--color-foreground-muted) transition-colors hover:text-(--color-foreground)"
+        >
+          <ArrowLeft className="size-4" />
+          All categories
+        </Link>
+        <div>
+          <h2 className="text-xl font-semibold text-(--color-foreground)">{category.name}</h2>
+          <p className="text-sm text-(--color-foreground-muted)">
+            {category.items.length} {category.items.length === 1 ? "deck" : "decks"}
+          </p>
         </div>
+      </div>
 
-        <PublicDecksBrowser decks={category.items} showCategories={false} />
-      </Container>
-    </div>
+      <PublicDecksBrowser decks={category.items} showCategories={false} />
+    </Container>
   );
 }
