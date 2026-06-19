@@ -63,6 +63,7 @@ export async function generateMetadata({
     title: `${archetype.name} Archetype · Yu-Gi-Oh Deck Guide`,
     description: archetype.description,
     path: `/archetypes/${slug}`,
+    robots: featured ? undefined : { index: false, follow: true },
   });
 }
 

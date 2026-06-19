@@ -7,17 +7,21 @@ export function createPageMetadata({
   description,
   path,
   noIndex = false,
+  robots,
 }: {
   title: string;
   description: string;
   path?: string;
   noIndex?: boolean;
+  robots?: Metadata["robots"];
 }): Metadata {
+  const resolvedRobots = robots ?? (noIndex ? { index: false, follow: false } : undefined);
+
   return {
     title,
     description,
     ...(path && { alternates: { canonical: path } }),
-    ...(noIndex && { robots: { index: false, follow: false } }),
+    ...(resolvedRobots ? { robots: resolvedRobots } : {}),
     openGraph: {
       title,
       description,
