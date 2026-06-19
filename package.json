@@ -14,7 +14,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:sync": "npx tsx --env-file=.env scripts/sync-db.ts",
-    "curate-decks": "npx tsx --env-file=.env scripts/curate-decks.ts"
+    "curate-decks": "npx tsx --env-file=.env scripts/curate-decks.ts",
+    "fix-public-decks": "npx tsx --env-file=.env scripts/fix-public-decks.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.2",
