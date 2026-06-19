@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { SeoContentCard, SeoContentGrid, SeoCta } from "@/components/seo/seo-content";
@@ -50,17 +49,7 @@ export default function ImportPage() {
           description="Open the builder and use the Import button to paste or upload your list."
           primaryHref="/app/deck-builder"
           primaryLabel="Open deck builder"
-          secondaryHref="/guides/how-to-import-yugioh-decks"
-          secondaryLabel="Import guide"
         />
-
-        <p className="text-sm text-(--color-foreground-muted)">
-          Need step-by-step help? Read the{" "}
-          <Link href="/guides/how-to-import-yugioh-decks" className="text-(--color-primary) hover:underline">
-            full import guide
-          </Link>
-          .
-        </p>
       </div>
     </Container>
   );

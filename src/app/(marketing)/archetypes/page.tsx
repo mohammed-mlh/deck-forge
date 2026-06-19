@@ -55,8 +55,8 @@ export default async function ArchetypesPage() {
           description="Use advanced filters for attribute, frame type, stats, link markers, and pendulum scales."
           primaryHref="/app/cards"
           primaryLabel="Open card browser"
-          secondaryHref="/guides/yugioh-deck-building-guide"
-          secondaryLabel="Deck building guide"
+          secondaryHref="/app/deck-builder"
+          secondaryLabel="Open deck builder"
         />
 
         <p className="text-sm text-(--color-foreground-muted)">

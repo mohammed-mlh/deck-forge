@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/my-decks", "/deck-builder", "/api/"],
+      disallow: ["/app/my-decks", "/app/deck-builder", "/api/"],
     },
     sitemap: `${base}/sitemap.xml`,
   };

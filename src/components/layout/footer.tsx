@@ -4,17 +4,22 @@ import { Container } from "@/components/layout/container";
 
 const footerLinks = {
   Product: [
-    { label: "Cards", href: "/cards" },
+    { label: "Cards", href: "/app/cards" },
     { label: "Archetypes", href: "/archetypes" },
-    { label: "Guides", href: "/guides" },
+    { label: "Decks", href: "/app/decks" },
   ],
   Tools: [
-    { label: "Deck Builder", href: "/deck-builder" },
+    { label: "Deck Builder", href: "/app/deck-builder" },
     { label: "Import Formats", href: "/import" },
-    { label: "Decks", href: "/decks" },
-    { label: "My Decks", href: "/my-decks" },
+    { label: "My Decks", href: "/app/my-decks" },
   ],
 };
+
+const legalLinks = [
+  { label: "About", href: "/about" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+];
 
 export function Footer() {
   return (
@@ -57,6 +62,17 @@ export function Footer() {
             <p className="text-xs text-(--color-foreground-subtle)">
               © {new Date().getFullYear()} DeckForge. All rights reserved.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-xs text-(--color-foreground-subtle) transition-colors hover:text-(--color-foreground-muted)"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
             <p className="text-xs text-(--color-foreground-subtle)">
               Not affiliated with Konami.
             </p>
