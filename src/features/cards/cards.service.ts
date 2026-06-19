@@ -5,6 +5,7 @@ import {
   findBanlistByCardId,
   findCardById,
   findCardsByIds,
+  findCoverCardIdsByArchetypes,
   findImagesByCardIds,
   findPriceByCardId,
   findSetsByCardId,
@@ -64,6 +65,10 @@ export async function getCards(input: CardSearchInput = {}): Promise<Card[]> {
 
 export async function getCardsByIds(input: CardIdsInput): Promise<Card[]> {
   return loadCardsByIds(input.ids);
+}
+
+export async function getCoverCardIdsByArchetypes(names: string[]): Promise<Map<string, number>> {
+  return findCoverCardIdsByArchetypes(names);
 }
 
 export async function getCardById(cardId: number): Promise<CardDetail | null> {

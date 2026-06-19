@@ -6,9 +6,11 @@ import {
   gte,
   ilike,
   inArray,
+  isNotNull,
   like,
   lte,
   or,
+  sql,
 } from "drizzle-orm";
 import { db } from "@/db";
 import {
@@ -181,4 +183,26 @@ export function groupImagesByCardId(
     grouped.set(image.cardId, existing);
   }
   return grouped;
+}
+
+/** One representative card id per archetype name (for list cover art). */
+export async function findCoverCardIdsByArchetypes(
+  names: string[]
+): Promise<Map<string, number>> {
+  if (names.length === 0) return new Map();
+
+  const rows = await db
+    .select({
+      archetype: cards.archetype,
+      cardId: sql<number>`min(${cards.id})`,
+    })
+    .from(cards)
+    .where(and(isNotNull(cards.archetype), inArray(cards.archetype, names)))
+    .groupBy(cards.archetype);
+
+  const map = new Map<string, number>();
+  for (const row of rows) {
+    if (row.archetype) map.set(row.archetype, Number(row.cardId));
+  }
+  return map;
 }

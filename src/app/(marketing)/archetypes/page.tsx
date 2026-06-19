@@ -2,41 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
-import {
-  SeoContentCard,
-  SeoContentGrid,
-  SeoCta,
-} from "@/components/seo/seo-content";
-import { FEATURED_ARCHETYPES } from "@/content/seo-archetypes";
-import { getCards } from "@/features/cards/cards.service";
-import { getCardImageUrl } from "@/lib/cards";
+import { ImageLinkCard } from "@/components/seo/image-link-card";
+import { SeoCta } from "@/components/seo/seo-content";
+import { buildArchetypeListItems } from "@/features/archetypes/archetypes.view";
 import { createPageMetadata } from "@/lib/site-metadata";
 import { JsonLd } from "@/lib/seo/json-ld";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Yu-Gi-Oh Archetypes",
   description:
-    "Explore popular Yu-Gi-Oh archetypes — strategy overviews, key cards, and links to browse the full card database.",
+    "Explore Yu-Gi-Oh archetypes — strategy overviews, key cards, and links to browse the full card database.",
   path: "/archetypes",
 });
 
-async function resolveFeaturedCardImages() {
-  const results = await Promise.all(
-    FEATURED_ARCHETYPES.map(async (archetype) => {
-      const cards = await getCards({ name: archetype.featuredCardName, num: 1 });
-      const card = cards[0];
-      return {
-        slug: archetype.slug,
-        imageUrl: card ? getCardImageUrl(card, "small") : undefined,
-        imageAlt: card?.name ?? archetype.featuredCardName,
-      };
-    })
-  );
-  return new Map(results.map((result) => [result.slug, result]));
-}
-
 export default async function ArchetypesPage() {
-  const cardImages = await resolveFeaturedCardImages();
+  const archetypes = await buildArchetypeListItems();
 
   return (
     <Container>
@@ -46,7 +26,7 @@ export default async function ArchetypesPage() {
           "@type": "CollectionPage",
           name: "Yu-Gi-Oh Archetypes",
           description:
-            "Explore popular Yu-Gi-Oh archetypes with key cards and deck building resources.",
+            "Explore Yu-Gi-Oh archetypes with key cards and deck building resources.",
           url: "/archetypes",
         }}
       />
@@ -54,26 +34,21 @@ export default async function ArchetypesPage() {
       <div className="flex flex-col gap-10 py-8">
         <PageHeader
           title="Yu-Gi-Oh Archetypes"
-          description="Strategy overviews and key cards for popular archetypes. Each page links to the full card browser filtered by archetype."
+          description={`Browse ${archetypes.length} archetypes from the card database. Each page links to cards and deck-building resources.`}
         />
 
-        <SeoContentGrid>
-          {FEATURED_ARCHETYPES.map((archetype) => {
-            const image = cardImages.get(archetype.slug);
-            return (
-              <SeoContentCard
-                key={archetype.slug}
-                href={`/archetypes/${archetype.slug}`}
-                title={archetype.name}
-                description={archetype.description}
-                tags={archetype.tags}
-                imageUrl={image?.imageUrl}
-                imageAlt={image?.imageAlt}
-                meta={`Featured: ${archetype.featuredCardName}`}
-              />
-            );
-          })}
-        </SeoContentGrid>
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {archetypes.map((archetype) => (
+            <ImageLinkCard
+              key={archetype.slug}
+              href={`/archetypes/${archetype.slug}`}
+              title={archetype.name}
+              subtitle={archetype.description ?? undefined}
+              imageUrl={archetype.imageUrl}
+              imageAlt={archetype.name}
+            />
+          ))}
+        </div>
 
         <SeoCta
           title="Search all 12,000+ cards"
@@ -88,10 +63,6 @@ export default async function ArchetypesPage() {
           Looking for a specific archetype?{" "}
           <Link href="/app/cards" className="text-(--color-primary) hover:underline">
             Filter by archetype in the card browser
-          </Link>{" "}
-          or browse{" "}
-          <Link href="/guides/what-is-a-yugioh-archetype" className="text-(--color-primary) hover:underline">
-            what archetypes are
           </Link>
           .
         </p>
